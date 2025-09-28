@@ -4,62 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - Green Fresh</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <style>
-            .bg-gradient-green {
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            }
-            .input-focus:focus {
-                border-color: #10b981;
-                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-            }
-            .btn-primary {
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                color: #fff;
-                box-shadow: 0 2px 8px rgba(16,185,129,0.15);
-                transition: all 0.3s;
-            }
-            .btn-primary:hover {
-                transform: translateY(-2px) scale(1.03);
-                box-shadow: 0 8px 24px rgba(16,185,129,0.25);
-            }
-            .card {
-                border-radius: 1rem;
-                box-shadow: 0 2px 12px rgba(16,185,129,0.08);
-                transition: box-shadow 0.3s;
-            }
-            .card:hover {
-                box-shadow: 0 8px 32px rgba(16,185,129,0.18);
-            }
-        </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .input-focus:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
-                    <a href="index.html" class="flex items-center space-x-2">
-                        <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
-                            <i class="fas fa-leaf text-white text-xl"></i>
-                        </div>
-                        <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
-                    </a>
-                    <nav class="hidden md:flex items-center space-x-6">
-                        <a href="index.html" class="text-gray-600 hover:text-green-600 font-semibold transition">Trang chủ</a>
-                        <a href="products.html" class="text-gray-600 hover:text-green-600 font-semibold transition">Sản phẩm</a>
-                        <a href="#" class="text-gray-600 hover:text-green-600 font-semibold transition">Liên hệ</a>
-                    </nav>
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
+                </a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-green-600 font-semibold transition">Trang chủ</a>
+                    <a href="products.html" class="text-gray-600 hover:text-green-600 font-semibold transition">Sản phẩm</a>
+                    <a href="#" class="text-gray-600 hover:text-green-600 font-semibold transition">Liên hệ</a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center py-12 px-4">
         <div class="max-w-md w-full">
-            <!-- Login Card -->
-                <div class="bg-white card overflow-hidden">
-                <!-- Header -->
+            <div class="bg-white card overflow-hidden">
                 <div class="bg-gradient-green px-8 py-6 text-center">
                     <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-user text-white text-2xl"></i>
@@ -68,18 +64,20 @@
                     <p class="text-green-100">Đăng nhập để tiếp tục mua sắm</p>
                 </div>
 
-                <!-- Form -->
                 <div class="px-8 py-8">
-                    <div class="mb-6 flex flex-col gap-3">
-                        <button id="loginGoogle" type="button" class="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 font-semibold hover:bg-gray-100">
-                            <i class="fab fa-google text-red-500"></i> Đăng nhập bằng Google
-                        </button>
-                        <button id="loginFacebook" type="button" class="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 font-semibold hover:bg-gray-100">
-                            <i class="fab fa-facebook text-blue-600"></i> Đăng nhập bằng Facebook
-                        </button>
+                    <div class="mb-6 hidden" id="messageBlock">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4" id="errorMessage">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                                <div>
+                                    <h3 class="text-red-800 font-medium">Lỗi đăng nhập!</h3>
+                                    <p class="text-red-700 text-sm mt-1" id="errorText">Email hoặc mật khẩu không đúng.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    
                     <form id="loginForm" class="space-y-6">
-                        <!-- Email Field -->
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-envelope text-gray-400 mr-2"></i>
@@ -98,7 +96,6 @@
                             </div>
                         </div>
 
-                        <!-- Password Field -->
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-lock text-gray-400 mr-2"></i>
@@ -126,18 +123,16 @@
                             </div>
                         </div>
 
-                        <!-- Remember Me & Forgot Password -->
                         <div class="flex items-center justify-between">
                             <label class="flex items-center">
                                 <input type="checkbox" name="remember" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
                             </label>
-                            <a href="#" class="text-sm text-green-600 hover:text-green-700 font-medium">
+                            <a href="forgotpassword.html" class="text-sm text-green-600 hover:text-green-700 font-medium">
                                 Quên mật khẩu?
                             </a>
                         </div>
 
-                        <!-- Submit Button -->
                         <button 
                             type="submit" 
                             class="w-full btn-primary text-white py-3 px-4 rounded-lg font-semibold text-lg"
@@ -146,38 +141,37 @@
                             <span id="loginBtnText">Đăng nhập</span>
                             <i class="fas fa-spinner fa-spin ml-2 hidden" id="loginSpinner"></i>
                         </button>
-
-                        <!-- Divider -->
-                        <div class="relative my-6">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-300"></div>
-                            </div>
-                            <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white text-gray-500">Hoặc đăng nhập với</span>
-                            </div>
-                        </div>
-
-                        <!-- Social Login -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <button 
-                                type="button" 
-                                class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                            >
-                                <i class="fab fa-google text-red-500 mr-2"></i>
-                                Google
-                            </button>
-                            <button 
-                                type="button" 
-                                class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                            >
-                                <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                                Facebook
-                            </button>
-                        </div>
                     </form>
+
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Hoặc đăng nhập với</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button 
+                            type="button" 
+                            id="loginGoogle"
+                            class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            <i class="fab fa-google text-red-500 mr-2"></i>
+                            Google
+                        </button>
+                        <button 
+                            type="button" 
+                            id="loginFacebook"
+                            class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                        >
+                            <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                            Facebook
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="px-8 py-6 bg-gray-50 text-center">
                     <p class="text-gray-600">
                         Chưa có tài khoản? 
@@ -188,7 +182,6 @@
                 </div>
             </div>
 
-            <!-- Additional Info -->
             <div class="mt-8 text-center">
                 <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
                     <div class="flex items-center">
@@ -208,15 +201,35 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t py-6">
+    <footer class="bg-white border-t py-6 mt-auto">
         <div class="container mx-auto px-4 text-center text-gray-600">
             <p>&copy; 2024 Green Fresh. Tất cả quyền được bảo lưu.</p>
         </div>
     </footer>
 
     <script>
-        // Đăng nhập Google/Facebook demo
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api';
+        
+        // Hàm hiển thị thông báo lỗi
+        function showErrorMessage(message) {
+            const messageBlock = document.getElementById('messageBlock');
+            const errorMsg = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+
+            errorText.textContent = message || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+            messageBlock.classList.remove('hidden');
+            errorMsg.classList.remove('hidden');
+        }
+
+        // Hàm ẩn thông báo lỗi
+        function hideErrorMessage() {
+            const messageBlock = document.getElementById('messageBlock');
+            const errorMsg = document.getElementById('errorMessage');
+            messageBlock.classList.add('hidden');
+            errorMsg.classList.add('hidden');
+        }
+        
+        // Xử lý đăng nhập Google/Facebook (vẫn giữ nguyên demo, có thể thay bằng API thật nếu cần)
         document.getElementById('loginGoogle').onclick = function() {
             const user = { email: 'googleuser@gmail.com', role: 'customer', displayName: 'Google User' };
             localStorage.setItem('user', JSON.stringify(user));
@@ -227,6 +240,7 @@
             localStorage.setItem('user', JSON.stringify(user));
             window.location.href = 'index.html';
         };
+        
         // Toggle password visibility
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
@@ -243,14 +257,15 @@
             }
         }
 
-        // Form validation and submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Form validation and submission (ĐÃ SỬA API CALL)
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             
             // Reset errors
+            hideErrorMessage();
             document.getElementById('emailError').classList.add('hidden');
             document.getElementById('passwordError').classList.add('hidden');
             
@@ -269,28 +284,50 @@
                 isValid = false;
             }
             
-            if (isValid) {
-                // Show loading state
-                const btn = document.getElementById('loginBtn');
-                const btnText = document.getElementById('loginBtnText');
-                const spinner = document.getElementById('loginSpinner');
-                
-                btn.disabled = true;
-                btnText.textContent = 'Đang đăng nhập...';
-                spinner.classList.remove('hidden');
-                
-                // Simulate API call
-                setTimeout(() => {
-                    // Reset button state
-                    btn.disabled = false;
-                    btnText.textContent = 'Đăng nhập';
-                    spinner.classList.add('hidden');
-                    // Lưu thông tin đăng nhập vào localStorage
-                    localStorage.setItem('user', JSON.stringify({ email }));
-                    // Redirect on success
+            if (!isValid) return;
+
+            // Show loading state
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginSpinner');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Đang đăng nhập...';
+            spinner.classList.remove('hidden');
+            
+            try {
+                // FIX: Thay thế setTimeout bằng fetch API
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Đăng nhập thành công
+                    // Lưu token và thông tin user vào localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Chuyển hướng
                     alert('Đăng nhập thành công!');
                     window.location.href = 'index.html';
-                }, 2000);
+                } else {
+                    // Đăng nhập thất bại (Ví dụ: sai email/mật khẩu)
+                    showErrorMessage(data.message || 'Email hoặc mật khẩu không đúng.');
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                showErrorMessage('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btnText.textContent = 'Đăng nhập';
+                spinner.classList.add('hidden');
             }
         });
 
@@ -305,6 +342,7 @@
             } else {
                 errorDiv.classList.add('hidden');
             }
+            hideErrorMessage();
         });
 
         document.getElementById('password').addEventListener('input', function() {
@@ -316,6 +354,7 @@
             } else {
                 errorDiv.classList.add('hidden');
             }
+            hideErrorMessage();
         });
     </script>
 </body>

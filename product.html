@@ -1,195 +1,3 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sản phẩm - Green Fresh</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .bg-gradient-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
-            transition: box-shadow 0.3s;
-        }
-        .card:hover {
-            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
-            transition: all 0.3s;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
-        }
-        /* Toast Notification Style */
-        #toast {
-            transition: opacity 0.3s ease-in-out;
-            pointer-events: none; /* Cho phép click xuyên qua khi ẩn */
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <div id="toast" class="fixed top-6 right-6 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 opacity-0"></div>
-
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between py-4">
-                <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
-                        <i class="fas fa-leaf text-white text-xl"></i>
-                    </div>
-                    <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
-                </a>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
-                    <a href="product.html" class="text-green-600 font-semibold transition">Sản phẩm</a>
-                    <a href="product-detail.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Về chúng tôi</a>
-                    <a href="forgotpassword.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Liên hệ</a>
-                </nav>
-                <div class="flex items-center space-x-4">
-                    <div class="relative hidden md:block">
-                        <input id="search-input" type="text" placeholder="Tìm kiếm sản phẩm..." 
-                               class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
-                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
-                    </div>
-                    <a href="cart.html">
-                        <button class="relative p-2 text-gray-700 hover:text-green-600">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                            <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-                        </button>
-                    </a>
-                    <div id="user-info" class="flex items-center space-x-2"></div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="bg-white border-b">
-        <div class="container mx-auto px-4 py-3">
-            <nav class="flex items-center space-x-2 text-sm">
-                <a href="index.html" class="text-gray-500 hover:text-green-600">Trang chủ</a>
-                <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-                <span class="text-gray-800">Sản phẩm</span>
-            </nav>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-1/4">
-                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
-                    <h3 class="text-lg font-semibold mb-4">Bộ lọc</h3>
-                    
-                    <div class="mb-6">
-                        <h4 class="font-medium mb-3">Danh mục</h4>
-                        <div class="space-y-2" id="category-filters">
-                            <label class="flex items-center">
-                                <input type="checkbox" data-category="Rau củ quả" class="mr-2 text-green-500 category-filter">
-                                <span class="text-sm">Rau củ quả (45)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" data-category="Trái cây" class="mr-2 text-green-500 category-filter">
-                                <span class="text-sm">Trái cây (32)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" data-category="Thịt sạch" class="mr-2 text-green-500 category-filter">
-                                <span class="text-sm">Thịt sạch (18)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" data-category="Hải sản" class="mr-2 text-green-500 category-filter">
-                                <span class="text-sm">Hải sản (12)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <h4 class="font-medium mb-3">Khoảng giá</h4>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="0-50000" class="mr-2 text-green-500 price-filter">
-                                <span class="text-sm">Dưới 50,000đ</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="50000-100000" class="mr-2 text-green-500 price-filter">
-                                <span class="text-sm">50,000đ - 100,000đ</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="100000-200000" class="mr-2 text-green-500 price-filter">
-                                <span class="text-sm">100,000đ - 200,000đ</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="price" value="200000-max" class="mr-2 text-green-500 price-filter">
-                                <span class="text-sm">Trên 200,000đ</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:w-3/4">
-                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-center">
-                        <div class="mb-4 sm:mb-0">
-                            <span class="text-gray-600" id="product-count-display">Hiển thị 1-12 của 87 sản phẩm</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <select id="sort-select" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="default">Sắp xếp theo</option>
-                                <option value="price-asc">Giá thấp đến cao</option>
-                                <option value="price-desc">Giá cao đến thấp</option>
-                                <option value="newest">Mới nhất</option>
-                                <option value="best-seller">Bán chạy nhất</option>
-                            </select>
-                            <div class="flex border border-gray-300 rounded">
-                                <button class="p-2 bg-green-500 text-white">
-                                    <i class="fas fa-th"></i>
-                                </button>
-                                <button class="p-2 hover:bg-gray-100">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
-                    </div>
-
-                <div class="mt-8 flex justify-center" id="pagination-container">
-                    </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-gray-800 text-white py-12 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-leaf text-white"></i>
-                        </div>
-                        <span class="text-xl font-bold">Green Fresh</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">
-                        Cung cấp thực phẩm xanh sạch, an toàn cho sức khỏe gia đình Việt.
-                    </p>
-                </div>
-                </div>
-            
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 Green Fresh. Tất cả quyền được bảo lưu.</p>
-            </div>
-        </div>
-    </footer>
-
 <script>
     // --- DỮ LIỆU SẢN PHẨM GIẢ ĐỊNH (MOCK DATA) ---
     const allProducts = [
@@ -202,43 +10,123 @@
         { id: 7, name: 'Gạo hữu cơ ST25', price: 85000, category: 'Rau củ quả', description: 'Gạo thơm ngon, dinh dưỡng', image: 'https://i.imgur.com/rM1q5gP.jpeg', rating: 4.6, reviews: 50, isOrganic: true },
         { id: 8, name: 'Bò Úc tươi', price: 220000, category: 'Thịt sạch', description: 'Thịt bò nhập khẩu, mềm', image: 'https://i.imgur.com/M6Lg4gA.jpeg', rating: 4.4, reviews: 30, isOrganic: false },
         { id: 9, name: 'Sữa chua dâu', price: 15000, category: 'Khác', description: 'Sữa chua tự nhiên, vị dâu', image: 'https://i.imgur.com/hO5qW7O.jpeg', rating: 4.3, reviews: 22, isOrganic: true },
-    ];
-    
-    // --- HÀM GIỎ HÀNG (CORE FIX) ---
+        // Thêm nhiều sản phẩm hơn để thấy rõ phân trang
+        { id: 10, name: 'Bơ sáp Đắk Lắk', price: 70000, category: 'Trái cây', description: 'Bơ dẻo thơm ngon', image: 'https://i.imgur.com/rM1q5gP.jpeg', rating: 4.5, reviews: 20, isOrganic: true },
+        { id: 11, name: 'Cá hồi tươi', price: 350000, category: 'Hải sản', description: 'Cá hồi Na Uy phi lê', image: 'https://i.imgur.com/w4p7r8q.jpeg', rating: 4.9, reviews: 90, isOrganic: false },
+        { id: 12, name: 'Thịt heo sạch', price: 110000, category: 'Thịt sạch', description: 'Heo nuôi theo quy trình sạch', image: 'https://i.imgur.com/YJgqDkU.jpeg', rating: 4.6, reviews: 40, isOrganic: true },
+        { id: 13, name: 'Bắp cải tí hon', price: 30000, category: 'Rau củ quả', description: 'Bắp cải Brussels mini', image: 'https://i.imgur.com/M6Lg4gA.jpeg', rating: 4.1, reviews: 15, isOrganic: true },
+        { id: 14, name: 'Dâu tây Đà Lạt', price: 150000, category: 'Trái cây', description: 'Dâu tây đỏ mọng', image: 'https://i.imgur.com/hO5qW7O.jpeg', rating: 4.8, reviews: 55, isOrganic: false },
+        { id: 15, name: 'Tôm hùm Canada', price: 800000, category: 'Hải sản', description: 'Tôm hùm nhập khẩu', image: 'https://i.imgur.com/vHqB3qB.jpeg', rating: 5.0, reviews: 10, isOrganic: false },
+    ].filter(p => p.category !== 'Khác'); // Loại bỏ sản phẩm category 'Khác' để khớp với bộ lọc
 
-    /**
-     * Cập nhật số lượng sản phẩm trên icon giỏ hàng
-     */
+    // --- CẤU HÌNH PHÂN TRANG & TRẠNG THÁI ---
+    const productsPerPage = 9; // Số sản phẩm mỗi trang
+    let currentPage = 1;
+    let currentFilteredProducts = [];
+
+    // --- HÀM CẬP NHẬT URL (QUAN TRỌNG) ---
+    function updateUrl() {
+        const params = new URLSearchParams();
+        
+        // 1. Trang hiện tại
+        params.set('page', currentPage);
+
+        // 2. Danh mục
+        const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
+                                     .map(input => input.getAttribute('data-category'));
+        if (selectedCategories.length > 0) {
+            params.set('category', selectedCategories.join(','));
+        }
+
+        // 3. Khoảng giá
+        const selectedPrice = document.querySelector('.price-filter:checked');
+        if (selectedPrice) {
+            params.set('price', selectedPrice.value);
+        }
+        
+        // 4. Sắp xếp
+        const sortValue = document.getElementById('sort-select').value;
+        if (sortValue !== 'default') {
+            params.set('sort', sortValue);
+        }
+
+        // 5. Tìm kiếm
+        const searchTerm = document.getElementById('search-input').value;
+        if (searchTerm) {
+            params.set('search', searchTerm);
+        }
+
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        history.pushState(null, '', newUrl); // Cập nhật URL mà không cần tải lại trang
+    }
+
+    // --- HÀM KHỞI TẠO TỪ URL (QUAN TRỌNG) ---
+    function loadStateFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // 1. Lấy trang hiện tại
+        const page = parseInt(params.get('page')) || 1;
+        currentPage = page;
+
+        // 2. Áp dụng Danh mục
+        const categoryParam = params.get('category');
+        if (categoryParam) {
+            const categories = categoryParam.split(',');
+            document.querySelectorAll('.category-filter').forEach(input => {
+                if (categories.includes(input.getAttribute('data-category'))) {
+                    input.checked = true;
+                }
+            });
+        }
+
+        // 3. Áp dụng Khoảng giá
+        const priceParam = params.get('price');
+        if (priceParam) {
+            document.querySelector(`.price-filter[value="${priceParam}"]`).checked = true;
+        }
+        
+        // 4. Áp dụng Sắp xếp
+        const sortParam = params.get('sort');
+        if (sortParam) {
+            document.getElementById('sort-select').value = sortParam;
+        }
+
+        // 5. Áp dụng Tìm kiếm
+        const searchParam = params.get('search');
+        if (searchParam) {
+            document.getElementById('search-input').value = searchParam;
+        }
+
+        // Sau khi đặt các giá trị đầu vào (input values), gọi applyFilters
+        // để thực hiện việc lọc/sắp xếp ban đầu.
+        applyFilters(false); // Tham số false báo hiệu không cần update URL nữa
+    }
+
+    // --- CÁC HÀM KHÁC (ĐÃ CẬP NHẬT) ---
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.opacity = 1;
+        setTimeout(() => { toast.style.opacity = 0; }, 2000);
+    }
+    
+    // Hàm giỏ hàng (giữ nguyên)
     function updateCartCount() {
-        // Lấy danh sách sản phẩm (distinct items)
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const cartCount = document.getElementById('cart-count');
         if (cartCount) cartCount.textContent = cart.length;
     }
-
-    /**
-     * Thêm sản phẩm vào giỏ hàng
-     * @param {number} productId - ID duy nhất của sản phẩm
-     */
     window.addToCart = function(productId) {
         const productToAdd = allProducts.find(p => p.id === productId);
         if (!productToAdd) return;
-
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const productIndex = cart.findIndex(item => item.id === productId);
 
         if (productIndex > -1) {
-            // Nếu sản phẩm đã có, tăng số lượng
             cart[productIndex].quantity = (cart[productIndex].quantity || 1) + 1;
         } else {
-            // Nếu sản phẩm chưa có, thêm mới với số lượng là 1
-            const newItem = {
-                id: productToAdd.id,
-                name: productToAdd.name,
-                price: productToAdd.price,
-                image: productToAdd.image, // Thêm image để dễ hiển thị trong giỏ hàng
-                quantity: 1
-            };
+            const newItem = { id: productToAdd.id, name: productToAdd.name, price: productToAdd.price, image: productToAdd.image, quantity: 1 };
             cart.push(newItem);
         }
 
@@ -247,38 +135,40 @@
         showToast(`Đã thêm 1 x "${productToAdd.name}" vào giỏ hàng!`);
     }
 
-    // --- HÀM RENDER VÀ LỌC SẢN PHẨM ---
-
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.style.opacity = 1;
-        setTimeout(() => { toast.style.opacity = 0; }, 2000);
-    }
-
     function renderProducts(products) {
         const grid = document.getElementById('products-grid');
         const countDisplay = document.getElementById('product-count-display');
         
         if (!grid) return;
 
+        // Xử lý phân trang
+        const totalProducts = products.length;
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const productsOnPage = products.slice(startIndex, endIndex);
+
         grid.innerHTML = '';
-        if (products.length === 0) {
+        
+        if (productsOnPage.length === 0) {
             grid.innerHTML = '<p class="col-span-3 text-center text-gray-500">Không tìm thấy sản phẩm nào.</p>';
             countDisplay.textContent = 'Hiển thị 0 sản phẩm';
+            renderPagination(totalProducts); 
             return;
         }
         
-        countDisplay.textContent = `Hiển thị 1-${products.length} của ${allProducts.length} sản phẩm`;
+        const displayStart = startIndex + 1;
+        const displayEnd = startIndex + productsOnPage.length;
+        
+        countDisplay.textContent = `Hiển thị ${displayStart}-${displayEnd} của ${totalProducts} sản phẩm`;
 
 
-        products.forEach((product) => {
+        productsOnPage.forEach((product) => {
             const stars = Array(5).fill(0).map((_, i) => 
                 `<i class="fas fa-star ${product.rating > i ? 'text-yellow-400' : 'text-gray-300'}"></i>`
             ).join('');
             
             grid.innerHTML += `
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="bg-white card overflow-hidden">
                     <div class="relative">
                         <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
                         <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">${product.isOrganic ? 'Hữu cơ' : 'Giảm 10%'}</span>
@@ -297,7 +187,7 @@
                             <div>
                                 <span class="text-green-600 font-bold text-lg">${product.price.toLocaleString('vi-VN')}đ</span>
                             </div>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(${product.id})">
+                            <button class="btn-primary text-white px-3 py-1 rounded transition" onclick="addToCart(${product.id})">
                                 <i class="fas fa-plus"></i> Mua hàng
                             </button>
                         </div>
@@ -305,14 +195,74 @@
                 </div>
             `;
         });
+        
+        renderPagination(totalProducts);
     }
 
-    function applyFilters() {
+    function renderPagination(totalProducts) {
+        const paginationContainer = document.getElementById('pagination-container');
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+        
+        paginationContainer.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        let paginationHTML = '';
+        
+        // Nút Previous
+        paginationHTML += `
+            <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
+                onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left text-xs"></i>
+            </button>
+        `;
+
+        // Các nút số trang
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `
+                <button class="px-4 py-2 mx-1 border rounded-lg font-semibold transition ${i === currentPage ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-white hover:bg-gray-100 text-gray-700'}" 
+                    onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+
+        // Nút Next
+        paginationHTML += `
+            <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
+                onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right text-xs"></i>
+            </button>
+        `;
+
+        paginationContainer.innerHTML = paginationHTML;
+    }
+
+    /**
+     * Thay đổi trang hiện tại và render lại sản phẩm
+     * @param {number} page - Số trang muốn chuyển đến
+     */
+    window.changePage = function(page) {
+        const totalPages = Math.ceil(currentFilteredProducts.length / productsPerPage);
+        if (page < 1 || page > totalPages) return;
+        
+        currentPage = page;
+        renderProducts(currentFilteredProducts);
+        updateUrl(); // <<-- CẬP NHẬT URL
+        
+        document.getElementById('products-grid').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /**
+     * Áp dụng tất cả các bộ lọc, sắp xếp và phân trang.
+     * @param {boolean} resetPage - Có nên reset về trang 1 khi thay đổi lọc/sắp xếp không (Mặc định: true)
+     */
+    function applyFilters(resetPage = true) {
         let filteredProducts = [...allProducts];
 
         // 1. Lọc theo Danh mục
         const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
-                                    .map(input => input.getAttribute('data-category'));
+                                     .map(input => input.getAttribute('data-category'));
         
         if (selectedCategories.length > 0) {
             filteredProducts = filteredProducts.filter(p => selectedCategories.includes(p.category));
@@ -328,34 +278,44 @@
             filteredProducts = filteredProducts.filter(p => p.price >= min && p.price <= max);
         }
 
-        // 3. Sắp xếp
+        // 3. Lọc theo Tìm kiếm
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        if (searchTerm) {
+            filteredProducts = filteredProducts.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.description.toLowerCase().includes(searchTerm) ||
+                (p.category || '').toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // 4. Sắp xếp
         const sortValue = document.getElementById('sort-select').value;
         if (sortValue === 'price-asc') {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (sortValue === 'price-desc') {
             filteredProducts.sort((a, b) => b.price - a.price);
+        } else if (sortValue === 'newest') {
+            filteredProducts.sort((a, b) => b.id - a.id);
+        } else if (sortValue === 'best-seller') {
+            filteredProducts.sort((a, b) => b.reviews - a.reviews);
         }
-        // Thêm logic sắp xếp khác (newest, best-seller) ở đây nếu cần
 
-        renderProducts(filteredProducts);
+        // Cập nhật danh sách sản phẩm đã lọc
+        currentFilteredProducts = filteredProducts;
+        
+        // Đặt lại trang về 1 nếu bộ lọc thay đổi (trừ khi được gọi từ loadStateFromUrl)
+        if (resetPage) {
+             currentPage = 1;
+        }
+
+        renderProducts(currentFilteredProducts);
+        updateUrl(); // <<-- CẬP NHẬT URL
     }
 
     // --- GẮN SỰ KIỆN KHI TRANG LOAD ---
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Khởi tạo hiển thị sản phẩm
-        renderProducts(allProducts);
-        updateCartCount();
-
-        // Gắn sự kiện cho các bộ lọc
-        document.querySelectorAll('.category-filter, .price-filter').forEach(input => {
-            input.addEventListener('change', applyFilters);
-        });
-
-        // Gắn sự kiện cho Sắp xếp
-        document.getElementById('sort-select').addEventListener('change', applyFilters);
-
-        // Logic trạng thái đăng nhập (giữ nguyên)
+        // 1. Logic trạng thái đăng nhập (giữ nguyên)
         const userInfo = document.getElementById('user-info');
         let user = localStorage.getItem('user');
         if (user) {
@@ -374,7 +334,28 @@
                 <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
             `;
         }
+
+        // 2. Cập nhật số lượng giỏ hàng
+        updateCartCount();
+
+        // 3. Khởi tạo trạng thái ban đầu từ URL
+        loadStateFromUrl();
+
+
+        // 4. Gắn sự kiện cho các bộ lọc (chỉ gọi applyFilters)
+        document.querySelectorAll('.category-filter, .price-filter').forEach(input => {
+            input.addEventListener('change', () => applyFilters(true));
+        });
+
+        // Gắn sự kiện cho Sắp xếp
+        document.getElementById('sort-select').addEventListener('change', () => applyFilters(true));
+        
+        // Gắn sự kiện cho Tìm kiếm
+        document.getElementById('search-input').addEventListener('input', () => applyFilters(true));
+        
+        // Xử lý nút back/forward của trình duyệt (Popstate)
+        window.addEventListener('popstate', function() {
+            loadStateFromUrl();
+        });
     });
 </script>
-</body>
-</html>

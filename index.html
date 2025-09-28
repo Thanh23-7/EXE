@@ -47,7 +47,7 @@
     </button>
     
     <script>
-    // Giữ nguyên logic Chat
+    // FIX: Đã thay thế '/api/chat/send' bằng URL Render
     document.getElementById('open-chat-btn').onclick = function() {
         document.getElementById('chat-box').style.display = 'flex';
         loadChatMessages();
@@ -58,7 +58,7 @@
         e.preventDefault();
         const msg = document.getElementById('chat-input').value.trim();
         if (!msg) return;
-        fetch('/api/chat/send', {
+        fetch('https://exe-zjbe.onrender.com/api/chat/send', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sender: userEmail, receiver: 'admin', message: msg })
@@ -68,7 +68,8 @@
         });
     };
     function loadChatMessages() {
-        fetch(`/api/chat/history?user_email=${userEmail}`)
+        // FIX: Đã thay thế '/api/chat/history' bằng URL Render
+        fetch(`https://exe-zjbe.onrender.com/api/chat/history?user_email=${userEmail}`)
             .then(res => res.json())
             .then(data => {
                 const box = document.getElementById('chat-messages');
@@ -107,7 +108,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="relative hidden md:block">
                         <input type="text" placeholder="Tìm kiếm sản phẩm..." 
-                               class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                                class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
                         <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                     </div>
                     <a href="cart.html">
@@ -167,8 +168,8 @@
                 <div id="recommend-products" class="grid md:grid-cols-3 gap-8"></div>
             </div>
             <script>
-            // Giữ nguyên logic lấy dữ liệu gợi ý từ API
-            fetch('/api/recommend-products')
+            // FIX: Đã thay thế '/api/recommend-products' bằng URL Render
+            fetch('https://exe-zjbe.onrender.com/api/recommend-products')
                 .then(res => res.json())
                 .then(data => {
                     const container = document.getElementById('recommend-products');

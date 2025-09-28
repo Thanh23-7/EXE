@@ -6,57 +6,206 @@
     <title>Lịch sử đơn hàng - Green Fresh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* CSS cho button */
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 flex flex-col min-h-screen">
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <a href="index.html" class="flex items-center space-x-2">
                 <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                     <i class="fas fa-leaf text-white text-lg"></i>
                 </div>
-                <span class="text-2xl font-bold text-green-600">Veggies</span>
+                <span class="text-2xl font-bold text-green-600">Green Fresh</span> 
             </a>
             <nav class="hidden md:flex space-x-8">
                 <a href="index.html" class="text-gray-700 hover:text-green-600 font-medium">Trang chủ</a>
-                <a href="product.html" class="text-gray-700 hover:text-green-600 font-medium">Sản phẩm</a>
-                <a href="orders.html" class="text-green-600 font-medium">Lịch sử đơn hàng</a>
+                <a href="products.html" class="text-gray-700 hover:text-green-600 font-medium">Sản phẩm</a>
+                <a href="orders.html" class="text-green-600 font-medium border-b-2 border-green-600 pb-1">Lịch sử đơn hàng</a>
             </nav>
         </div>
     </header>
-    <main class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">Lịch sử đơn hàng</h1>
-        <div id="orders-list" class="space-y-6"></div>
-        <div id="orders-empty" class="text-gray-500 text-center mt-12 hidden">Bạn chưa có đơn hàng nào.</div>
+    
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800 border-b pb-2">Lịch sử đơn hàng</h1>
+        
+        <div id="orders-loading" class="text-center py-16">
+            <i class="fas fa-spinner fa-spin text-4xl text-green-500 mb-4"></i>
+            <p class="text-gray-600">Đang tải lịch sử đơn hàng...</p>
+        </div>
+
+        <div id="orders-empty" class="text-gray-500 text-center mt-12 hidden bg-white p-10 rounded-lg shadow-md">
+            <i class="fas fa-box-open text-6xl mb-4 text-green-400"></i>
+            <p class="text-xl font-semibold mb-4">Bạn chưa có đơn hàng nào!</p>
+            <p class="mb-6">Hãy ghé thăm trang sản phẩm để tìm kiếm những món rau củ tươi ngon nhé.</p>
+            <a href="products.html" class="btn-primary py-2 px-6 rounded-lg font-semibold">
+                Mua sắm ngay
+            </a>
+        </div>
+        
+        <div id="orders-unauthorized" class="text-center mt-12 hidden bg-white p-10 rounded-lg shadow-md">
+            <i class="fas fa-lock text-6xl mb-4 text-red-400"></i>
+            <p class="text-xl font-semibold mb-4 text-gray-800">Vui lòng đăng nhập để xem lịch sử đơn hàng</p>
+            <p class="mb-6 text-gray-600">Bạn cần có tài khoản để theo dõi các đơn hàng đã đặt.</p>
+            <a href="login.html" class="btn-primary py-2 px-6 rounded-lg font-semibold">
+                Đăng nhập
+            </a>
+        </div>
+
+        <div id="orders-list" class="space-y-6 hidden"></div>
+        
     </main>
+    
+    <footer class="bg-white border-t py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p>&copy; 2024 Green Fresh. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
     <script>
-        function renderOrders() {
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            const ordersList = document.getElementById('orders-list');
-            const ordersEmpty = document.getElementById('orders-empty');
-            ordersList.innerHTML = '';
-            if (orders.length === 0) {
-                ordersEmpty.classList.remove('hidden');
-                return;
-            } else {
-                ordersEmpty.classList.add('hidden');
-            }
-            orders.forEach((order, idx) => {
-                let itemsHtml = '';
-                let total = 0;
-                order.items.forEach(item => {
-                    total += item.price;
-                    itemsHtml += `<li>${item.name} - <span class='text-green-600 font-bold'>${item.price}đ</span></li>`;
-                });
-                ordersList.innerHTML += `
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="mb-2 font-semibold">Đơn hàng #${idx + 1} - <span class="text-gray-500 text-sm">${order.date}</span></div>
-                    <ul class="mb-2 list-disc ml-6">${itemsHtml}</ul>
-                    <div class="text-right font-bold">Tổng cộng: <span class="text-green-600">${total}đ</span></div>
-                </div>
-                `;
-            });
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api';
+        
+        // Helper function to format currency (giả định VND)
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         }
-        renderOrders();
+
+        // Helper function to render a single order item
+        function renderOrderItem(item) {
+            // Giả định schema item có name, quantity, price
+            const unitPrice = item.price / item.quantity;
+            return `
+                <li class="flex justify-between text-sm text-gray-700 py-1 border-b border-gray-100 last:border-b-0">
+                    <span class="font-medium">${item.name}</span>
+                    <span class="text-gray-500">${item.quantity} x ${formatCurrency(unitPrice)}</span>
+                    <span class="text-green-600 font-bold">${formatCurrency(item.price)}</span>
+                </li>
+            `;
+        }
+
+        // Main function to fetch and render orders
+        async function fetchAndRenderOrders() {
+            const token = localStorage.getItem('token');
+            const ordersList = document.getElementById('orders-list');
+            const ordersLoading = document.getElementById('orders-loading');
+            const ordersEmpty = document.getElementById('orders-empty');
+            const ordersUnauthorized = document.getElementById('orders-unauthorized');
+
+            // Ẩn tất cả các trạng thái trước khi bắt đầu
+            ordersList.classList.add('hidden');
+            ordersLoading.classList.remove('hidden');
+            ordersEmpty.classList.add('hidden');
+            ordersUnauthorized.classList.add('hidden');
+            ordersList.innerHTML = '';
+            
+            if (!token) {
+                ordersLoading.classList.add('hidden');
+                ordersUnauthorized.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Gửi token xác thực
+                    }
+                });
+
+                ordersLoading.classList.add('hidden');
+                
+                if (response.ok) {
+                    const orders = await response.json();
+                    
+                    if (orders.length === 0) {
+                        ordersEmpty.classList.remove('hidden');
+                    } else {
+                        ordersList.classList.remove('hidden');
+                        
+                        // Lặp qua danh sách đơn hàng và tạo HTML
+                        orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)); // Sắp xếp theo ngày mới nhất
+                        
+                        orders.forEach((order) => {
+                            const totalAmount = order.totalAmount || order.items.reduce((sum, item) => sum + item.price, 0);
+                            const statusClass = order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                                order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                                                'bg-yellow-100 text-yellow-800'; // Default is Pending or different status
+
+                            let itemsHtml = order.items.map(renderOrderItem).join('');
+
+                            ordersList.innerHTML += `
+                                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-600">Mã đơn hàng: <span class="text-gray-800 font-bold">#${order.orderId || order._id.substring(0, 8)}</span></div>
+                                            <div class="text-sm text-gray-500 mt-1">Ngày đặt: ${new Date(order.orderDate).toLocaleDateString('vi-VN')}</div>
+                                        </div>
+                                        <span class="text-xs font-semibold px-3 py-1 rounded-full ${statusClass}">
+                                            ${order.status === 'Delivered' ? 'Đã giao' : order.status === 'Processing' ? 'Đang xử lý' : 'Chờ xác nhận'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="border-t border-b py-3 mb-4">
+                                        <ul class="space-y-1">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
+
+                                    <div class="flex justify-end items-center">
+                                        <div class="text-lg font-bold">
+                                            Tổng tiền: <span class="text-green-600">${formatCurrency(totalAmount)}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-right mt-4">
+                                        <button class="text-sm text-blue-500 hover:text-blue-700 font-medium">
+                                            Xem chi tiết <i class="fas fa-arrow-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                } else if (response.status === 401) {
+                    // Token hết hạn hoặc không hợp lệ
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    ordersUnauthorized.classList.remove('hidden');
+                } else {
+                    // Lỗi khác từ server
+                    ordersList.innerHTML = `<div class="text-center py-16 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Không thể tải dữ liệu đơn hàng. Mã lỗi: ${response.status}</p>
+                    </div>`;
+                    ordersList.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                ordersLoading.classList.add('hidden');
+                ordersList.classList.remove('hidden');
+                ordersList.innerHTML = `<div class="text-center py-16 text-red-500">
+                    <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                    <p>Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.</p>
+                </div>`;
+                console.error('Error fetching orders:', error);
+            }
+        }
+        
+        // Khởi chạy khi trang tải xong
+        document.addEventListener('DOMContentLoaded', fetchAndRenderOrders);
+
     </script>
 </body>
 </html>

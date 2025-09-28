@@ -28,10 +28,29 @@
             transform: translateY(-2px) scale(1.03);
             box-shadow: 0 8px 24px rgba(16,185,129,0.25);
         }
+        /* Style cho Product Journey Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            border-left: 2px solid #34D399; /* green-400 */
+        }
+        .timeline-item:last-child {
+            border-left: none;
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.6rem;
+            top: 0;
+            width: 1.2rem;
+            height: 1.2rem;
+            background-color: #059669; /* green-700 */
+            border-radius: 50%;
+            border: 3px solid #E5E7EB; /* gray-200 */
+        }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header -->
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between py-4">
@@ -43,27 +62,22 @@
                 </a>
                 <nav class="hidden md:flex space-x-8">
                     <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
-                    <a href="product.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Sản phẩm</a>
-                    <a href="#" class="text-gray-700 hover:text-green-600 font-semibold transition">Về chúng tôi</a>
-                    <a href="#" class="text-gray-700 hover:text-green-600 font-semibold transition">Liên hệ</a>
+                    <a href="products.html" class="text-green-600 font-semibold transition border-b-2 border-green-600 pb-1">Sản phẩm</a>
+                    <a href="orders.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Lịch sử đơn hàng</a>
                 </nav>
                 <div class="flex items-center space-x-4">
                     <button class="relative p-2 text-gray-700 hover:text-green-600">
                         <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" id="cart-count">0</span>
                     </button>
-                    <button class="bg-gradient-green text-white px-4 py-2 rounded-full hover:scale-105 transition btn-primary">
+                    <a href="login.html" class="bg-gradient-green text-white px-4 py-2 rounded-full hover:scale-105 transition btn-primary" id="auth-button">
                         Đăng nhập
-                    </button>
-                    <button class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition">
-                        Đăng ký
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Breadcrumb -->
     <div class="bg-white border-b">
         <div class="container mx-auto px-4 py-3">
             <nav class="flex items-center space-x-2 text-sm">
@@ -71,73 +85,61 @@
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 <a href="products.html" class="text-gray-500 hover:text-green-600">Sản phẩm</a>
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-                <span class="text-gray-800">Rau cải xanh hữu cơ</span>
+                <span class="text-gray-800" id="breadcrumb-product-name">Rau cải xanh hữu cơ</span>
             </nav>
         </div>
     </div>
 
-    <!-- Product Detail -->
     <div class="container mx-auto px-4 py-8">
         <div class="grid lg:grid-cols-2 gap-12">
-            <!-- Product Images -->
             <div>
                 <div class="mb-4">
-                    <img src="/placeholder.svg?height=400&width=500" alt="Rau cải xanh hữu cơ" 
-                         class="w-full h-96 object-cover rounded-lg shadow-md" id="mainImage">
+                    <img src="https://via.placeholder.com/500x400/10b981/ffffff?text=Cai+Xanh+Huu+Co" alt="Rau cải xanh hữu cơ" 
+                          class="w-full h-96 object-cover rounded-lg shadow-md" id="mainImage">
                 </div>
                 <div class="grid grid-cols-4 gap-2">
-                    <img src="/placeholder.svg?height=100&width=100" alt="Thumbnail 1" 
-                         class="w-full h-20 object-cover rounded cursor-pointer border-2 border-green-500">
-                    <img src="/placeholder.svg?height=100&width=100" alt="Thumbnail 2" 
-                         class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
-                    <img src="/placeholder.svg?height=100&width=100" alt="Thumbnail 3" 
-                         class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
-                    <img src="/placeholder.svg?height=100&width=100" alt="Thumbnail 4" 
-                         class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
+                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb1" alt="Thumbnail 1" 
+                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-green-500">
+                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb2" alt="Thumbnail 2" 
+                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
+                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb3" alt="Thumbnail 3" 
+                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
+                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb4" alt="Thumbnail 4" 
+                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
                 </div>
             </div>
 
-            <!-- Product Info -->
             <div>
                 <div class="mb-4">
                     <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Hữu cơ</span>
                     <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium ml-2">Tươi ngon</span>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">Rau cải xanh hữu cơ</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4" id="product-name-detail">Rau cải xanh hữu cơ</h1>
                 
                 <div class="flex items-center mb-4">
-                    <div class="flex text-yellow-400 mr-2">
+                    <div class="flex text-yellow-400 mr-2" id="product-rating">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
                     </div>
-                    <span class="text-gray-600">(4.9) • 124 đánh giá</span>
+                    <span class="text-gray-600">(4.9) • <span id="review-count">124</span> đánh giá</span>
                 </div>
 
                 <div class="mb-6">
                     <div class="flex items-center space-x-4">
-                        <span class="text-3xl font-bold text-green-600">25,000đ</span>
-                                        <!-- Hành trình sản phẩm -->
-                                        <div class="mb-8">
-                                                <h3 class="font-bold text-lg mb-3 text-green-700 flex items-center gap-2">
-                                                        <i class="fas fa-route"></i> Hành trình sản phẩm
-                                                </h3>
-                                                <div id="journey-timeline" class="space-y-4">
-                                                        <!-- Dữ liệu hành trình sẽ được render ở đây -->
-                                                </div>
-                                        </div>
-                        <span class="text-xl text-gray-400 line-through">30,000đ</span>
+                        <span class="text-3xl font-bold text-green-600" id="current-price">25,000đ</span>
+                        <span class="text-xl text-gray-400 line-through" id="old-price">30,000đ</span>
                         <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Giảm 17%</span>
                     </div>
-                    <p class="text-gray-600 mt-1">Giá đã bao gồm VAT</p>
+                    <p class="text-gray-600 mt-1">Giá đã bao gồm VAT / Đơn vị: 500g</p>
                 </div>
 
                 <div class="mb-6">
                     <h3 class="font-semibold mb-2">Mô tả sản phẩm:</h3>
-                    <p class="text-gray-700 leading-relaxed">
+                    <p class="text-gray-700 leading-relaxed" id="product-description">
                         Rau cải xanh hữu cơ được trồng theo phương pháp tự nhiên, không sử dụng 
                         hóa chất độc hại. Giàu vitamin A, C, K và các khoáng chất thiết yếu. 
                         Lá xanh tươi, giòn ngọt, phù hợp cho nhiều món ăn.
@@ -179,7 +181,7 @@
                 </div>
 
                 <div class="flex space-x-4 mb-6">
-                    <button class="flex-1 bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition font-semibold">
+                    <button class="flex-1 bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition font-semibold" onclick="addToCart()">
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Thêm vào giỏ hàng
                     </button>
@@ -213,81 +215,52 @@
             </div>
         </div>
 
-        <!-- Product Tabs -->
         <div class="mt-16">
-                        <!-- AI Gợi ý sản phẩm -->
-                        <div class="mb-12">
-                                <h2 class="text-xl font-bold text-green-700 mb-6 flex items-center gap-2">
-                                        <i class="fas fa-robot"></i> Gợi ý cho bạn
-                                </h2>
-                                <div id="recommend-products-detail" class="grid md:grid-cols-3 gap-8"></div>
-                        </div>
-                        <script>
-                        // Lấy product_id từ URL hoặc gán cứng cho demo
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const productId = urlParams.get('id') || 1;
-                        fetch(`/api/recommend-products?product_id=${productId}`)
-                                            .then(res => res.json())
-                                            .then(data => {
-                                                const container = document.getElementById('recommend-products-detail');
-                                                if (!data || data.length === 0) {
-                                                    container.innerHTML = '<div class="text-gray-500">Chưa có gợi ý sản phẩm.</div>';
-                                                    return;
-                                                }
-                                                container.innerHTML = data.map(p => `
-                                                    <div class="card bg-white p-4 flex flex-col items-center text-center">
-                                                        <img src="${p.image && p.image.startsWith('http') ? p.image : '/placeholder.svg?height=200&width=300'}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
-                                                        <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
-                                                        <div class="text-green-600 font-semibold mb-2">${p.price.toLocaleString()}đ</div>
-                                                        <div class="text-gray-600 text-sm mb-2">${p.description}</div>
-                                                        <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto">Xem chi tiết</a>
-                                                    </div>
-                                                `).join('');
-                                            });
-                        </script>
-                        <div class="border-b border-gray-200">
+            <div class="border-b border-gray-200">
                 <nav class="flex space-x-8">
-                    <button class="py-4 px-1 border-b-2 border-green-500 font-medium text-green-600">
+                    <button class="tab-button py-4 px-1 border-b-2 border-green-500 font-medium text-green-600" data-target="detail-content">
                         Mô tả chi tiết
                     </button>
-                    <button class="py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700" id="tab-review">
+                    <button class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700" data-target="review-content" id="tab-review">
                         Đánh giá
                     </button>
-                    <button class="py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700">
-                        Chính sách đổi trả
+                    <button class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700" data-target="journey-content">
+                        Hành trình sản phẩm
                     </button>
                 </nav>
             </div>
             
-            <div class="py-8" id="tab-content-detail">
+            <div class="py-8" id="detail-content">
                 <div class="prose max-w-none">
-                    <h3 class="text-xl font-semibold mb-4">Thông tin chi tiết về sản phẩm</h3>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Thông tin chi tiết về sản phẩm</h3>
                     <p class="mb-4">
                         Rau cải xanh hữu cơ của chúng tôi được trồng tại các trang trại hữu cơ 
                         được chứng nhận tại Đà Lạt, nơi có khí hậu mát mẻ và đất đai màu mỡ 
                         lý tưởng cho việc trồng rau xanh.
                     </p>
-                    <h4 class="text-lg font-semibold mb-2">Giá trị dinh dưỡng:</h4>
+                    <h4 class="text-lg font-semibold mb-2 text-green-700">Giá trị dinh dưỡng:</h4>
                     <ul class="list-disc list-inside mb-4 space-y-1">
-                        <li>Giàu vitamin A: Tốt cho mắt và da</li>
-                        <li>Vitamin C: Tăng cường hệ miễn dịch</li>
-                        <li>Vitamin K: Hỗ trợ đông máu và xương khớp</li>
-                        <li>Folate: Quan trọng cho phụ nữ mang thai</li>
-                        <li>Chất xơ: Hỗ trợ tiêu hóa</li>
+                        <li>Giàu **vitamin A**: Tốt cho mắt và da</li>
+                        <li>**Vitamin C**: Tăng cường hệ miễn dịch</li>
+                        <li>**Vitamin K**: Hỗ trợ đông máu và xương khớp</li>
+                        <li>**Folate**: Quan trọng cho phụ nữ mang thai</li>
+                        <li>**Chất xơ**: Hỗ trợ tiêu hóa</li>
                     </ul>
-                    <h4 class="text-lg font-semibold mb-2">Cách sử dụng:</h4>
+                    <h4 class="text-lg font-semibold mb-2 text-green-700">Cách sử dụng:</h4>
                     <p>
                         Có thể chế biến thành nhiều món ăn như xào, luộc, nấu canh, làm salad. 
                         Nên rửa sạch trước khi sử dụng và bảo quản trong tủ lạnh.
                     </p>
                 </div>
             </div>
-            <div class="py-8 hidden" id="tab-content-review">
-                <h3 class="text-xl font-semibold mb-4">Đánh giá & bình luận sản phẩm</h3>
-                <form id="review-form" class="mb-6">
+
+            <div class="py-8 hidden" id="review-content">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Đánh giá & bình luận sản phẩm</h3>
+                <form id="review-form" class="mb-6 bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                    <p class="font-medium mb-3">Gửi đánh giá của bạn (Cần đăng nhập)</p>
                     <div class="flex items-center mb-2">
-                        <span class="mr-2">Chọn đánh giá:</span>
-                        <select id="review-rating" class="border rounded px-2 py-1">
+                        <span class="mr-2 text-gray-700">Chọn đánh giá:</span>
+                        <select id="review-rating" class="border border-gray-300 rounded px-3 py-1">
                             <option value="5">5 sao</option>
                             <option value="4">4 sao</option>
                             <option value="3">3 sao</option>
@@ -295,101 +268,37 @@
                             <option value="1">1 sao</option>
                         </select>
                     </div>
-                    <textarea id="review-comment" rows="3" class="w-full border rounded px-3 py-2 mb-2" placeholder="Nhập bình luận..."></textarea>
-                    <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Gửi đánh giá</button>
+                    <textarea id="review-comment" rows="3" class="w-full border border-gray-300 rounded px-3 py-2 mb-4 mt-2 focus:ring-green-500 focus:border-green-500" placeholder="Nhập bình luận..."></textarea>
+                    <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 font-semibold transition">Gửi đánh giá</button>
+                    <div id="review-message" class="mt-3 text-sm hidden"></div>
                 </form>
-                <div id="review-list"></div>
+                <div id="review-list">
+                    <div class="text-center text-gray-500 py-10">Đang tải đánh giá...</div>
+                </div>
             </div>
-    <script>
-    // Tab chuyển đổi
-    document.getElementById('tab-review').onclick = function() {
-        document.getElementById('tab-content-detail').classList.add('hidden');
-        document.getElementById('tab-content-review').classList.remove('hidden');
-    };
-    document.querySelector('nav button').onclick = function() {
-        document.getElementById('tab-content-detail').classList.remove('hidden');
-        document.getElementById('tab-content-review').classList.add('hidden');
-    };
-    // Lấy id sản phẩm (ví dụ hardcode là 1, thực tế lấy từ URL hoặc backend)
-    const product_id = 1;
-    // Hiển thị danh sách đánh giá
-    function loadReviews() {
-        fetch(`/api/reviews?product_id=${product_id}`)
-            .then(res => res.json())
-            .then(reviews => {
-                const list = document.getElementById('review-list');
-                list.innerHTML = '';
-                if (reviews.length === 0) {
-                    list.innerHTML = '<div class="text-gray-500">Chưa có đánh giá nào.</div>';
-                    return;
-                }
-                reviews.forEach(r => {
-                    list.innerHTML += `<div class="border-b py-3">
-                        <div class="flex items-center mb-1">
-                            <span class="font-semibold text-green-700 mr-2">${r.user_email}</span>
-                            <span class="text-yellow-500">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
-                            <span class="ml-2 text-xs text-gray-400">${new Date(r.created_at).toLocaleString()}</span>
-                        </div>
-                        <div class="text-gray-700">${r.comment}</div>
-                    </div>`;
-                });
-            });
-    }
-    loadReviews();
-    // Gửi đánh giá
-    document.getElementById('review-form').onsubmit = function(e) {
-        e.preventDefault();
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        if (!user) {
-            alert('Bạn cần đăng nhập để đánh giá!');
-            return;
-        }
-        fetch('/api/reviews', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                product_id,
-                user_email: user.email,
-                rating: document.getElementById('review-rating').value,
-                comment: document.getElementById('review-comment').value
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('review-comment').value = '';
-                loadReviews();
-            } else {
-                alert('Gửi đánh giá thất bại!');
-            }
-        });
-    };
-    </script>
+
+            <div class="py-8 hidden" id="journey-content">
+                <h3 class="font-bold text-xl mb-6 text-green-700 flex items-center gap-2">
+                    <i class="fas fa-route"></i> Hành trình sản phẩm
+                </h3>
+                <div id="journey-timeline" class="space-y-6">
+                    <div class="text-center text-gray-500 py-10">Đang tải thông tin hành trình...</div>
+                </div>
+            </div>
+            
         </div>
 
-        <!-- Related Products -->
         <div class="mt-16">
-            <h2 class="text-2xl font-bold mb-8">Sản phẩm liên quan</h2>
-            <div class="grid md:grid-cols-4 gap-6">
-                <!-- Related product cards -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                    <img src="/placeholder.svg?height=200&width=300" alt="Related product" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-semibold mb-2">Rau muống hữu cơ</h3>
-                        <div class="flex items-center justify-between">
-                            <span class="text-green-600 font-bold">20,000đ</span>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Repeat for more related products -->
+            <h2 class="text-2xl font-bold text-green-700 mb-8 border-b pb-3 flex items-center gap-3">
+                <i class="fas fa-robot"></i> Sản phẩm gợi ý cho bạn
+            </h2>
+            <div id="recommend-products" class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div class="col-span-4 text-center text-gray-500 py-10">Đang tải gợi ý...</div>
             </div>
         </div>
+
     </div>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-12 mt-16">
         <div class="container mx-auto px-4">
             <div class="text-center text-gray-400">
@@ -399,8 +308,20 @@
     </footer>
 
     <script>
-        let quantity = 1;
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api';
         
+        // Lấy product_id từ URL hoặc gán cứng cho demo
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id') || '1'; // Giả định product ID là 1 cho demo
+        
+        let quantity = 1;
+
+        // Helper function to format currency (VND)
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+        
+        // --- Quantity Controls ---
         function increaseQuantity() {
             quantity++;
             document.getElementById('quantity').textContent = quantity;
@@ -412,6 +333,245 @@
                 document.getElementById('quantity').textContent = quantity;
             }
         }
+        
+        // --- Tab Switching ---
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and hide all content
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('border-green-500', 'text-green-600');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+                });
+                document.querySelectorAll('[id$="-content"]').forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Add active class to the clicked button and show target content
+                const targetId = button.getAttribute('data-target');
+                button.classList.add('border-green-500', 'text-green-600');
+                button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+                document.getElementById(targetId).classList.remove('hidden');
+            });
+        });
+
+        // --- Authentication Check (Mockup) ---
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const authButton = document.getElementById('auth-button');
+            if (token && user) {
+                authButton.textContent = user.email.split('@')[0]; // Hiển thị tên người dùng
+                authButton.href = 'profile.html';
+            } else {
+                authButton.textContent = 'Đăng nhập';
+                authButton.href = 'login.html';
+            }
+        }
+        checkAuth();
+
+        // --- Render Star Rating ---
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+            
+            let html = '';
+            for (let i = 0; i < fullStars; i++) html += '<i class="fas fa-star"></i>';
+            if (halfStar) html += '<i class="fas fa-star-half-alt"></i>';
+            for (let i = 0; i < emptyStars; i++) html += '<i class="far fa-star"></i>';
+            
+            return html;
+        }
+        document.getElementById('product-rating').innerHTML = renderStars(4.9); // Giữ hardcode cho rating tổng
+
+        // --- API Calls ---
+
+        // 1. Load Reviews
+        async function loadReviews() {
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '<div class="text-center text-gray-500 py-10">Đang tải đánh giá...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/reviews?product_id=${productId}`);
+                
+                if (response.ok) {
+                    const reviews = await response.json();
+                    reviewList.innerHTML = '';
+                    document.getElementById('review-count').textContent = reviews.length;
+
+                    if (reviews.length === 0) {
+                        reviewList.innerHTML = '<div class="text-gray-500 text-center py-6 border rounded-lg">Chưa có đánh giá nào. Hãy là người đầu tiên!</div>';
+                        return;
+                    }
+                    
+                    reviews.forEach(r => {
+                        const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+                        reviewList.innerHTML += `
+                            <div class="border-b py-3 last:border-b-0">
+                                <div class="flex items-center mb-1">
+                                    <span class="font-semibold text-green-700 mr-2">${r.user_email || 'Khách hàng'}</span>
+                                    <span class="text-yellow-500 text-lg">${stars}</span>
+                                    <span class="ml-auto text-xs text-gray-400">${new Date(r.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
+                                </div>
+                                <div class="text-gray-700">${r.comment}</div>
+                            </div>`;
+                    });
+
+                } else {
+                    reviewList.innerHTML = '<div class="text-red-500 text-center py-6">Không thể tải đánh giá.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                reviewList.innerHTML = '<div class="text-red-500 text-center py-6">Lỗi kết nối mạng.</div>';
+            }
+        }
+
+        // 2. Submit Review
+        document.getElementById('review-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const token = localStorage.getItem('token');
+            const reviewMessage = document.getElementById('review-message');
+            reviewMessage.classList.remove('hidden', 'text-red-500', 'text-green-500');
+            reviewMessage.textContent = 'Đang gửi...';
+
+            if (!user || !token) {
+                reviewMessage.textContent = 'Bạn cần đăng nhập để đánh giá!';
+                reviewMessage.classList.add('text-red-500');
+                return;
+            }
+
+            const rating = document.getElementById('review-rating').value;
+            const comment = document.getElementById('review-comment').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/reviews`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        user_email: user.email,
+                        rating: parseInt(rating),
+                        comment
+                    })
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    reviewMessage.textContent = 'Gửi đánh giá thành công!';
+                    reviewMessage.classList.add('text-green-500');
+                    document.getElementById('review-comment').value = '';
+                    loadReviews(); // Tải lại danh sách đánh giá
+                } else {
+                    reviewMessage.textContent = data.message || 'Gửi đánh giá thất bại!';
+                    reviewMessage.classList.add('text-red-500');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                reviewMessage.textContent = 'Lỗi kết nối mạng hoặc server!';
+                reviewMessage.classList.add('text-red-500');
+            }
+        };
+
+        // 3. Load Product Journey
+        async function renderProductJourney() {
+            const journeyTimeline = document.getElementById('journey-timeline');
+            journeyTimeline.innerHTML = '<div class="text-center text-gray-500 py-10">Đang tải thông tin hành trình...</div>';
+
+            try {
+                // Endpoint giả định cho hành trình sản phẩm
+                const response = await fetch(`${API_BASE_URL}/products/${productId}/journey`); 
+                
+                if (response.ok) {
+                    const journey = await response.json();
+                    journeyTimeline.innerHTML = '';
+
+                    if (journey.length === 0) {
+                        journeyTimeline.innerHTML = '<div class="text-gray-500 text-center py-6 border rounded-lg">Không có thông tin hành trình.</div>';
+                        return;
+                    }
+                    
+                    // Sắp xếp theo ngày tăng dần
+                    journey.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                    journey.forEach(step => {
+                        journeyTimeline.innerHTML += `
+                            <div class="timeline-item pb-6">
+                                <div class="timeline-dot"></div>
+                                <div class="text-sm text-green-600 font-bold">${new Date(step.timestamp).toLocaleDateString('vi-VN')} - ${new Date(step.timestamp).toLocaleTimeString('vi-VN').substring(0, 5)}</div>
+                                <h4 class="font-semibold text-gray-800 text-lg">${step.stage}</h4>
+                                <p class="text-gray-600">${step.details}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    journeyTimeline.innerHTML = '<div class="text-red-500 text-center py-6">Không thể tải hành trình sản phẩm.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading product journey:', error);
+                journeyTimeline.innerHTML = '<div class="text-red-500 text-center py-6">Lỗi kết nối mạng.</div>';
+            }
+        }
+
+        // 4. Load Recommended Products
+        async function loadRecommendedProducts() {
+            const container = document.getElementById('recommend-products');
+            container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-10">Đang tải gợi ý...</div>';
+
+            try {
+                // Sử dụng API backend cho gợi ý sản phẩm
+                const response = await fetch(`${API_BASE_URL}/products?limit=4&exclude=${productId}`); 
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    container.innerHTML = '';
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="col-span-4 text-gray-500 text-center py-6">Chưa có gợi ý sản phẩm.</div>';
+                        return;
+                    }
+                    
+                    data.forEach(p => {
+                        container.innerHTML += `
+                            <div class="card bg-white p-4 flex flex-col items-center text-center">
+                                <img src="${p.image || 'https://via.placeholder.com/300x200/cccccc/ffffff?text=Product'}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
+                                <div class="text-green-600 font-semibold mb-2">${formatCurrency(p.price)}</div>
+                                <div class="text-gray-600 text-sm mb-2 line-clamp-2">${p.description}</div>
+                                <a href="product-detail.html?id=${p._id}" class="btn-primary px-4 py-2 rounded-full font-semibold mt-auto">Xem chi tiết</a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<div class="col-span-4 text-red-500 text-center py-6">Không thể tải gợi ý sản phẩm.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading recommended products:', error);
+                container.innerHTML = '<div class="col-span-4 text-red-500 text-center py-6">Lỗi kết nối mạng.</div>';
+            }
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReviews();
+            renderProductJourney();
+            loadRecommendedProducts();
+            
+            // Tải lại Journey khi click tab
+            document.querySelector('.tab-button[data-target="journey-content"]').addEventListener('click', renderProductJourney);
+        });
+
+        // --- Cart Mockup (Basic) ---
+        function addToCart() {
+            alert(`Đã thêm ${quantity} sản phẩm 'Rau cải xanh hữu cơ' vào giỏ hàng! (Chức năng này cần API giỏ hàng thực tế)`);
+            let currentCartCount = parseInt(document.getElementById('cart-count').textContent);
+            document.getElementById('cart-count').textContent = currentCartCount + quantity;
+        }
+
     </script>
 </body>
 </html>
