@@ -1,5 +1,12 @@
 <script>
-    // --- UTILITIES VÀ MOCK API ---
+    // --- KHAI BÁO CẤU HÌNH API THẬT ---
+    const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
+    // Giả định endpoint đăng ký là /api/auth/register
+    const API_REGISTER_URL = `${API_BASE_URL}/auth/register`; 
+
+
+    // --- UTILITIES VÀ VALIDATION ---
+
     // Toggle password visibility
     function togglePassword(fieldId) {
         const field = document.getElementById(fieldId);
@@ -16,7 +23,7 @@
         }
     }
 
-    // Password strength checker (Giữ nguyên)
+    // Password strength checker
     function checkPasswordStrength(password) {
         let strength = 0;
         let feedback = [];
@@ -39,7 +46,7 @@
         return { strength, feedback };
     }
 
-    // Update password strength indicator (Giữ nguyên)
+    // Update password strength indicator
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
         const strengthBar = document.getElementById('passwordStrength');
@@ -79,37 +86,34 @@
     });
 
 
-    // --- LOGIC ĐĂNG KÝ VÀ LƯU TRỮ (LOCALSTORAGE MOCK DB) ---
-    
-    // Hàm giả lập đăng ký API
-    function mockApiRegister(user) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const usersDB = JSON.parse(localStorage.getItem('usersDB') || '[]');
-                
-                // 1. Kiểm tra email đã tồn tại chưa
-                const existingUser = usersDB.find(u => u.email === user.email);
-                if (existingUser) {
-                    return resolve({ success: false, error: 'Email đã được sử dụng. Vui lòng đăng nhập.' });
-                }
-                
-                // 2. Thêm người dùng mới vào DB
-                const newUser = {
-                    ...user,
-                    displayName: `${user.firstName} ${user.lastName}`,
-                    id: Date.now().toString(),
-                    joinedDate: new Date().toISOString(),
-                    // Mật khẩu thực tế sẽ được hash, ở đây chỉ lưu tạm
-                    password: user.password 
-                };
-                
-                usersDB.push(newUser);
-                localStorage.setItem('usersDB', JSON.stringify(usersDB));
-                
-                resolve({ success: true, user: newUser });
-            }, 1500); // Giả lập độ trễ mạng 1.5s
-        });
+    // --- HÀM GỌI API THẬT: Đăng ký người dùng ---
+    async function registerUser(userInfo) {
+        try {
+            // SỬ DỤNG FETCH VỚI API THẬT
+            const response = await fetch(API_REGISTER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userInfo)
+            });
+
+            const data = await response.json();
+
+            // Nếu Backend trả về thành công (ví dụ: HTTP 201 Created)
+            if (response.ok) {
+                return { success: true, user: data };
+            } else {
+                // Xử lý các lỗi như email đã tồn tại, validation lỗi từ Backend
+                return { success: false, error: data.message || 'Lỗi đăng ký từ máy chủ.' };
+            }
+
+        } catch (error) {
+            console.error("Lỗi kết nối API:", error);
+            return { success: false, error: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền hoặc CORS.' };
+        }
     }
+
 
     // Form validation and submission
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
@@ -135,7 +139,10 @@
         // Reset errors
         const errorFields = ['firstNameError', 'lastNameError', 'emailError', 'phoneError', 'passwordError', 'confirmPasswordError', 'termsError'];
         errorFields.forEach(field => {
-            document.getElementById(field).classList.add('hidden');
+            const el = document.getElementById(field);
+            // Giả định bạn có thuộc tính data-default-error trong HTML cho lỗi mặc định
+            el.textContent = el.getAttribute('data-default-error') || ''; 
+            el.classList.add('hidden');
         });
         
         let isValid = true;
@@ -148,6 +155,7 @@
         if (!emailRegex.test(email)) { document.getElementById('emailError').classList.remove('hidden'); isValid = false; }
         
         const phoneRegex = /^[0-9]{10,11}$/;
+        // Bỏ khoảng trắng trước khi kiểm tra SĐT
         if (!phoneRegex.test(phone.replace(/\s/g, ''))) { document.getElementById('phoneError').classList.remove('hidden'); isValid = false; }
         
         const { strength } = checkPasswordStrength(password);
@@ -176,8 +184,8 @@
                 newsletter
             };
             
-            // Call Mock API
-            const result = await mockApiRegister(newUserInfo);
+            // GỌI API THẬT
+            const result = await registerUser(newUserInfo);
             
             // Reset button state
             btn.disabled = false;
@@ -190,7 +198,7 @@
                 // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
                 window.location.href = 'login.html'; 
             } else {
-                // Hiển thị lỗi từ Mock API (ví dụ: email đã tồn tại)
+                // Hiển thị lỗi từ API (ví dụ: email đã tồn tại)
                 const emailErrorDiv = document.getElementById('emailError');
                 emailErrorDiv.textContent = result.error;
                 emailErrorDiv.classList.remove('hidden');

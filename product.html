@@ -1,361 +1,563 @@
-<script>
-    // --- DỮ LIỆU SẢN PHẨM GIẢ ĐỊNH (MOCK DATA) ---
-    const allProducts = [
-        { id: 1, name: 'Thịt gà ta', price: 90000, category: 'Thịt sạch', description: 'Gà ta thả vườn, chắc thịt', image: 'https://i.imgur.com/gK5pYJ6.jpeg', rating: 4.5, reviews: 24, isOrganic: true },
-        { id: 2, name: 'Tôm sú biển', price: 180000, category: 'Hải sản', description: 'Tôm sú tươi sống, ngọt thịt', image: 'https://i.imgur.com/vHqB3qB.jpeg', rating: 4.8, reviews: 35, isOrganic: false },
-        { id: 3, name: 'Hàu sữa Pháp', price: 60000, category: 'Hải sản', description: 'Hàu sữa tươi, béo ngậy', image: 'https://i.imgur.com/sSgVbJm.jpeg', rating: 4.2, reviews: 18, isOrganic: false },
-        { id: 4, name: 'Rau cải xanh hữu cơ', price: 25000, category: 'Rau củ quả', description: 'Tươi ngon, không hóa chất', image: 'https://i.imgur.com/w4p7r8q.jpeg', rating: 5.0, reviews: 45, isOrganic: true },
-        { id: 5, name: 'Cà chua cherry Đà Lạt', price: 45000, category: 'Rau củ quả', description: 'Ngọt tự nhiên, giàu vitamin', image: 'https://i.imgur.com/YJgqDkU.jpeg', rating: 4.7, reviews: 60, isOrganic: true },
-        { id: 6, name: 'Táo Fuji Nhật Bản', price: 120000, category: 'Trái cây', description: 'Giòn ngọt, chất lượng cao', image: 'https://i.imgur.com/hO5qW7O.jpeg', rating: 4.9, reviews: 78, isOrganic: false },
-        { id: 7, name: 'Gạo hữu cơ ST25', price: 85000, category: 'Rau củ quả', description: 'Gạo thơm ngon, dinh dưỡng', image: 'https://i.imgur.com/rM1q5gP.jpeg', rating: 4.6, reviews: 50, isOrganic: true },
-        { id: 8, name: 'Bò Úc tươi', price: 220000, category: 'Thịt sạch', description: 'Thịt bò nhập khẩu, mềm', image: 'https://i.imgur.com/M6Lg4gA.jpeg', rating: 4.4, reviews: 30, isOrganic: false },
-        { id: 9, name: 'Sữa chua dâu', price: 15000, category: 'Khác', description: 'Sữa chua tự nhiên, vị dâu', image: 'https://i.imgur.com/hO5qW7O.jpeg', rating: 4.3, reviews: 22, isOrganic: true },
-        // Thêm nhiều sản phẩm hơn để thấy rõ phân trang
-        { id: 10, name: 'Bơ sáp Đắk Lắk', price: 70000, category: 'Trái cây', description: 'Bơ dẻo thơm ngon', image: 'https://i.imgur.com/rM1q5gP.jpeg', rating: 4.5, reviews: 20, isOrganic: true },
-        { id: 11, name: 'Cá hồi tươi', price: 350000, category: 'Hải sản', description: 'Cá hồi Na Uy phi lê', image: 'https://i.imgur.com/w4p7r8q.jpeg', rating: 4.9, reviews: 90, isOrganic: false },
-        { id: 12, name: 'Thịt heo sạch', price: 110000, category: 'Thịt sạch', description: 'Heo nuôi theo quy trình sạch', image: 'https://i.imgur.com/YJgqDkU.jpeg', rating: 4.6, reviews: 40, isOrganic: true },
-        { id: 13, name: 'Bắp cải tí hon', price: 30000, category: 'Rau củ quả', description: 'Bắp cải Brussels mini', image: 'https://i.imgur.com/M6Lg4gA.jpeg', rating: 4.1, reviews: 15, isOrganic: true },
-        { id: 14, name: 'Dâu tây Đà Lạt', price: 150000, category: 'Trái cây', description: 'Dâu tây đỏ mọng', image: 'https://i.imgur.com/hO5qW7O.jpeg', rating: 4.8, reviews: 55, isOrganic: false },
-        { id: 15, name: 'Tôm hùm Canada', price: 800000, category: 'Hải sản', description: 'Tôm hùm nhập khẩu', image: 'https://i.imgur.com/vHqB3qB.jpeg', rating: 5.0, reviews: 10, isOrganic: false },
-    ].filter(p => p.category !== 'Khác'); // Loại bỏ sản phẩm category 'Khác' để khớp với bộ lọc
-
-    // --- CẤU HÌNH PHÂN TRANG & TRẠNG THÁI ---
-    const productsPerPage = 9; // Số sản phẩm mỗi trang
-    let currentPage = 1;
-    let currentFilteredProducts = [];
-
-    // --- HÀM CẬP NHẬT URL (QUAN TRỌNG) ---
-    function updateUrl() {
-        const params = new URLSearchParams();
-        
-        // 1. Trang hiện tại
-        params.set('page', currentPage);
-
-        // 2. Danh mục
-        const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
-                                     .map(input => input.getAttribute('data-category'));
-        if (selectedCategories.length > 0) {
-            params.set('category', selectedCategories.join(','));
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sản Phẩm - E-commerce Sạch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Tùy chỉnh màu sắc Tailwind (Green cho theme Organic) */
+        .btn-primary {
+            /* @apply bg-green-500 hover:bg-green-600 focus:ring-green-500; */
+            background-color: #10B981; /* green-500 */
+            transition: background-color 0.15s;
         }
-
-        // 3. Khoảng giá
-        const selectedPrice = document.querySelector('.price-filter:checked');
-        if (selectedPrice) {
-            params.set('price', selectedPrice.value);
+        .btn-primary:hover {
+            background-color: #059669; /* green-600 */
         }
-        
-        // 4. Sắp xếp
-        const sortValue = document.getElementById('sort-select').value;
-        if (sortValue !== 'default') {
-            params.set('sort', sortValue);
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease;
         }
-
-        // 5. Tìm kiếm
-        const searchTerm = document.getElementById('search-input').value;
-        if (searchTerm) {
-            params.set('search', searchTerm);
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
-        const newUrl = `${window.location.pathname}?${params.toString()}`;
-        history.pushState(null, '', newUrl); // Cập nhật URL mà không cần tải lại trang
-    }
-
-    // --- HÀM KHỞI TẠO TỪ URL (QUAN TRỌNG) ---
-    function loadStateFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        
-        // 1. Lấy trang hiện tại
-        const page = parseInt(params.get('page')) || 1;
-        currentPage = page;
-
-        // 2. Áp dụng Danh mục
-        const categoryParam = params.get('category');
-        if (categoryParam) {
-            const categories = categoryParam.split(',');
-            document.querySelectorAll('.category-filter').forEach(input => {
-                if (categories.includes(input.getAttribute('data-category'))) {
-                    input.checked = true;
-                }
-            });
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
         }
-
-        // 3. Áp dụng Khoảng giá
-        const priceParam = params.get('price');
-        if (priceParam) {
-            document.querySelector(`.price-filter[value="${priceParam}"]`).checked = true;
+        /* Style cho Filter Box */
+        .filter-box {
+            /* @apply bg-white p-6 rounded-lg shadow-lg mb-6 border border-gray-100; */
+            background-color: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; border: 1px solid #f3f4f6;
         }
-        
-        // 4. Áp dụng Sắp xếp
-        const sortParam = params.get('sort');
-        if (sortParam) {
-            document.getElementById('sort-select').value = sortParam;
+        .filter-title {
+            /* @apply text-xl font-bold mb-4 border-b pb-2 text-green-700; */
+            font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid; padding-bottom: 0.5rem; color: #047857;
         }
+    </style>
+</head>
+<body class="bg-gray-50">
 
-        // 5. Áp dụng Tìm kiếm
-        const searchParam = params.get('search');
-        if (searchParam) {
-            document.getElementById('search-input').value = searchParam;
-        }
-
-        // Sau khi đặt các giá trị đầu vào (input values), gọi applyFilters
-        // để thực hiện việc lọc/sắp xếp ban đầu.
-        applyFilters(false); // Tham số false báo hiệu không cần update URL nữa
-    }
-
-    // --- CÁC HÀM KHÁC (ĐÃ CẬP NHẬT) ---
-
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.style.opacity = 1;
-        setTimeout(() => { toast.style.opacity = 0; }, 2000);
-    }
-    
-    // Hàm giỏ hàng (giữ nguyên)
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) cartCount.textContent = cart.length;
-    }
-    window.addToCart = function(productId) {
-        const productToAdd = allProducts.find(p => p.id === productId);
-        if (!productToAdd) return;
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const productIndex = cart.findIndex(item => item.id === productId);
-
-        if (productIndex > -1) {
-            cart[productIndex].quantity = (cart[productIndex].quantity || 1) + 1;
-        } else {
-            const newItem = { id: productToAdd.id, name: productToAdd.name, price: productToAdd.price, image: productToAdd.image, quantity: 1 };
-            cart.push(newItem);
-        }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        showToast(`Đã thêm 1 x "${productToAdd.name}" vào giỏ hàng!`);
-    }
-
-    function renderProducts(products) {
-        const grid = document.getElementById('products-grid');
-        const countDisplay = document.getElementById('product-count-display');
-        
-        if (!grid) return;
-
-        // Xử lý phân trang
-        const totalProducts = products.length;
-        const startIndex = (currentPage - 1) * productsPerPage;
-        const endIndex = startIndex + productsPerPage;
-        const productsOnPage = products.slice(startIndex, endIndex);
-
-        grid.innerHTML = '';
-        
-        if (productsOnPage.length === 0) {
-            grid.innerHTML = '<p class="col-span-3 text-center text-gray-500">Không tìm thấy sản phẩm nào.</p>';
-            countDisplay.textContent = 'Hiển thị 0 sản phẩm';
-            renderPagination(totalProducts); 
-            return;
-        }
-        
-        const displayStart = startIndex + 1;
-        const displayEnd = startIndex + productsOnPage.length;
-        
-        countDisplay.textContent = `Hiển thị ${displayStart}-${displayEnd} của ${totalProducts} sản phẩm`;
-
-
-        productsOnPage.forEach((product) => {
-            const stars = Array(5).fill(0).map((_, i) => 
-                `<i class="fas fa-star ${product.rating > i ? 'text-yellow-400' : 'text-gray-300'}"></i>`
-            ).join('');
-            
-            grid.innerHTML += `
-                <div class="bg-white card overflow-hidden">
-                    <div class="relative">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
-                        <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">${product.isOrganic ? 'Hữu cơ' : 'Giảm 10%'}</span>
-                        <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
-                            <i class="far fa-heart text-gray-600"></i>
-                        </button>
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-green-600">Organic Shop 🌾</h1>
+            <nav class="flex items-center space-x-4">
+                <div class="relative">
+                    <a href="cart.html" class="text-gray-700 hover:text-green-600 transition">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
+                <div id="user-info" class="flex items-center space-x-3">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
-                        <p class="text-gray-600 text-sm mb-3">${product.description || ''}</p>
-                        <div class="flex items-center mb-2">
-                            <div class="flex text-sm">${stars}</div>
-                            <span class="text-gray-500 text-sm ml-2">(${product.reviews})</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="text-green-600 font-bold text-lg">${product.price.toLocaleString('vi-VN')}đ</span>
-                            </div>
-                            <button class="btn-primary text-white px-3 py-1 rounded transition" onclick="addToCart(${product.id})">
-                                <i class="fas fa-plus"></i> Mua hàng
-                            </button>
-                        </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-3 text-sm text-gray-500">
+        <a href="index.html" class="hover:text-green-600">Trang chủ</a> / <span class="font-semibold text-gray-700">Danh sách Sản phẩm</span>
+    </div>
+    
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-extrabold text-gray-800 mb-6">Thực Phẩm Hữu Cơ & Sạch</h2>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="w-full lg:w-1/4">
+
+                <div class="filter-box">
+                    <h3 class="filter-title">Tìm kiếm</h3>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm tên sản phẩm..." class="w-full border border-gray-300 p-2 rounded focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div class="filter-box">
+                    <h3 class="filter-title">Danh mục</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" data-category="Rau củ quả" class="category-filter form-checkbox h-5 w-5 text-green-600 rounded" />
+                            <span class="ml-2 text-gray-700">Rau củ quả</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" data-category="Thịt sạch" class="category-filter form-checkbox h-5 w-5 text-green-600 rounded" />
+                            <span class="ml-2 text-gray-700">Thịt sạch</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" data-category="Hải sản" class="category-filter form-checkbox h-5 w-5 text-green-600 rounded" />
+                            <span class="ml-2 text-gray-700">Hải sản</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" data-category="Trái cây" class="category-filter form-checkbox h-5 w-5 text-green-600 rounded" />
+                            <span class="ml-2 text-gray-700">Trái cây</span>
+                        </label>
                     </div>
                 </div>
-            `;
-        });
+
+                <div class="filter-box">
+                    <h3 class="filter-title">Khoảng giá (VNĐ)</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="price_filter" value="0-50000" class="price-filter form-radio h-4 w-4 text-green-600" />
+                            <span class="ml-2 text-gray-700">Dưới 50,000</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="price_filter" value="50000-100000" class="price-filter form-radio h-4 w-4 text-green-600" />
+                            <span class="ml-2 text-gray-700">50,000 - 100,000</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="price_filter" value="100000-200000" class="price-filter form-radio h-4 w-4 text-green-600" />
+                            <span class="ml-2 text-gray-700">100,000 - 200,000</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="price_filter" value="200000-max" class="price-filter form-radio h-4 w-4 text-green-600" />
+                            <span class="ml-2 text-gray-700">Trên 200,000</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="price_filter" value="" checked class="price-filter form-radio h-4 w-4 text-green-600" />
+                            <span class="ml-2 text-gray-700 font-semibold">Tất cả</span>
+                        </label>
+                    </div>
+                </div>
+
+            </aside>
+
+            <section class="w-full lg:w-3/4">
+                <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
+                    <p id="product-count-display" class="text-gray-600 font-medium">Đang tải...</p>
+                    <div class="flex items-center space-x-3">
+                        <label for="sort-select" class="text-gray-700">Sắp xếp theo:</label>
+                        <select id="sort-select" class="border border-gray-300 p-2 rounded focus:ring-green-500 focus:border-green-500">
+                            <option value="default">Mặc định</option>
+                            <option value="price-asc">Giá: Thấp đến Cao</option>
+                            <option value="price-desc">Giá: Cao đến Thấp</option>
+                            <option value="newest-desc">Mới nhất</option>
+                            <option value="reviews-desc">Bán chạy nhất</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-3 text-center py-10 text-xl text-green-600">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Đang tải sản phẩm...
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center mt-10" id="pagination-container">
+                    </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <footer class="bg-gray-800 text-white mt-12 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Organic Shop. Bảo mật & Điều khoản.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- KHAI BÁO CẤU HÌNH API ---
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api';
+        const API_PRODUCTS_URL = `${API_BASE_URL}/products`; 
+    
+        // --- CẤU HÌNH PHÂN TRANG & TRẠNG THÁI ---
+        const productsPerPage = 9; // Số sản phẩm mỗi trang (sẽ gửi lên API)
+        let currentPage = 1;
         
-        renderPagination(totalProducts);
-    }
-
-    function renderPagination(totalProducts) {
-        const paginationContainer = document.getElementById('pagination-container');
-        const totalPages = Math.ceil(totalProducts / productsPerPage);
+        // --- HÀM TẢI DỮ LIỆU TỪ API (MỚI) ---
+        /**
+         * Tải sản phẩm từ API, có áp dụng lọc, sắp xếp và phân trang.
+         * @param {boolean} updateUrlFlag - Có cập nhật URL của trình duyệt không.
+         */
+        async function loadProductsFromAPI(updateUrlFlag = true) {
+            const grid = document.getElementById('products-grid');
+            const countDisplay = document.getElementById('product-count-display');
+            const paginationContainer = document.getElementById('pagination-container');
+            
+            // Ẩn nội dung cũ và hiển thị trạng thái tải
+            if (grid) grid.innerHTML = '<div class="col-span-3 text-center py-10 text-xl text-green-600"><i class="fas fa-spinner fa-spin mr-2"></i> Đang tải sản phẩm...</div>';
+            if (countDisplay) countDisplay.textContent = 'Đang tải...';
+            if (paginationContainer) paginationContainer.innerHTML = '';
+            
+            // 1. Xây dựng tham số truy vấn (Queries)
+            const params = new URLSearchParams();
+            
+            // Phân trang
+            params.set('page', currentPage);
+            params.set('limit', productsPerPage);
+    
+            // 2. Lấy tham số lọc từ giao diện (UI)
+            const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
+                                             .map(input => input.getAttribute('data-category'));
+            if (selectedCategories.length > 0) {
+                // Backend cần hỗ trợ lọc theo mảng category (chuyển thành chuỗi)
+                params.set('category', selectedCategories.join(','));
+            }
+    
+            const selectedPrice = document.querySelector('.price-filter:checked');
+            if (selectedPrice && selectedPrice.value) {
+                const [min, max] = selectedPrice.value.split('-');
+                params.set('minPrice', min);
+                if (max !== 'max') params.set('maxPrice', max);
+            }
+    
+            const sortValue = document.getElementById('sort-select').value;
+            if (sortValue !== 'default') {
+                const [field, direction] = sortValue.split('-');
+                params.set('sortField', field); 
+                params.set('sortDirection', direction); 
+            }
+    
+            const searchTerm = document.getElementById('search-input').value;
+            if (searchTerm) {
+                params.set('search', searchTerm);
+            }
+    
+            // 3. Cập nhật URL trình duyệt
+            if (updateUrlFlag) {
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                history.pushState(null, '', newUrl); 
+            }
+    
+            // 4. Gọi API
+            try {
+                const response = await fetch(`${API_PRODUCTS_URL}?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // API phải trả về: { products: [...], totalCount: N }
+                const products = data.products || [];
+                const totalProducts = data.totalCount || 0; 
+    
+                renderProducts(products, totalProducts); 
+    
+            } catch (error) {
+                console.error("Lỗi API:", error);
+                if (grid) grid.innerHTML = '<div class="col-span-3 text-center py-10 text-xl text-red-600">⚠️ Không thể kết nối với Backend hoặc tải dữ liệu. Vui lòng kiểm tra console log.</div>';
+                if (countDisplay) countDisplay.textContent = 'Lỗi tải dữ liệu';
+            }
+        }
+    
+    
+        // --- HÀM KHỞI TẠO TỪ URL (QUAN TRỌNG) ---
+        function loadStateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // 1. Lấy trang hiện tại
+            const page = parseInt(params.get('page')) || 1;
+            currentPage = page;
+    
+            // 2. Áp dụng Danh mục
+            const categoryParam = params.get('category');
+            if (categoryParam) {
+                const categories = categoryParam.split(',');
+                document.querySelectorAll('.category-filter').forEach(input => {
+                    if (categories.includes(input.getAttribute('data-category'))) {
+                        input.checked = true;
+                    }
+                });
+            }
+    
+            // 3. Áp dụng Khoảng giá
+            const minPrice = params.get('minPrice');
+            const maxPrice = params.get('maxPrice');
+            let priceValue = '';
+            
+            if (minPrice && maxPrice) {
+                priceValue = `${minPrice}-${maxPrice}`;
+            } else if (minPrice && !maxPrice) {
+                priceValue = `${minPrice}-max`;
+            }
+            
+            if (priceValue) {
+                const priceInput = document.querySelector(`.price-filter[value="${priceValue}"]`);
+                if (priceInput) {
+                     priceInput.checked = true;
+                }
+            } else {
+                 // Đảm bảo nút "Tất cả" được chọn nếu không có bộ lọc giá nào được áp dụng
+                const defaultPrice = document.querySelector('.price-filter[value=""]');
+                if (defaultPrice) defaultPrice.checked = true;
+            }
+            
+            // 4. Áp dụng Sắp xếp
+            const sortField = params.get('sortField');
+            const sortDirection = params.get('sortDirection');
+            if (sortField && sortDirection) {
+                document.getElementById('sort-select').value = `${sortField}-${sortDirection}`;
+            }
+    
+            // 5. Áp dụng Tìm kiếm
+            const searchParam = params.get('search');
+            if (searchParam) {
+                document.getElementById('search-input').value = searchParam;
+            }
+    
+            // Sau khi đặt các giá trị đầu vào, gọi API để tải dữ liệu ban đầu
+            loadProductsFromAPI(false); // Tham số false báo hiệu không cần update URL (vì nó đã được tải từ URL)
+        }
+    
+        // --- CÁC HÀM PHỤ TRỢ ---
+    
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.opacity = 1;
+            setTimeout(() => { toast.style.opacity = 0; }, 2000);
+        }
         
-        paginationContainer.innerHTML = '';
+        /**
+         * Hàm thêm sản phẩm vào giỏ hàng (không thay đổi)
+         */
+        window.addToCart = function(productId, productName, productPrice, productImage) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const productIndex = cart.findIndex(item => item.id === productId);
+    
+            if (productIndex > -1) {
+                cart[productIndex].quantity = (cart[productIndex].quantity || 1) + 1;
+            } else {
+                // Ensure productPrice is a number before storing
+                const price = parseFloat(productPrice);
+                const newItem = { id: productId, name: productName, price: price, image: productImage, quantity: 1 };
+                cart.push(newItem);
+            }
+    
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showToast(`Đã thêm 1 x "${productName}" vào giỏ hàng!`);
+        }
+    
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0); 
+        }
+    
+        function renderProducts(products, totalProducts) {
+            const grid = document.getElementById('products-grid');
+            const countDisplay = document.getElementById('product-count-display');
+            
+            if (!grid) return;
+    
+            grid.innerHTML = '';
+            
+            if (products.length === 0) {
+                grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-10">Không tìm thấy sản phẩm nào khớp với bộ lọc.</p>';
+                countDisplay.textContent = `Hiển thị 0 của ${totalProducts} sản phẩm`;
+                renderPagination(totalProducts); 
+                return;
+            }
+            
+            const displayStart = (currentPage - 1) * productsPerPage + 1;
+            const displayEnd = displayStart + products.length - 1;
+            
+            countDisplay.textContent = `Hiển thị ${displayStart}-${displayEnd} của ${totalProducts} sản phẩm`;
+    
+    
+            products.forEach((product) => {
+                const stars = Array(5).fill(0).map((_, i) => 
+                    `<i class="fas fa-star ${product.rating > i ? 'text-yellow-400' : 'text-gray-300'}"></i>`
+                ).join('');
+                
+                const finalPrice = product.price || 0;
+                // const finalRating = product.rating || 0; // rating không dùng cho hiển thị
 
-        if (totalPages <= 1) return;
+                grid.innerHTML += `
+                    <div class="bg-white card overflow-hidden">
+                        <div class="relative">
+                            <img src="${product.image || 'placeholder.jpg'}" alt="${product.name}" class="w-full h-48 object-cover">
+                            <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">${product.isOrganic ? 'Hữu cơ' : 'Giảm 10%'}</span>
+                            <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
+                                <i class="far fa-heart text-gray-600"></i>
+                            </button>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
+                            <p class="text-gray-600 text-sm mb-3">${product.description || ''}</p>
+                            <div class="flex items-center mb-2">
+                                <div class="flex text-sm">${stars}</div>
+                                <span class="text-gray-500 text-sm ml-2">(${product.reviews || 0})</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-green-600 font-bold text-lg">${finalPrice.toLocaleString('vi-VN')}đ</span>
+                                </div>
+                                <button class="btn-primary text-white px-3 py-1 rounded transition add-to-cart-btn" 
+                                    data-id="${product.id}" 
+                                    data-name="${product.name}" 
+                                    data-price="${finalPrice}" 
+                                    data-image="${product.image || 'placeholder.jpg'}">
+                                    <i class="fas fa-plus"></i> Mua hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            renderPagination(totalProducts);
+            // Gắn sự kiện sau khi render xong
+            attachAddToCartListeners(); 
+        }
 
-        let paginationHTML = '';
+        /**
+         * Gắn sự kiện click cho các nút Mua hàng
+         */
+        function attachAddToCartListeners() {
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                // Loại bỏ lắng nghe cũ nếu có
+                button.removeEventListener('click', handleAddToCartClick); 
+                // Gắn lắng nghe mới
+                button.addEventListener('click', handleAddToCartClick);
+            });
+        }
         
-        // Nút Previous
-        paginationHTML += `
-            <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
-                onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left text-xs"></i>
-            </button>
-        `;
-
-        // Các nút số trang
-        for (let i = 1; i <= totalPages; i++) {
+        /**
+         * Hàm xử lý khi nhấn nút Mua hàng, lấy data từ data-* attributes
+         */
+        function handleAddToCartClick() {
+            const button = this; // 'this' là nút button
+            const id = parseInt(button.getAttribute('data-id'));
+            const name = button.getAttribute('data-name');
+            const price = parseFloat(button.getAttribute('data-price'));
+            const image = button.getAttribute('data-image');
+            
+            window.addToCart(id, name, price, image);
+        }
+    
+        function renderPagination(totalProducts) {
+            const paginationContainer = document.getElementById('pagination-container');
+            const totalPages = Math.ceil(totalProducts / productsPerPage);
+            
+            paginationContainer.innerHTML = '';
+    
+            if (totalPages <= 1) return;
+    
+            let paginationHTML = '';
+            
+            // Nút Previous
             paginationHTML += `
-                <button class="px-4 py-2 mx-1 border rounded-lg font-semibold transition ${i === currentPage ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-white hover:bg-gray-100 text-gray-700'}" 
-                    onclick="changePage(${i})">
-                    ${i}
+                <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
+                    onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left text-xs"></i>
                 </button>
             `;
-        }
-
-        // Nút Next
-        paginationHTML += `
-            <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
-                onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right text-xs"></i>
-            </button>
-        `;
-
-        paginationContainer.innerHTML = paginationHTML;
-    }
-
-    /**
-     * Thay đổi trang hiện tại và render lại sản phẩm
-     * @param {number} page - Số trang muốn chuyển đến
-     */
-    window.changePage = function(page) {
-        const totalPages = Math.ceil(currentFilteredProducts.length / productsPerPage);
-        if (page < 1 || page > totalPages) return;
-        
-        currentPage = page;
-        renderProducts(currentFilteredProducts);
-        updateUrl(); // <<-- CẬP NHẬT URL
-        
-        document.getElementById('products-grid').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    /**
-     * Áp dụng tất cả các bộ lọc, sắp xếp và phân trang.
-     * @param {boolean} resetPage - Có nên reset về trang 1 khi thay đổi lọc/sắp xếp không (Mặc định: true)
-     */
-    function applyFilters(resetPage = true) {
-        let filteredProducts = [...allProducts];
-
-        // 1. Lọc theo Danh mục
-        const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
-                                     .map(input => input.getAttribute('data-category'));
-        
-        if (selectedCategories.length > 0) {
-            filteredProducts = filteredProducts.filter(p => selectedCategories.includes(p.category));
-        }
-
-        // 2. Lọc theo Giá
-        const selectedPrice = document.querySelector('.price-filter:checked');
-        if (selectedPrice) {
-            const [minStr, maxStr] = selectedPrice.value.split('-');
-            const min = parseInt(minStr);
-            const max = maxStr === 'max' ? Infinity : parseInt(maxStr);
+    
+            // Các nút số trang
+            const maxPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
             
-            filteredProducts = filteredProducts.filter(p => p.price >= min && p.price <= max);
-        }
-
-        // 3. Lọc theo Tìm kiếm
-        const searchTerm = document.getElementById('search-input').value.toLowerCase();
-        if (searchTerm) {
-            filteredProducts = filteredProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm) ||
-                (p.category || '').toLowerCase().includes(searchTerm)
-            );
-        }
-
-        // 4. Sắp xếp
-        const sortValue = document.getElementById('sort-select').value;
-        if (sortValue === 'price-asc') {
-            filteredProducts.sort((a, b) => a.price - b.price);
-        } else if (sortValue === 'price-desc') {
-            filteredProducts.sort((a, b) => b.price - a.price);
-        } else if (sortValue === 'newest') {
-            filteredProducts.sort((a, b) => b.id - a.id);
-        } else if (sortValue === 'best-seller') {
-            filteredProducts.sort((a, b) => b.reviews - a.reviews);
-        }
-
-        // Cập nhật danh sách sản phẩm đã lọc
-        currentFilteredProducts = filteredProducts;
-        
-        // Đặt lại trang về 1 nếu bộ lọc thay đổi (trừ khi được gọi từ loadStateFromUrl)
-        if (resetPage) {
-             currentPage = 1;
-        }
-
-        renderProducts(currentFilteredProducts);
-        updateUrl(); // <<-- CẬP NHẬT URL
-    }
-
-    // --- GẮN SỰ KIỆN KHI TRANG LOAD ---
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Logic trạng thái đăng nhập (giữ nguyên)
-        const userInfo = document.getElementById('user-info');
-        let user = localStorage.getItem('user');
-        if (user) {
-            user = JSON.parse(user);
-            userInfo.innerHTML = `
-                <span class="font-semibold text-green-600">${user.email}</span>
-                <button id="logoutBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-full hover:bg-gray-300 transition">Đăng xuất</button>
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+    
+    
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button class="px-4 py-2 mx-1 border rounded-lg font-semibold transition ${i === currentPage ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-white hover:bg-gray-100 text-gray-700'}" 
+                        onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+    
+            // Nút Next
+            paginationHTML += `
+                <button class="px-4 py-2 mx-1 border rounded-lg transition ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-green-100 text-green-600'}" 
+                    onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </button>
             `;
-            document.getElementById('logoutBtn').onclick = function() {
-                localStorage.removeItem('user');
-                location.reload();
-            };
-        } else {
-            userInfo.innerHTML = `
-                <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
-                <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
-            `;
+    
+            paginationContainer.innerHTML = paginationHTML;
         }
-
-        // 2. Cập nhật số lượng giỏ hàng
-        updateCartCount();
-
-        // 3. Khởi tạo trạng thái ban đầu từ URL
-        loadStateFromUrl();
-
-
-        // 4. Gắn sự kiện cho các bộ lọc (chỉ gọi applyFilters)
-        document.querySelectorAll('.category-filter, .price-filter').forEach(input => {
-            input.addEventListener('change', () => applyFilters(true));
+    
+        /**
+         * Thay đổi trang hiện tại và gọi API để tải lại sản phẩm
+         */
+        window.changePage = function(page) {
+            currentPage = page;
+            loadProductsFromAPI(true); 
+            
+            document.getElementById('products-grid').scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        /**
+         * Áp dụng tất cả các bộ lọc, sắp xếp.
+         */
+        function applyFilters(resetPage = true) {
+            if (resetPage) {
+                currentPage = 1;
+            }
+            loadProductsFromAPI(true); 
+        }
+    
+    
+        // --- GẮN SỰ KIỆN KHI TRANG LOAD ---
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Logic trạng thái đăng nhập (giữ nguyên)
+            const userInfo = document.getElementById('user-info');
+            let user = localStorage.getItem('user');
+            if (user) {
+                user = JSON.parse(user);
+                userInfo.innerHTML = `
+                    <span class="font-semibold text-green-600">${user.email}</span>
+                    <button id="logoutBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-full hover:bg-gray-300 transition">Đăng xuất</button>
+                `;
+                document.getElementById('logoutBtn').onclick = function() {
+                    localStorage.removeItem('user');
+                    // Chuyển hướng về trang chủ hoặc trang đăng nhập
+                    window.location.href = 'index.html'; 
+                };
+            } else {
+                userInfo.innerHTML = `
+                    <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
+                    <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
+                `;
+            }
+    
+            // 2. Cập nhật số lượng giỏ hàng
+            updateCartCount();
+    
+            // 3. Khởi tạo trạng thái ban đầu từ URL và tải sản phẩm
+            loadStateFromUrl(); // Gọi hàm này sẽ kích hoạt loadProductsFromAPI
+    
+            // 4. Gắn sự kiện cho các bộ lọc (chỉ gọi applyFilters)
+            document.querySelectorAll('.category-filter, .price-filter').forEach(input => {
+                input.addEventListener('change', () => applyFilters(true));
+            });
+    
+            // Gắn sự kiện cho Sắp xếp
+            document.getElementById('sort-select').addEventListener('change', () => applyFilters(true));
+            
+            // Gắn sự kiện cho Tìm kiếm (có Debounce)
+            let searchTimer;
+            document.getElementById('search-input').addEventListener('input', () => {
+                 clearTimeout(searchTimer);
+                 searchTimer = setTimeout(() => {
+                     applyFilters(true);
+                 }, 300); // Đợi 300ms sau khi người dùng ngừng gõ
+            });
+            
+            // Xử lý nút back/forward của trình duyệt (Popstate)
+            window.addEventListener('popstate', function() {
+                loadStateFromUrl();
+            });
         });
-
-        // Gắn sự kiện cho Sắp xếp
-        document.getElementById('sort-select').addEventListener('change', () => applyFilters(true));
-        
-        // Gắn sự kiện cho Tìm kiếm
-        document.getElementById('search-input').addEventListener('input', () => applyFilters(true));
-        
-        // Xử lý nút back/forward của trình duyệt (Popstate)
-        window.addEventListener('popstate', function() {
-            loadStateFromUrl();
-        });
-    });
-</script>
+    </script>
+</body>
+</html>

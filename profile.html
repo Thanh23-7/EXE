@@ -1,150 +1,261 @@
-<script>
-    // --- MOCK API (Giả lập Backend) ---
-    const usersDB = JSON.parse(localStorage.getItem('usersDB') || '[]');
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Cá nhân - Organic Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .btn-primary {
+            background-color: #10B981; /* green-500 */
+            transition: background-color 0.15s;
+        }
+        .btn-primary:hover {
+            background-color: #059669; /* green-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-green-600">Organic Shop 🌾</h1>
+            <nav>
+                <a href="product.html" class="text-gray-700 hover:text-green-600 transition">Sản phẩm</a>
+                <a href="cart.html" class="ml-4 text-gray-700 hover:text-green-600 transition">Giỏ hàng</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-8 text-center border-b pb-4">
+                Thông Tin Tài Khoản
+            </h2>
+
+            <div id="profile-msg" class="mt-4 text-center font-semibold">
+                </div>
+
+            <section class="mb-10 p-6 border border-gray-100 rounded-lg bg-gray-50">
+                <h3 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-user-edit mr-3"></i> Cập nhật Profile
+                </h3>
+                <form id="updateProfile">
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 font-semibold mb-2">Email (Không thể thay đổi)</label>
+                        <input type="email" id="email" class="w-full border border-gray-300 p-3 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+                    <div class="mb-6">
+                        <label for="displayName" class="block text-gray-700 font-semibold mb-2">Tên hiển thị</label>
+                        <input type="text" id="displayName" placeholder="Nhập tên hiển thị của bạn" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-green-500 focus:ring-green-500">
+                    </div>
+                    <button type="submit" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                        Cập nhật thông tin
+                    </button>
+                </form>
+            </section>
+
+            <section class="p-6 border border-gray-100 rounded-lg bg-gray-50">
+                <h3 class="text-2xl font-bold text-red-600 mb-6 flex items-center">
+                    <i class="fas fa-key mr-3"></i> Đổi Mật khẩu
+                </h3>
+                <form id="changePassword">
+                    <div class="mb-4">
+                        <label for="currentPassword" class="block text-gray-700 font-semibold mb-2">Mật khẩu hiện tại</label>
+                        <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-red-500 focus:ring-red-500">
+                    </div>
+                    <div class="mb-6">
+                        <label for="newPassword" class="block text-gray-700 font-semibold mb-2">Mật khẩu mới</label>
+                        <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-red-500 focus:ring-red-500">
+                    </div>
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 w-full text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md" id="changePassBtn">
+                        Đổi mật khẩu
+                    </button>
+                </form>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12 py-6 text-center">
+        <p>&copy; 2024 Organic Shop. Bảo mật & Điều khoản.</p>
+    </footer>
+
+    <script>
+        // --- KHAI BÁO CẤU HÌNH API THẬT ---
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
+        const API_USERS_URL = `${API_BASE_URL}/users`; 
     
-    function mockApiUpdateProfile(email, newDisplayName) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const userIndex = usersDB.findIndex(u => u.email === email);
-                if (userIndex > -1) {
-                    // Cập nhật trong DB giả định
-                    usersDB[userIndex].displayName = newDisplayName;
-                    localStorage.setItem('usersDB', JSON.stringify(usersDB));
-                    
-                    // Trả về thành công
-                    resolve({ success: true });
-                } else {
-                    resolve({ success: false, error: 'Tài khoản không tồn tại.' });
-                }
-            }, 500); // Giả lập độ trễ mạng 500ms
-        });
-    }
-
-    function mockApiChangePassword(email, currentPassword, newPassword) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const user = usersDB.find(u => u.email === email);
-                if (!user) {
-                    return resolve({ success: false, error: 'Tài khoản không tồn tại.' });
-                }
-
-                // Giả lập kiểm tra mật khẩu hiện tại
-                if (user.password !== currentPassword) {
-                    return resolve({ success: false, error: 'Mật khẩu hiện tại không đúng.' });
-                }
-
-                if (currentPassword === newPassword) {
-                    return resolve({ success: false, error: 'Mật khẩu mới phải khác mật khẩu cũ.' });
-                }
-
-                // Cập nhật mật khẩu trong DB giả định
-                user.password = newPassword;
-                localStorage.setItem('usersDB', JSON.stringify(usersDB));
-
-                resolve({ success: true });
-            }, 500);
-        });
-    }
-    // --- KẾT THÚC MOCK API ---
-
-
-    const profileMsgEl = document.getElementById('profile-msg');
-    const emailInput = document.getElementById('email');
-    const displayNameInput = document.getElementById('displayName');
-    const currentPasswordInput = document.getElementById('currentPassword');
-    const newPasswordInput = document.getElementById('newPassword');
-    const updateBtn = document.querySelector('#updateProfile button[type="submit"]');
-    const changePassBtn = document.querySelector('#changePassword button[type="submit"]');
-
-    // Kiểm tra trạng thái đăng nhập
-    let user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (!user) {
-        window.location.href = 'login.html';
-    }
-
-    // Hiển thị thông tin cá nhân
-    emailInput.value = user.email;
-    displayNameInput.value = user.displayName || user.email.split('@')[0]; // Dùng email nếu chưa có tên hiển thị
+        // --- HÀM GỌI API THẬT: Cập nhật thông tin cá nhân ---
+        async function updateProfile(userId, newDisplayName) {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Giả định: PUT /api/users/:userId
+                const response = await fetch(`${API_USERS_URL}/${userId}`, { 
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ displayName: newDisplayName })
+                });
     
-    /**
-     * Hiển thị thông báo và đặt màu sắc (thành công: xanh, lỗi: đỏ)
-     */
-    function showMessage(message, isSuccess = true) {
-        profileMsgEl.textContent = message;
-        profileMsgEl.className = `mt-4 text-center font-semibold ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
-    }
-
-    // --- Cập nhật thông tin cá nhân ---
-    document.getElementById('updateProfile').onsubmit = async function(e) {
-        e.preventDefault();
-        profileMsgEl.textContent = '';
+                const data = await response.json();
+    
+                if (!response.ok) {
+                    throw new Error(data.message || `Lỗi HTTP: ${response.status}. Vui lòng kiểm tra Backend/CORS.`);
+                }
+    
+                return { success: true, updatedUser: data }; 
+    
+            } catch (error) {
+                console.error("Lỗi cập nhật profile:", error);
+                return { success: false, error: error.message || 'Lỗi kết nối máy chủ.' };
+            }
+        }
+    
+        // --- HÀM GỌI API THẬT: Đổi mật khẩu ---
+        async function changePassword(userId, currentPassword, newPassword) {
+            try {
+                const token = localStorage.getItem('token'); 
+                
+                // Giả định: POST /api/users/:userId/change-password
+                const response = await fetch(`${API_USERS_URL}/${userId}/change-password`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+    
+                const data = await response.json();
+    
+                if (!response.ok) {
+                    throw new Error(data.message || `Lỗi HTTP: ${response.status}. Vui lòng kiểm tra Backend/CORS.`);
+                }
+    
+                return { success: true }; 
+    
+            } catch (error) {
+                console.error("Lỗi đổi mật khẩu:", error);
+                return { success: false, error: error.message || 'Lỗi kết nối máy chủ.' };
+            }
+        }
+        // --- KẾT THÚC HÀM API THẬT ---
+    
+    
+        const profileMsgEl = document.getElementById('profile-msg');
+        const emailInput = document.getElementById('email');
+        const displayNameInput = document.getElementById('displayName');
+        const currentPasswordInput = document.getElementById('currentPassword');
+        const newPasswordInput = document.getElementById('newPassword');
+        const updateBtn = document.querySelector('#updateProfile button[type="submit"]');
+        const changePassBtn = document.querySelector('#changePassword button[type="submit"]');
+    
+        // Kiểm tra trạng thái đăng nhập
+        let user = JSON.parse(localStorage.getItem('user') || 'null');
         
-        const newDisplayName = displayNameInput.value.trim();
-
-        if (newDisplayName.length < 3) {
-            return showMessage('Tên hiển thị phải ít nhất 3 ký tự.', false);
+        // Chuyển hướng nếu chưa đăng nhập hoặc thiếu thông tin quan trọng
+        if (!user || !user.id || !localStorage.getItem('token')) { 
+            window.location.href = 'login.html';
+            return; 
         }
-
-        // Kiểm tra nếu không có gì thay đổi
-        if (newDisplayName === user.displayName) {
-            return showMessage('Không có thông tin nào được thay đổi.', true);
+    
+        // Hiển thị thông tin cá nhân
+        emailInput.value = user.email;
+        displayNameInput.value = user.displayName || user.email.split('@')[0];
+        
+        /**
+         * Hiển thị thông báo và đặt màu sắc (thành công: xanh, lỗi: đỏ)
+         */
+        function showMessage(message, isSuccess = true) {
+            profileMsgEl.textContent = message;
+            profileMsgEl.className = `mt-4 text-center font-semibold ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
         }
-
-        // Bắt đầu Loading
-        updateBtn.textContent = 'Đang cập nhật...';
-        updateBtn.disabled = true;
-
-        // Giả lập gọi API thay vì fetch('/api/update-profile', ...)
-        const data = await mockApiUpdateProfile(user.email, newDisplayName);
-
-        // Kết thúc Loading
-        updateBtn.textContent = 'Cập nhật thông tin';
-        updateBtn.disabled = false;
-
-        if (data.success) {
-            // Cập nhật user trong localStorage (Frontend)
-            user.displayName = newDisplayName;
-            localStorage.setItem('user', JSON.stringify(user));
-            showMessage('Cập nhật thông tin thành công! 🎉', true);
-        } else {
-            showMessage(data.error || 'Có lỗi xảy ra khi cập nhật!', false);
-        }
-    };
-
-    // --- Đổi mật khẩu ---
-    document.getElementById('changePassword').onsubmit = async function(e) {
-        e.preventDefault();
-        profileMsgEl.textContent = '';
-
-        const currentPassword = currentPasswordInput.value;
-        const newPassword = newPasswordInput.value;
-
-        // Validation cơ bản
-        if (!currentPassword || !newPassword) {
-            return showMessage('Vui lòng điền đầy đủ Mật khẩu hiện tại và Mật khẩu mới.', false);
-        }
-        if (newPassword.length < 6) {
-            return showMessage('Mật khẩu mới phải có ít nhất 6 ký tự.', false);
-        }
-
-        // Bắt đầu Loading
-        changePassBtn.textContent = 'Đang xử lý...';
-        changePassBtn.disabled = true;
-
-        // Giả lập gọi API thay vì fetch('/api/change-password', ...)
-        const data = await mockApiChangePassword(user.email, currentPassword, newPassword);
-
-        // Kết thúc Loading
-        changePassBtn.textContent = 'Đổi mật khẩu';
-        changePassBtn.disabled = false;
-
-        if (data.success) {
-            showMessage('Đổi mật khẩu thành công! Vui lòng đăng nhập lại lần sau với mật khẩu mới.', true);
-            // Xóa nội dung form sau khi thành công
-            currentPasswordInput.value = '';
-            newPasswordInput.value = '';
-        } else {
-            showMessage(data.error || 'Đổi mật khẩu thất bại.', false);
-        }
-    };
-</script>
+    
+        // --- Xử lý Cập nhật thông tin cá nhân ---
+        document.getElementById('updateProfile').onsubmit = async function(e) {
+            e.preventDefault();
+            profileMsgEl.textContent = '';
+            
+            const newDisplayName = displayNameInput.value.trim();
+    
+            if (newDisplayName.length < 3) {
+                return showMessage('Tên hiển thị phải ít nhất 3 ký tự.', false);
+            }
+    
+            if (newDisplayName === user.displayName) {
+                return showMessage('Không có thông tin nào được thay đổi.', true);
+            }
+    
+            // Bắt đầu Loading
+            updateBtn.textContent = 'Đang cập nhật...';
+            updateBtn.disabled = true;
+    
+            // GỌI API THẬT
+            const data = await updateProfile(user.id, newDisplayName);
+    
+            // Kết thúc Loading
+            updateBtn.textContent = 'Cập nhật thông tin';
+            updateBtn.disabled = false;
+    
+            if (data.success) {
+                // Cập nhật user trong localStorage (Frontend)
+                user.displayName = data.updatedUser.displayName; 
+                localStorage.setItem('user', JSON.stringify(user));
+                showMessage('Cập nhật thông tin thành công! 🎉', true);
+            } else {
+                showMessage(data.error || 'Có lỗi xảy ra khi cập nhật!', false);
+            }
+        };
+    
+        // --- Xử lý Đổi mật khẩu ---
+        document.getElementById('changePassword').onsubmit = async function(e) {
+            e.preventDefault();
+            profileMsgEl.textContent = '';
+    
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+    
+            // Validation cơ bản
+            if (!currentPassword || !newPassword) {
+                return showMessage('Vui lòng điền đầy đủ Mật khẩu hiện tại và Mật khẩu mới.', false);
+            }
+            if (newPassword.length < 6) {
+                return showMessage('Mật khẩu mới phải có ít nhất 6 ký tự.', false);
+            }
+    
+            // Bắt đầu Loading
+            changePassBtn.textContent = 'Đang xử lý...';
+            changePassBtn.disabled = true;
+    
+            // GỌI API THẬT
+            const data = await changePassword(user.id, currentPassword, newPassword);
+    
+            // Kết thúc Loading
+            changePassBtn.textContent = 'Đổi mật khẩu';
+            changePassBtn.disabled = false;
+    
+            if (data.success) {
+                // Thao tác bảo mật: Yêu cầu đăng nhập lại sau khi đổi mật khẩu
+                showMessage('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', true);
+                
+                currentPasswordInput.value = '';
+                newPasswordInput.value = '';
+    
+                // Tự động Logout sau 2 giây
+                setTimeout(() => {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token'); // Xóa token
+                    window.location.href = 'login.html'; // Chuyển hướng đến trang đăng nhập
+                }, 2000); 
+            } else {
+                showMessage(data.error || 'Đổi mật khẩu thất bại.', false);
+            }
+        };
+    </script>
+</body>
+</html>
