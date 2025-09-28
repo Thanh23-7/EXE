@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - Green Fresh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-leaf text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
+                <a href="product.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Sản phẩm</a>
+                <a href="product-detail.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Về chúng tôi</a>
+                <a href="forgotpassword.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Liên hệ</a>
+            </nav>
+            <button class="relative p-2 text-gray-700 hover:text-green-600">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+            </button>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Giỏ hàng của bạn</h1>
+        <div id="cart-items" class="space-y-6"></div>
+        <div id="cart-empty" class="text-gray-500 text-center mt-12 hidden">Giỏ hàng của bạn đang trống.</div>
+        <div id="cart-total" class="text-right text-xl font-bold mt-8"></div>
+        <div class="text-right mt-4">
+            <button id="checkoutBtn" class="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition">Thanh toán khi nhận hàng</button>
+            <button id="vnpayBtn" class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition ml-2">Thanh toán VNPay</button>
+        </div>
+    </main>
+    <script>
+        document.getElementById('vnpayBtn').onclick = function() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert('Giỏ hàng trống!');
+                return;
+            }
+            let total = cart.reduce((sum, item) => sum + item.price, 0);
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user) {
+                alert('Bạn cần đăng nhập để thanh toán!');
+                return;
+            }
+            fetch('/api/vnpay/create_payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: total,
+                    orderId: 'ORDER' + Date.now(),
+                    orderInfo: `Thanh toán đơn hàng cho ${user.email}`
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.paymentUrl) {
+                    window.location.href = data.paymentUrl;
+                } else {
+                    alert('Không tạo được link thanh toán!');
+                }
+            });
+        };
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) cartCount.textContent = cart.length;
+        }
+        updateCartCount();
+        window.addEventListener('storage', updateCartCount);
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartItems = document.getElementById('cart-items');
+            const cartEmpty = document.getElementById('cart-empty');
+            const cartTotal = document.getElementById('cart-total');
+            cartItems.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartEmpty.classList.remove('hidden');
+                cartTotal.textContent = '';
+                return;
+            } else {
+                cartEmpty.classList.add('hidden');
+            }
+            cart.forEach((item, idx) => {
+                total += item.price;
+                cartItems.innerHTML += `
+                <div class="bg-white rounded-lg shadow-md p-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">${item.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${item.description || ''}</p>
+                        <span class="text-green-600 font-bold text-lg">${item.price}đ</span>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">Xóa</button>
+                </div>
+                `;
+            });
+            cartTotal.textContent = `Tổng cộng: ${total}đ`;
+        }
+        function removeFromCart(idx) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart.splice(idx, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+        document.getElementById('checkoutBtn').onclick = function() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert('Giỏ hàng trống!');
+                return;
+            }
+            let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push({
+                items: cart,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('orders', JSON.stringify(orders));
+            localStorage.setItem('cart', '[]');
+            renderCart();
+            alert('Đặt hàng thành công! Đơn hàng đã được lưu vào lịch sử.');
+        };
+        renderCart();
+    </script>
+</body>
+</html>

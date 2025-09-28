@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Fresh - Thực phẩm xanh sạch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="chat-box" class="fixed bottom-6 right-6 z-50 w-80 bg-white rounded-xl shadow-lg border border-green-200 flex flex-col" style="display:none;">
+        <div class="bg-gradient-green text-white px-4 py-3 rounded-t-xl flex items-center justify-between">
+            <span class="font-bold"><i class="fas fa-comments mr-2"></i>Chat với admin</span>
+            <button onclick="document.getElementById('chat-box').style.display='none'" class="text-white hover:text-red-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-messages" class="flex-1 px-4 py-2 overflow-y-auto" style="max-height:260px;"></div>
+        <form id="chat-form" class="flex border-t">
+            <input id="chat-input" type="text" class="flex-1 px-3 py-2 focus:outline-none" placeholder="Nhập tin nhắn...">
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-r-xl hover:bg-green-600">Gửi</button>
+        </form>
+    </div>
+    <button id="open-chat-btn" class="fixed bottom-6 right-6 z-40 bg-gradient-green text-white px-4 py-3 rounded-full shadow-lg flex items-center gap-2 font-semibold hover:scale-105 transition">
+        <i class="fas fa-comments"></i> Chat với admin
+    </button>
+    
+    <script>
+    // Giữ nguyên logic Chat
+    document.getElementById('open-chat-btn').onclick = function() {
+        document.getElementById('chat-box').style.display = 'flex';
+        loadChatMessages();
+    };
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const userEmail = user ? user.email : 'guest';
+    document.getElementById('chat-form').onsubmit = function(e) {
+        e.preventDefault();
+        const msg = document.getElementById('chat-input').value.trim();
+        if (!msg) return;
+        fetch('/api/chat/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: userEmail, receiver: 'admin', message: msg })
+        }).then(() => {
+            document.getElementById('chat-input').value = '';
+            loadChatMessages();
+        });
+    };
+    function loadChatMessages() {
+        fetch(`/api/chat/history?user_email=${userEmail}`)
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('chat-messages');
+                box.innerHTML = '';
+                data.forEach(m => {
+                    box.innerHTML += `<div class="mb-2 flex ${m.sender===userEmail?'justify-end':'justify-start'}">
+                        <div class="px-3 py-2 rounded-lg ${m.sender===userEmail?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'} max-w-[70%]">
+                            <span>${m.message}</span>
+                            <div class="text-xs text-gray-400 mt-1">${m.sender==='admin'?'Admin':'Bạn'} - ${new Date(m.sent_at).toLocaleTimeString()}</div>
+                        </div>
+                    </div>`;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+    }
+    setInterval(() => {
+        if (document.getElementById('chat-box').style.display==='flex') loadChatMessages();
+    }, 5000);
+    </script>
+    
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
+                </a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
+                    <a href="product.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Sản phẩm</a>
+                    <a href="product-detail.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Về chúng tôi</a>
+                    <a href="forgotpassword.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Liên hệ</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden md:block">
+                        <input type="text" placeholder="Tìm kiếm sản phẩm..." 
+                               class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <a href="cart.html">
+                        <button class="relative p-2 text-gray-700 hover:text-green-600">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                    </a>
+                    <div id="user-info" class="flex items-center space-x-2"></div>
+                </div>
+                <button class="md:hidden p-2 rounded-full hover:bg-green-100">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-green-400 to-green-600 text-white py-20">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl font-bold mb-6">Thực phẩm xanh sạch cho sức khỏe gia đình</h1>
+                    <p class="text-xl mb-8 opacity-90">
+                        Chúng tôi cung cấp những sản phẩm thực phẩm hữu cơ, tươi ngon và an toàn nhất 
+                        từ các trang trại địa phương uy tín.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="product.html" class="bg-white text-green-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
+                            Mua sắm ngay
+                        </a>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-green-600 transition">
+                            Tìm hiểu thêm
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="https://i.imgur.com/YJgqDkU.jpeg" alt="Fresh vegetables" 
+                            class="rounded-lg shadow-2xl w-full h-96 object-cover">
+                    <div class="absolute -bottom-4 -left-4 bg-white p-4 rounded-lg shadow-lg">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="font-semibold">4.9/5</span>
+                            <span class="text-gray-600">từ 2,500+ đánh giá</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="mb-16">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2">
+                    <i class="fas fa-robot"></i> Gợi ý cho bạn
+                </h2>
+                <div id="recommend-products" class="grid md:grid-cols-3 gap-8"></div>
+            </div>
+            <script>
+            // Giữ nguyên logic lấy dữ liệu gợi ý từ API
+            fetch('/api/recommend-products')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('recommend-products');
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="text-gray-500">Chưa có gợi ý sản phẩm.</div>';
+                        return;
+                    }
+                    container.innerHTML = data.map(p => `
+                        <div class="card bg-white p-4 flex flex-col items-center text-center">
+                            <img src="${p.image && p.image.startsWith('http') ? p.image : 'https://i.imgur.com/sSgVbJm.jpeg'}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                            <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
+                            <div class="text-green-600 font-semibold mb-2">${p.price.toLocaleString()}đ</div>
+                            <div class="text-gray-600 text-sm mb-2">${p.description}</div>
+                            <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})">Xem chi tiết</a>
+                        </div>
+                    `).join('');
+                });
+            </script>
+            
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Tại sao chọn Green Fresh?</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Chúng tôi cam kết mang đến những sản phẩm chất lượng cao nhất với dịch vụ tốt nhất
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-green-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">100% Hữu cơ</h3>
+                    <p class="text-gray-600">Không sử dụng hóa chất, thuốc trừ sâu</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-truck text-blue-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Giao hàng nhanh</h3>
+                    <p class="text-gray-600">Giao hàng trong 2-4 giờ tại TP.HCM</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-yellow-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Đảm bảo chất lượng</h3>
+                    <p class="text-gray-600">Hoàn tiền 100% nếu không hài lòng</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-purple-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Hỗ trợ 24/7</h3>
+                    <p class="text-gray-600">Đội ngũ tư vấn chuyên nghiệp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Sản phẩm nổi bật</h2>
+                <p class="text-gray-600">Những sản phẩm được yêu thích nhất</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition featured-product-card">
+                    <div class="relative">
+                        <img src="https://i.imgur.com/gK5pYJ6.jpeg" alt="Rau cải xanh" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">Hữu cơ</span>
+                        <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Rau cải xanh hữu cơ</h3>
+                        <p class="text-gray-600 text-sm mb-3">Tươi ngon, không hóa chất</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-green-600 font-bold text-lg">25,000đ</span>
+                                <span class="text-gray-400 line-through ml-2">30,000đ</span>
+                            </div>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(101, 'Rau cải xanh hữu cơ', 25000)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition featured-product-card">
+                    <div class="relative">
+                        <img src="https://i.imgur.com/w4p7r8q.jpeg" alt="Cà chua cherry" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm">Giảm 20%</span>
+                        <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Cà chua cherry Đà Lạt</h3>
+                        <p class="text-gray-600 text-sm mb-3">Ngọt tự nhiên, giàu vitamin</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-green-600 font-bold text-lg">45,000đ</span>
+                                <span class="text-gray-400 line-through ml-2">55,000đ</span>
+                            </div>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(102, 'Cà chua cherry Đà Lạt', 45000)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition featured-product-card">
+                    <div class="relative">
+                        <img src="https://i.imgur.com/hO5qW7O.jpeg" alt="Táo Fuji" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-sm">Nhập khẩu</span>
+                        <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
+                            <i class="fas fa-heart text-red-500"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Táo Fuji Nhật Bản</h3>
+                        <p class="text-gray-600 text-sm mb-3">Giòn ngọt, chất lượng cao</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-green-600 font-bold text-lg">120,000đ</span>
+                                <span class="text-gray-600 text-sm">/kg</span>
+                            </div>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(103, 'Táo Fuji Nhật Bản', 120000)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition featured-product-card">
+                    <div class="relative">
+                        <img src="https://i.imgur.com/rM1q5gP.jpeg" alt="Gạo hữu cơ" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">Hữu cơ</span>
+                        <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100">
+                            <i class="far fa-heart text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Gạo hữu cơ ST25</h3>
+                        <p class="text-gray-600 text-sm mb-3">Gạo thơm ngon, dinh dưỡng</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-green-600 font-bold text-lg">85,000đ</span>
+                                <span class="text-gray-600 text-sm">/5kg</span>
+                            </div>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(104, 'Gạo hữu cơ ST25', 85000)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <a href="product.html" class="bg-green-500 text-white px-8 py-3 rounded-full hover:bg-green-600 transition">
+                    Xem tất cả sản phẩm
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-green-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-4">Đăng ký nhận tin khuyến mãi</h2>
+            <p class="text-xl mb-8 opacity-90">Nhận thông tin về sản phẩm mới và ưu đãi đặc biệt</p>
+            <div class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Nhập email của bạn" 
+                        class="flex-1 px-4 py-3 rounded-l-full text-gray-800 focus:outline-none">
+                <button class="bg-yellow-500 text-white px-6 py-3 rounded-r-full hover:bg-yellow-600 transition">
+                    Đăng ký
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-leaf text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Green Fresh</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Cung cấp thực phẩm xanh sạch, an toàn cho sức khỏe gia đình Việt.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" class="text-gray-400 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="https://instagram.com" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Sản phẩm</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="product.html" class="hover:text-white">Rau củ quả</a></li>
+                        <li><a href="product.html" class="hover:text-white">Trái cây</a></li>
+                        <li><a href="product.html" class="hover:text-white">Thịt sạch</a></li>
+                        <li><a href="product.html" class="hover:text-white">Hải sản</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Hỗ trợ</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="forgotpassword.html" class="hover:text-white">Liên hệ</a></li>
+                        <li><a href="index.html" class="hover:text-white">Chính sách đổi trả</a></li>
+                        <li><a href="index.html" class="hover:text-white">Hướng dẫn mua hàng</a></li>
+                        <li><a href="index.html" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
+                    <div class="space-y-2 text-gray-400">
+                        <p><i class="fas fa-map-marker-alt mr-2"></i>123 Đường ABC, Quận 1, TP.HCM</p>
+                        <p><i class="fas fa-phone mr-2"></i>0123 456 789</p>
+                        <p><i class="fas fa-envelope mr-2"></i>info@greenfresh.vn</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Green Fresh. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * Hàm thêm sản phẩm vào giỏ hàng (sử dụng localStorage)
+         * @param {number} id - ID duy nhất của sản phẩm
+         * @param {string} name - Tên sản phẩm
+         * @param {number} price - Giá sản phẩm (đơn vị: đ)
+         */
+        function addToCart(id, name, price) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            // Xử lý trường hợp chuỗi chứa ký tự đặc biệt
+            const cleanedName = name.replace(/\\'/g, "'"); 
+            const productIndex = cart.findIndex(item => item.id === id);
+
+            if (productIndex > -1) {
+                // Nếu sản phẩm đã có, tăng số lượng
+                cart[productIndex].quantity += 1;
+            } else {
+                // Nếu sản phẩm chưa có, thêm mới
+                cart.push({
+                    id: id,
+                    name: cleanedName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            alert(`Đã thêm 1 x "${cleanedName}" vào giỏ hàng!`);
+        }
+
+        // Cập nhật số lượng giỏ hàng trên icon
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = document.getElementById('cart-count');
+            // Tính tổng số lượng sản phẩm khác nhau trong giỏ (không phải tổng số lượng item)
+            if (cartCount) cartCount.textContent = cart.length; 
+        }
+        updateCartCount();
+        window.addEventListener('storage', updateCartCount);
+
+        // Hiển thị thông tin đăng nhập hoặc nút đăng nhập/đăng ký
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInfo = document.getElementById('user-info');
+            let user = localStorage.getItem('user');
+            if (user) {
+                user = JSON.parse(user);
+                userInfo.innerHTML = `
+                    <span class="font-semibold text-green-600">${user.email}</span>
+                    <button id="logoutBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-full hover:bg-gray-300 transition">Đăng xuất</button>
+                `;
+                document.getElementById('logoutBtn').onclick = function() {
+                    localStorage.removeItem('user');
+                    location.reload();
+                };
+            } else {
+                userInfo.innerHTML = `
+                    <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
+                    <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
+                `;
+            }
+
+            // Gắn sự kiện cho các nút Mua hàng trên trang sản phẩm (nếu đây là file product.html)
+            // LƯU Ý: Đoạn này cần được đặt trong file product.html nếu đó là file riêng.
+            // Để đảm bảo code chạy được, tôi sẽ đặt giả định cho trang chủ.
+        });
+    </script>
+</body>
+</html>

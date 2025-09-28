@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Admin - Green Fresh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-leaf text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
+                <a href="product.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Sản phẩm</a>
+                <a href="cart.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Giỏ hàng</a>
+                <a href="orders.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Đơn hàng</a>
+            </nav>
+        </div>
+    </header>
+    <script>
+        // Kiểm tra quyền admin
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!user || user.role !== 'admin') {
+            alert('Bạn không có quyền truy cập trang này!');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Quản lý sản phẩm & đơn hàng</h1>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Danh sách sản phẩm</h2>
+                <div id="admin-products" class="space-y-4"></div>
+<!-- Modal chi tiết sản phẩm -->
+<div id="product-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+        <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+        <img id="modal-image" src="" class="w-full h-48 object-cover rounded mb-4" />
+        <h2 id="modal-name" class="text-2xl font-bold mb-2"></h2>
+        <div id="modal-price" class="text-green-600 font-bold mb-2"></div>
+        <div id="modal-desc" class="text-gray-700 mb-2"></div>
+        <div id="modal-category" class="text-sm text-gray-500"></div>
+        <div class="flex space-x-2 mt-4">
+            <button id="edit-product-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sửa</button>
+            <button id="delete-product-btn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Xóa</button>
+        </div>
+<!-- Modal sửa sản phẩm -->
+<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+        <button id="close-edit-modal" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-4">Sửa sản phẩm</h2>
+        <form id="edit-product-form">
+            <input type="hidden" id="edit-id" />
+            <div class="mb-2"><input id="edit-name" class="w-full border rounded px-3 py-2" placeholder="Tên sản phẩm" /></div>
+            <div class="mb-2"><input id="edit-price" class="w-full border rounded px-3 py-2" placeholder="Giá" type="number" /></div>
+            <div class="mb-2"><input id="edit-category" class="w-full border rounded px-3 py-2" placeholder="Danh mục" /></div>
+            <div class="mb-2"><input id="edit-image" class="w-full border rounded px-3 py-2" placeholder="Link hình ảnh" /></div>
+            <div class="mb-2"><textarea id="edit-desc" class="w-full border rounded px-3 py-2" placeholder="Mô tả"></textarea></div>
+            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Lưu</button>
+        </form>
+        <div id="edit-msg" class="mt-2 text-green-600"></div>
+    </div>
+</div>
+    </div>
+</div>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Đơn hàng đã đặt</h2>
+                <div id="admin-orders" class="space-y-4"></div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Hiển thị sản phẩm
+        fetch('/api/products')
+            .then(res => res.json())
+            .then(products => {
+                const list = document.getElementById('admin-products');
+                list.innerHTML = '';
+                products.forEach((p, idx) => {
+                    list.innerHTML += `<div class="bg-white rounded shadow p-4 flex justify-between items-center cursor-pointer" onclick="showProductModal(${idx})">
+                        <div>
+                            <div class="font-semibold">${p.name}</div>
+                            <div class="text-gray-600 text-sm">${p.description || ''}</div>
+                            <div class="text-green-600 font-bold">${p.price}đ</div>
+                        </div>
+                        <img src='${p.image || '/placeholder.svg?height=80&width=120'}' class="w-20 h-16 object-cover rounded" />
+                    </div>`;
+                });
+                window.products = products;
+            });
+
+        // Modal chi tiết sản phẩm
+        function showProductModal(idx) {
+            document.getElementById('edit-product-btn').onclick = function() {
+                document.getElementById('edit-id').value = p.id;
+                document.getElementById('edit-name').value = p.name;
+                document.getElementById('edit-price').value = p.price;
+                document.getElementById('edit-category').value = p.category;
+                document.getElementById('edit-image').value = p.image;
+                document.getElementById('edit-desc').value = p.description;
+                document.getElementById('edit-modal').classList.remove('hidden');
+            };
+            document.getElementById('delete-product-btn').onclick = function() {
+                if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                    fetch(`/api/products/${p.id}`, { method: 'DELETE' })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert('Xóa thất bại!');
+                            }
+                        });
+                }
+            };
+    document.getElementById('close-edit-modal').onclick = function() {
+        document.getElementById('edit-modal').classList.add('hidden');
+    };
+    document.getElementById('edit-product-form').onsubmit = function(e) {
+        e.preventDefault();
+        fetch(`/api/products/${document.getElementById('edit-id').value}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: document.getElementById('edit-name').value,
+                price: document.getElementById('edit-price').value,
+                category: document.getElementById('edit-category').value,
+                image: document.getElementById('edit-image').value,
+                description: document.getElementById('edit-desc').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('edit-msg').textContent = 'Cập nhật thành công!';
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                document.getElementById('edit-msg').textContent = 'Cập nhật thất bại!';
+            }
+        });
+    };
+            const p = window.products[idx];
+            document.getElementById('modal-image').src = p.image || '/placeholder.svg?height=400&width=600';
+            document.getElementById('modal-name').textContent = p.name;
+            document.getElementById('modal-price').textContent = p.price + 'đ';
+            document.getElementById('modal-desc').textContent = p.description || '';
+            document.getElementById('modal-category').textContent = 'Danh mục: ' + (p.category || '');
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+        document.getElementById('close-modal').onclick = function() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+        // Hiển thị đơn hàng
+        fetch('/api/orders')
+            .then(res => res.json())
+            .then(orders => {
+                const orderList = document.getElementById('admin-orders');
+                orderList.innerHTML = '';
+                orders.forEach(order => {
+                    orderList.innerHTML += `<div class="bg-white rounded shadow p-4 mb-2">
+                        <div class="font-semibold mb-2">Đơn hàng #${order.id} - ${order.user_email}</div>
+                        <div class="mb-2">Trạng thái: 
+                            <select onchange="updateOrderStatus(${order.id}, this.value)" class="border rounded px-2 py-1">
+                                <option value="Chờ duyệt" ${order.status==='Chờ duyệt'?'selected':''}>Chờ duyệt</option>
+                                <option value="Đang giao" ${order.status==='Đang giao'?'selected':''}>Đang giao</option>
+                                <option value="Đã giao" ${order.status==='Đã giao'?'selected':''}>Đã giao</option>
+                                <option value="Đã hủy" ${order.status==='Đã hủy'?'selected':''}>Đã hủy</option>
+                            </select>
+                        </div>
+                        <ul class="list-disc ml-6">
+                            ${order.items.map(i => `<li>${i.name} - ${i.price}đ</li>`).join('')}
+                        </ul>
+                        <div class="text-xs text-gray-400 mt-2">${new Date(order.created_at).toLocaleString()}</div>
+                    </div>`;
+                });
+            });
+        window.updateOrderStatus = function(id, status) {
+            fetch(`/api/orders/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) alert('Cập nhật trạng thái thất bại!');
+            });
+        }
+    </script>
+</body>
+</html>
