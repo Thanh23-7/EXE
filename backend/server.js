@@ -207,11 +207,15 @@ app.get('/api/products', (req, res) => {
         else if (price === '3') sql += ' AND price > 100000 AND price <= 200000';
         else if (price === '4') sql += ' AND price > 200000';
     }
-    // Category filter
+    
+    // ⭐️ FIX MÃ HÓA/LỌC: Đảm bảo sử dụng tham số hóa an toàn ⭐️
     if (req.query.category) {
+        // Log ra để kiểm tra chuỗi nhận được từ Frontend (thường là "Hải sản" đã được decode)
+        console.log("Filtering category:", req.query.category); 
         sql += ' AND category = ?';
         params.push(req.query.category);
     }
+    
     // Limit and Exclude (dùng cho gợi ý)
     if (req.query.limit) sql += ` LIMIT ${parseInt(req.query.limit)}`;
     if (req.query.exclude) {
@@ -220,7 +224,12 @@ app.get('/api/products', (req, res) => {
     }
     
     db.all(sql, params, (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            // Log lỗi chi tiết nếu có
+            console.error('Lỗi khi truy vấn sản phẩm:', err.message, 'SQL:', sql, 'Params:', params);
+            // Trả về lỗi 500 để Frontend hiển thị thông báo lỗi
+            return res.status(500).json({ error: 'Lỗi server khi tải sản phẩm: ' + err.message });
+        }
         res.json(rows);
     });
 });
@@ -249,8 +258,14 @@ app.get('/api/products/:id', (req, res) => {
 
 // API: Lấy hành trình sản phẩm
 app.get('/api/products/:product_id/journey', (req, res) => {
+    // ⭐️ FIX: Thêm xử lý lỗi để đảm bảo phản hồi hợp lệ ⭐️
     db.all('SELECT * FROM ProductJourney WHERE product_id = ? ORDER BY timestamp ASC', [req.params.product_id], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error('Lỗi khi tải hành trình sản phẩm:', err.message);
+            // Trả về mảng rỗng hoặc lỗi 500 nếu có lỗi DB thực sự
+            return res.status(500).json({ error: 'Lỗi tải hành trình sản phẩm: ' + err.message });
+        }
+        // Trả về mảng dữ liệu (có thể là rỗng)
         res.json(rows);
     });
 });
@@ -263,6 +278,7 @@ app.post('/api/product-journey', (req, res) => {
         res.json({ id: this.lastID });
     });
 });
+// ... (Các API khác giữ nguyên)
 
 // API: Gửi tin nhắn chat
 app.post('/api/chat/send', (req, res) => {
