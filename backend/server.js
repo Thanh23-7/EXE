@@ -30,28 +30,22 @@ const corsOptions = {
 app.use(cors(corsOptions)); // ⭐️ SỬ DỤNG CORS ⭐️
 app.use(express.json());
 
-// Serve static files (HTML, CSS, JS)
+// Serve static files (HTML, CSS, JS) - CHỈ DÙNG TRONG MÔI TRƯỜNG DEV/MÔI TRƯỜNG CHẠY CÙNG FRONTEND
 app.use(express.static(path.join(__dirname, '..')));
 app.use(session({ secret: 'greenfresh_secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Connect to SQLite database (or create if not exists)
+// Connect to SQLite database
 const db = new sqlite3.Database(path.join(__dirname, 'greenfresh.db'));
 
-// Bảng đơn hàng có trạng thái
+// Tạo bảng DB an toàn hơn (sử dụng lệnh riêng biệt)
 db.run('CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY, user_email TEXT, items TEXT, status TEXT DEFAULT "Chờ duyệt", created_at TEXT)');
-// Simple user table for demo
 db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT UNIQUE, password TEXT, role TEXT DEFAULT "customer")');
-// Bảng đánh giá sản phẩm
 db.run('CREATE TABLE IF NOT EXISTS reviews (id INTEGER PRIMARY KEY, product_id INTEGER, user_email TEXT, rating INTEGER, comment TEXT, created_at TEXT)');
-// Bảng sản phẩm (thêm lại cho đầy đủ)
 db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, price REAL, description TEXT, category TEXT, image TEXT)');
-// Bảng ProductJourney (thêm lại cho đầy đủ)
 db.run('CREATE TABLE IF NOT EXISTS ProductJourney (id INTEGER PRIMARY KEY, product_id INTEGER, stage TEXT, description TEXT, date TEXT, image TEXT)');
-// Bảng PurchaseHistory (thêm lại cho đầy đủ)
 db.run('CREATE TABLE IF NOT EXISTS PurchaseHistory (id INTEGER PRIMARY KEY, user_email TEXT, product_id INTEGER, quantity INTEGER, purchased_at TEXT)');
-// Bảng ChatMessage (thêm lại cho đầy đủ)
 db.run('CREATE TABLE IF NOT EXISTS ChatMessage (id INTEGER PRIMARY KEY, sender TEXT, receiver TEXT, message TEXT, sent_at TEXT)');
 
 // Tạo tài khoản admin mặc định nếu chưa có
@@ -241,27 +235,26 @@ app.post('/api/products', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`GreenFresh backend running at ${BACKEND_BASE_URL}`);
-});
-
-// --- VNPay Payment Integration (Demo structure, fill merchant info to use real) ---
-// SỬ DỤNG BIẾN MÔI TRƯỜNG CHO VNPay
+// --- VNPay Payment Integration ---
 const vnp_TmnCode = process.env.VNP_TMN_CODE; 
 const vnp_HashSecret = process.env.VNP_HASH_SECRET; 
-const vnp_Url = 'https://pay.vnpay.vn/vpcpay.html';
+// ⭐️ FIX: Dùng URL Sandbox nếu đang sử dụng Mã Test 2XQUI4J4 ⭐️
+const vnp_Url = (vnp_TmnCode === '2XQUI4J4') ? 'http://sandbox.vnpayment.vn/paymentv2/vpcpay.html' : 'https://pay.vnpay.vn/vpcpay.html';
 
-// ⭐️ ĐÃ FIX: Đổi URL trả về thành địa chỉ Netlify Frontend ⭐️
+// Đã FIX: Đổi URL trả về thành địa chỉ Netlify Frontend
 const vnp_ReturnUrl = `${NETLIFY_URL}/vnpay_return.html`; 
 
 // API: Tạo link thanh toán VNPay
 app.post('/api/vnpay/create_payment', (req, res) => {
-    if (!vnp_TmnCode || !vnp_HashSecret) {
-        return res.status(500).json({ error: 'Missing VNPAY credentials (VNP_TMN_CODE or VNP_HASH_SECRET) in Environment Variables' });
+    // ⭐️ FIX: Thêm kiểm tra placeholder để báo lỗi rõ ràng hơn ⭐️
+    if (!vnp_TmnCode || !vnp_HashSecret || vnp_TmnCode.startsWith('YOUR_') || vnp_HashSecret.startsWith('YOUR_')) {
+        return res.status(500).json({ error: 'Missing or placeholder VNPAY credentials (VNP_TMN_CODE or VNP_HASH_SECRET) in Environment Variables' });
     }
     
     const { amount, orderId, orderInfo } = req.body;
-    const ipAddr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // Xử lý lấy IP address khi chạy trên Render/Production
+    const ipAddr = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : req.connection.remoteAddress;
+    
     const tmnCode = vnp_TmnCode;
     const secretKey = vnp_HashSecret;
     let vnp_Params = {};
@@ -277,28 +270,26 @@ app.post('/api/vnpay/create_payment', (req, res) => {
     vnp_Params['vnp_ReturnUrl'] = vnp_ReturnUrl; // <-- Đã dùng URL Netlify
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+    
     // Sort params
-    vnp_Params = Object.fromEntries(Object.entries(vnp_Params).sort());
-    // Create querystring
-    const signData = Object.entries(vnp_Params).map(([k, v]) => `${k}=${v}`).join('&');
+    const sortedParams = Object.fromEntries(Object.entries(vnp_Params).sort(([k1], [k2]) => k1.localeCompare(k2)));
+
+    // Create querystring and Hash
+    const signData = Object.entries(sortedParams).map(([k, v]) => `${k}=${v}`).join('&');
     const hmac = crypto.createHmac('sha512', secretKey);
     const signed = hmac.update(signData).digest('hex');
-    vnp_Params['vnp_SecureHash'] = signed;
-    const query = Object.entries(vnp_Params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+    sortedParams['vnp_SecureHash'] = signed;
+    
+    const query = Object.entries(sortedParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
     const paymentUrl = `${vnp_Url}?${query}`;
     res.json({ paymentUrl });
 });
 
-// API: Xử lý callback VNPay (demo, cần xác thực hash khi dùng thật)
-// API này chỉ dành cho SERVER-TO-SERVER (IPN), nhưng ta vẫn giữ lại
+// API: Xử lý callback VNPay (demo)
 app.get('/vnpay_return', (req, res) => {
-    // Logic: VNPay gửi kết quả về Frontend (vnpay_return.html). 
-    // Frontend sẽ gọi một API khác trên Backend để xác thực.
-    // API này (vnpay_return trên Render) có thể chỉ dùng cho IPN (thông báo tức thời).
+    // Frontend sẽ xử lý kết quả trả về từ VNPay qua vnpay_return.html
     res.send('Thanh toán VNPay thành công!');
 });
-
-// ... (Các API còn lại giữ nguyên) ...
 
 // API: Tạo đơn hàng
 app.post('/api/orders', (req, res) => {
@@ -413,4 +404,8 @@ app.post('/api/create-admin', (req, res) => {
         if (err) return res.status(400).json({ error: 'Email đã tồn tại hoặc lỗi' });
         res.json({ success: true, id: this.lastID });
     });
+});
+
+app.listen(PORT, () => {
+    console.log(`GreenFresh backend running at ${BACKEND_BASE_URL}`);
 });
