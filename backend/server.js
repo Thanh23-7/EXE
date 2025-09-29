@@ -102,9 +102,16 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRe
 // Initialize DB from SQL files if empty
 function initializeDB() {
     db.serialize(() => {
-        db.all('SELECT COUNT(*) as count FROM products', (err, rows) => {
-            if (!err && rows[0].count === 0) {
-                // ⭐️ START: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ⭐️
+        // ⭐️ FIX: Bỏ qua kiểm tra COUNT và buộc TẠO LẠI BẢNG PRODUCTS để cập nhật mô tả chi tiết ⭐️
+        db.run('DROP TABLE IF EXISTS products', (err) => {
+            // Recreate table
+            db.run('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, old_price REAL, description TEXT, category TEXT, image TEXT, origin TEXT, weight TEXT, expiry TEXT, storage TEXT, stock INTEGER)', (err) => {
+                if (err) {
+                    console.error("Lỗi khi tạo lại bảng products:", err.message);
+                    return;
+                }
+
+                // ⭐️ START: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ĐẦY ĐỦ ⭐️
                 const sampleProducts = [
                     { 
                         id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, 
@@ -147,31 +154,43 @@ function initializeDB() {
                         category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 
                     },
                 ];
-                // ⭐️ END: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ⭐️
-                
+                // ⭐️ END: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ĐẦY ĐỦ ⭐️
+
+                // Chèn dữ liệu mới vào bảng products rỗng
                 const insertStmt = db.prepare('INSERT INTO products (id, name, price, old_price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 sampleProducts.forEach(p => {
                     insertStmt.run(p.id, p.name, p.price, p.old_price || p.price, p.description, p.category, p.image, p.origin, p.weight, p.expiry, p.storage, p.stock);
                 });
                 insertStmt.finalize();
 
-                // Thêm dữ liệu Hành trình sản phẩm mẫu cho sản phẩm ID=1
-                const journeyStmt = db.prepare('INSERT INTO ProductJourney (product_id, stage, details, timestamp) VALUES (?, ?, ?, ?)');
-                journeyStmt.run(1, 'Gieo hạt', 'Hạt giống hữu cơ được gieo trồng tại nông trại Lâm Đồng.', new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString());
-                journeyStmt.run(1, 'Chăm sóc hữu cơ', 'Sử dụng phân bón hữu cơ và nước sạch được kiểm soát.', new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString());
-                journeyStmt.run(1, 'Thu hoạch', 'Thu hoạch bằng tay vào sáng sớm để đảm bảo độ tươi ngon.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
-                journeyStmt.run(1, 'Đóng gói & Vận chuyển', 'Đóng gói trong bao bì sinh học và vận chuyển về kho lạnh.', new Date().toISOString());
-                journeyStmt.finalize();
+                // ⭐️ Khởi tạo lại dữ liệu mẫu cho Hành trình và Đánh giá ⭐️
                 
+                // Thêm dữ liệu Hành trình sản phẩm mẫu cho sản phẩm ID=1
+                db.run('DROP TABLE IF EXISTS ProductJourney', (err) => {
+                    db.run('CREATE TABLE ProductJourney (id INTEGER PRIMARY KEY, product_id INTEGER, stage TEXT, details TEXT, timestamp TEXT, image TEXT)', (err) => {
+                        const journeyStmt = db.prepare('INSERT INTO ProductJourney (product_id, stage, details, timestamp) VALUES (?, ?, ?, ?)');
+                        journeyStmt.run(1, 'Gieo hạt', 'Hạt giống hữu cơ được gieo trồng tại nông trại Lâm Đồng.', new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString());
+                        journeyStmt.run(1, 'Chăm sóc hữu cơ', 'Sử dụng phân bón hữu cơ và nước sạch được kiểm soát.', new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString());
+                        journeyStmt.run(1, 'Thu hoạch', 'Thu hoạch bằng tay vào sáng sớm để đảm bảo độ tươi ngon.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
+                        journeyStmt.run(1, 'Đóng gói & Vận chuyển', 'Đóng gói trong bao bì sinh học và vận chuyển về kho lạnh.', new Date().toISOString());
+                        journeyStmt.finalize();
+                    });
+                });
+
                 // Thêm đánh giá mẫu cho sản phẩm ID=1
-                const reviewStmt = db.prepare('INSERT INTO reviews (product_id, user_email, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)');
-                reviewStmt.run(1, 'customer1@gmail.com', 5, 'Rau tươi, sạch, rất đáng tiền!', new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString());
-                reviewStmt.run(1, 'customer2@gmail.com', 4, 'Hơi ít, nhưng chất lượng tuyệt vời.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
-                reviewStmt.finalize();
-            }
+                db.run('DROP TABLE IF EXISTS reviews', (err) => {
+                    db.run('CREATE TABLE reviews (id INTEGER PRIMARY KEY, product_id INTEGER, user_email TEXT, rating INTEGER, comment TEXT, created_at TEXT)', (err) => {
+                        const reviewStmt = db.prepare('INSERT INTO reviews (product_id, user_email, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)');
+                        reviewStmt.run(1, 'customer1@gmail.com', 5, 'Rau tươi, sạch, rất đáng tiền!', new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString());
+                        reviewStmt.run(1, 'customer2@gmail.com', 4, 'Hơi ít, nhưng chất lượng tuyệt vời.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
+                        reviewStmt.finalize();
+                    });
+                });
+            });
         });
     });
 }
+// Chạy hàm khởi tạo database
 initializeDB();
 
 // --- API ROUTES ---
