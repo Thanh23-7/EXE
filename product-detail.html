@@ -20,6 +20,8 @@
             background-color: #10B981; border-radius: 50%;
             border: 2px solid white; 
         }
+        /* Đảm bảo nội dung mô tả chi tiết hiển thị đúng */
+        #description-content p, #description-content div { margin-bottom: 1rem; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -222,18 +224,29 @@
                     document.getElementById('breadcrumb-product-name').textContent = productData.name;
                     
                     // 2. Thông tin chính
+                    // Hiển thị mô tả ngắn gọn (chỉ dòng đầu tiên, nếu cần)
+                    const shortDescription = productData.description.split('\n')[0];
                     document.getElementById('product-name-detail').textContent = productData.name;
-                    document.getElementById('product-description').textContent = productData.description;
+                    document.getElementById('product-description').textContent = shortDescription;
                     
                     // 3. Giá
                     const currentPrice = productData.price;
                     // Giá cũ đã có trong DB, nếu không có thì giả định
-                    const oldPrice = productData.old_price || currentPrice * 1.2; 
+                    const oldPrice = productData.old_price || currentPrice * 1.25; 
                     const discountPercentage = Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
                     
                     document.getElementById('current-price').textContent = formatCurrency(currentPrice);
                     document.getElementById('old-price').textContent = formatCurrency(oldPrice);
-                    document.querySelector('.bg-red-100.text-red-800').textContent = `Giảm ${discountPercentage}%`;
+                    // Cập nhật thẻ giảm giá nếu có giảm giá
+                    const discountTag = document.querySelector('.bg-red-100.text-red-800');
+                    if (discountPercentage > 0) {
+                        discountTag.textContent = `Giảm ${discountPercentage}%`;
+                        discountTag.style.display = 'inline-block';
+                        document.getElementById('old-price').style.display = 'inline';
+                    } else {
+                        discountTag.style.display = 'none';
+                        document.getElementById('old-price').style.display = 'none';
+                    }
 
                     // 4. Hình ảnh
                     // Sử dụng trường 'image' theo cấu trúc DB của bạn
@@ -263,12 +276,21 @@
                     `;
                     
                     // 6. Số lượng còn lại 
-                    document.querySelector('.text-gray-600:last-of-type').textContent = `Còn lại: ${productData.stock || '0'} sản phẩm`;
+                    document.querySelector('.text-sm.text-gray-600.mt-4.text-right .font-medium').textContent = `${productData.stock || '0'}`;
 
-                    // FIX LỖI THÔNG TIN CHI TIẾT: Cập nhật nội dung mô tả đầy đủ trong tab
+                    // ⭐️ FIX LỖI HIỂN THỊ MÔ TẢ CHI TIẾT ĐẦY ĐỦ ⭐️
                     if (descriptionContentDiv) {
-                        // Thay thế \n thành <br> để HTML hiểu xuống dòng
-                        const fullDescriptionHtml = (productData.description || 'Không có mô tả chi tiết.').replace(/\n/g, '<br>');
+                        let fullDescriptionText = productData.description || 'Không có mô tả chi tiết.';
+                        
+                        // 1. Xử lý In Đậm Markdown: **text** thành <strong>text</strong>
+                        let fullDescriptionHtml = fullDescriptionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                        // 2. Xử lý Xuống Dòng: Thay thế \n thành <br>
+                        fullDescriptionHtml = fullDescriptionHtml.replace(/\n/g, '<br>');
+                        
+                        // 3. Xử lý List (tùy chọn): Thêm dấu bullet point cho các dòng mới nếu cần (ví dụ: bắt đầu bằng -)
+                        fullDescriptionHtml = fullDescriptionHtml.replace(/<br>\-\s/g, '<br>&bull; ');
+
                         descriptionContentDiv.innerHTML = `
                             <div class="text-gray-700 leading-relaxed space-y-4">
                                 ${fullDescriptionHtml}
@@ -443,12 +465,14 @@
                     }
                     
                     data.forEach(p => {
+                        // Lấy mô tả ngắn gọn cho thẻ gợi ý
+                        const shortDesc = (p.description || '').split('\n')[0];
                         container.innerHTML += `
-                            <div class="card bg-white p-4 flex flex-col items-center text-center">
+                            <div class="card bg-white p-4 flex flex-col items-center text-center rounded-lg shadow-md hover:shadow-xl transition duration-300">
                                 <img src="${p.image || 'https://via.placeholder.com/300x200/cccccc/ffffff?text=Product'}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
                                 <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
                                 <div class="text-green-600 font-semibold mb-2">${formatCurrency(p.price)}</div>
-                                <div class="text-gray-600 text-sm mb-2 line-clamp-2">${p.description}</div>
+                                <div class="text-gray-600 text-sm mb-2 line-clamp-2">${shortDesc}</div>
                                 <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full font-semibold mt-auto bg-green-500 text-white hover:bg-green-600">Xem chi tiết</a>
                             </div>
                         `;
@@ -471,7 +495,6 @@
             
             // 2. Tải các thành phần phụ thuộc
             loadReviews();
-            // renderProductJourney() sẽ được gọi khi click vào tab Journey lần đầu, nhưng ta gọi nó ở đây để tải lần đầu
             renderProductJourney(); 
             loadRecommendedProducts();
             
@@ -481,11 +504,14 @@
 
         // --- Cart Mockup (Basic) ---
         function addToCart() {
-            alert(`Đã thêm ${quantity} sản phẩm '${productData ? productData.name : 'sản phẩm'}' vào giỏ hàng! (Chức năng này cần API giỏ hàng thực tế)`);
+            if (!productData) {
+                alert('Sản phẩm đang tải, vui lòng đợi giây lát.');
+                return;
+            }
+            alert(`Đã thêm ${quantity} sản phẩm '${productData.name}' vào giỏ hàng! (Chức năng này cần API giỏ hàng thực tế)`);
             let currentCartCount = parseInt(document.getElementById('cart-count').textContent);
             document.getElementById('cart-count').textContent = currentCartCount + quantity;
         }
-
     </script>
 </body>
 </html>
