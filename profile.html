@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin cá nhân - Green Fresh</title>
+    <title>Thông Tin Tài Khoản - Green Fresh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Các style giữ nguyên từ bản gốc */
         .bg-gradient-green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .btn-primary { 
             background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
@@ -77,55 +78,104 @@
             
             <div id="alert-message" class="mb-4 hidden p-3 rounded-lg text-sm" role="alert"></div>
 
-            <form id="profile-form">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="mb-5">
-                            <label for="email" class="block text-gray-700 font-medium mb-2">Email (Không thể thay đổi)</label>
-                            <input type="email" id="email" name="email" readonly
-                                class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg focus:outline-none"
-                                placeholder="example@email.com">
-                        </div>
-                        <div class="mb-5">
-                            <label for="displayName" class="block text-gray-700 font-medium mb-2">Tên hiển thị</label>
-                            <input type="text" id="displayName" name="displayName"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                placeholder="Nhập tên của bạn">
-                        </div>
-                        <div class="mb-5">
-                            <label for="phone" class="block text-gray-700 font-medium mb-2">Số điện thoại</label>
-                            <input type="tel" id="phone" name="phone"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                placeholder="090-xxx-xxxx">
-                        </div>
-                    </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="col-span-1 border-r border-gray-200 pr-8">
                     
-                    <div>
-                        <div class="mb-5">
-                            <label for="gender" class="block text-gray-700 font-medium mb-2">Giới tính</label>
-                            <select id="gender" name="gender" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="" disabled selected>Chọn giới tính</option>
-                                <option value="male">Nam</option>
-                                <option value="female">Nữ</option>
-                                <option value="other">Khác</option>
-                            </select>
-                        </div>
-                        <div class="mb-5">
-                            <label for="address" class="block text-gray-700 font-medium mb-2">Địa chỉ</label>
-                            <textarea id="address" name="address" rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                placeholder="Số nhà, tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố"></textarea>
-                        </div>
-                    </div>
+                    <section class="mb-8 text-center">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center justify-center gap-2">
+                             Ảnh đại diện
+                        </h2>
+                        <img id="profile-avatar" src="https://via.placeholder.com/120/10B981/FFFFFF?text=U" alt="Avatar" 
+                             class="w-32 h-32 rounded-full object-cover border-4 border-green-400 shadow-lg mx-auto mb-4">
+                        
+                        <label for="avatar-input" class="cursor-pointer bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition text-sm">
+                            <i class="fas fa-camera mr-2"></i> Chọn Ảnh
+                        </label>
+                        <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                        
+                        <button id="update-avatar-btn" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition text-sm mt-3 hidden">
+                            <i class="fas fa-upload mr-2"></i> Lưu Avatar
+                        </button>
+                        <p id="avatar-status" class="text-xs mt-2 text-gray-500"></p>
+                    </section>
+                    
+                    <hr class="my-6">
+
+                    <section>
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-lock text-red-500"></i> Đổi mật khẩu
+                        </h2>
+                        <form id="password-form">
+                            <div class="mb-3">
+                                <input type="password" id="current-password" placeholder="Mật khẩu hiện tại" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+                            </div>
+                            <div class="mb-4">
+                                <input type="password" id="new-password" placeholder="Mật khẩu mới (ít nhất 6 ký tự)" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+                            </div>
+                            <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition">
+                                Đổi mật khẩu
+                            </button>
+                            <p id="password-status" class="text-xs text-center mt-2 text-red-500"></p>
+                        </form>
+                    </section>
                 </div>
 
-                <div class="flex justify-end mt-8 border-t pt-6">
-                    <button type="submit" class="btn-primary px-8 py-3 rounded-full font-semibold">
-                        <i class="fas fa-save mr-2"></i> Lưu thay đổi
-                    </button>
+                <div class="md:col-span-2">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">Thông tin cơ bản & Giao hàng</h2>
+                    <form id="profile-form">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <h3 class="font-semibold text-lg mb-3 text-green-600"><i class="fas fa-user mr-2"></i> Thông tin cá nhân</h3>
+                                <div class="mb-4">
+                                    <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
+                                    <input type="email" id="email" name="email" readonly
+                                        class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg cursor-not-allowed">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="displayName" class="block text-gray-700 font-medium mb-1">Tên hiển thị</label>
+                                    <input type="text" id="displayName" name="displayName"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                        placeholder="Tên của bạn">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="gender" class="block text-gray-700 font-medium mb-1">Giới tính</label>
+                                    <select id="gender" name="gender" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                                        <option value="" disabled selected>Chọn giới tính</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold text-lg mb-3 text-green-600"><i class="fas fa-truck-fast mr-2"></i> Thông tin giao hàng</h3>
+                                <div class="mb-4">
+                                    <label for="phone" class="block text-gray-700 font-medium mb-1">Số điện thoại</label>
+                                    <input type="tel" id="phone" name="phone"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                        placeholder="Số điện thoại của bạn">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="address" class="block text-gray-700 font-medium mb-1">Địa chỉ giao hàng</label>
+                                    <textarea id="address" name="address" rows="5"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                        placeholder="Số nhà, tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-start mt-8 border-t pt-6">
+                            <button type="submit" class="btn-primary px-8 py-3 rounded-full font-semibold">
+                                <i class="fas fa-save mr-2"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </main>
 
@@ -190,7 +240,6 @@
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartCount = document.getElementById('cart-count');
-            // Tính tổng số lượng sản phẩm
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); 
             if (cartCount) cartCount.textContent = totalItems; 
         }
@@ -213,28 +262,178 @@
                 alertBox.classList.add('hidden');
             }, 5000);
         }
+        
+        // Cập nhật thông tin người dùng trong Header
+        function updateUserInfoHeader(user) {
+             const userInfo = document.getElementById('user-info');
+             userInfo.innerHTML = ''; // Xóa nội dung cũ
+             
+             if (user && user.email) {
+                 const displayName = user.displayName || user.email.split('@')[0];
+                 const avatarUrl = user.avatarUrl || 'https://via.placeholder.com/32/10B981/FFFFFF?text=U'; // Avatar mặc định
+                
+                 userInfo.innerHTML = `
+                     <div class="relative group">
+                         <button class="flex items-center p-2 text-green-700 hover:text-green-500 transition focus:outline-none">
+                             <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full border border-green-300 object-cover">
+                             <span class="hidden md:inline text-base ml-1 font-semibold">${displayName}</span> 
+                             <i class="fas fa-caret-down text-sm ml-1"></i>
+                         </button>
+                         
+                         <div class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
+                                     opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
+                                     transform scale-95 group-hover:scale-100 origin-top-right">
+                             
+                             <div class="px-4 py-2 text-gray-800 border-b border-gray-100 font-bold break-words text-sm">${user.email}</div>
+
+                             <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                 <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
+                             </a>
+                             <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                 <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
+                             </a>
+                             <hr class="my-1">
+                             <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                 <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                             </button>
+                         </div>
+                     </div>
+                 `;
+                 
+                 document.getElementById('logoutBtn').onclick = function() {
+                     localStorage.removeItem('user');
+                     localStorage.removeItem('token'); 
+                     window.location.href = 'index.html'; 
+                 };
+             } else {
+                 userInfo.innerHTML = `
+                     <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
+                     <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition hidden sm:flex items-center justify-center">Đăng ký</a>
+                 `;
+             }
+        }
+        
+        // ⭐️ LOGIC CẬP NHẬT AVATAR (Giả lập) ⭐️
+        function setupAvatarUpdate(user) {
+            const avatarImg = document.getElementById('profile-avatar');
+            const avatarInput = document.getElementById('avatar-input');
+            const updateAvatarBtn = document.getElementById('update-avatar-btn');
+            const avatarStatus = document.getElementById('avatar-status');
+            
+            // Tải ảnh đại diện hiện tại
+            avatarImg.src = user.avatarUrl || 'https://via.placeholder.com/120/10B981/FFFFFF?text=U';
+
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarImg.src = e.target.result;
+                        updateAvatarBtn.classList.remove('hidden');
+                        avatarStatus.textContent = 'Ảnh đã sẵn sàng. Nhấn "Lưu Avatar".';
+                        avatarStatus.classList.remove('text-red-500', 'text-green-500');
+                        avatarStatus.classList.add('text-blue-500');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            updateAvatarBtn.addEventListener('click', function() {
+                // CHỨC NĂNG GIẢ LẬP: Lưu Data URL vào localStorage
+                // Trong thực tế, bạn sẽ gửi file lên API server để lưu trữ.
+                const newAvatarUrl = avatarImg.src; 
+                
+                // Cập nhật localStorage
+                user.avatarUrl = newAvatarUrl;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                updateAvatarBtn.classList.add('hidden');
+                avatarStatus.textContent = 'Cập nhật Avatar thành công! 🎉';
+                avatarStatus.classList.remove('text-red-500', 'text-blue-500');
+                avatarStatus.classList.add('text-green-500');
+                
+                // Cập nhật lại header ngay lập tức
+                updateUserInfoHeader(user);
+            });
+        }
+
+
+        // ⭐️ LOGIC ĐỔI MẬT KHẨU ⭐️
+        function setupPasswordUpdate(token) {
+             document.getElementById('password-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const status = document.getElementById('password-status');
+                status.textContent = 'Đang đổi mật khẩu...';
+                status.classList.remove('text-red-500', 'text-green-500');
+                status.classList.add('text-gray-500');
+
+                const currentPass = document.getElementById('current-password').value;
+                const newPass = document.getElementById('new-password').value;
+
+                if (newPass.length < 6) {
+                    status.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+                    status.classList.remove('text-gray-500');
+                    status.classList.add('text-red-500');
+                    return;
+                }
+                
+                fetch('https://exe-zjbe.onrender.com/api/user/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword: currentPass, newPassword: newPass })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        status.textContent = 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.';
+                        status.classList.remove('text-gray-500', 'text-red-500');
+                        status.classList.add('text-green-500');
+                        
+                        // Xóa token và buộc đăng xuất sau 3 giây
+                        setTimeout(() => {
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('token');
+                            window.location.href = 'login.html';
+                        }, 3000);
+
+                    } else {
+                        status.textContent = data.message || 'Đổi mật khẩu thất bại. Kiểm tra mật khẩu hiện tại.';
+                        status.classList.remove('text-gray-500', 'text-green-500');
+                        status.classList.add('text-red-500');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error changing password:', error);
+                    status.textContent = 'Lỗi kết nối hoặc hệ thống. Vui lòng thử lại.';
+                    status.classList.remove('text-gray-500', 'text-green-500');
+                    status.classList.add('text-red-500');
+                });
+            });
+        }
 
         // Logic chính để tải trang Profile và xử lý đăng nhập
         document.addEventListener('DOMContentLoaded', function() {
-            const userInfo = document.getElementById('user-info');
             const userLocalStorage = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
             let user = null;
 
-            // ⭐️ BƯỚC 1: Xử lý lỗi JSON khi đọc localStorage ⭐️
+            // Xử lý lỗi JSON khi đọc localStorage
             if (userLocalStorage) {
                 try {
                     user = JSON.parse(userLocalStorage);
                 } catch (e) {
-                    console.error("Lỗi phân tích JSON user từ localStorage:", e);
-                    localStorage.removeItem('user'); // Xóa dữ liệu lỗi
-                    user = null; // Bắt buộc chuyển hướng
+                    localStorage.removeItem('user');
+                    user = null;
                 }
             }
 
-            // ⭐️ BƯỚC 2: Kiểm tra đăng nhập và chuyển hướng nếu không hợp lệ ⭐️
-            if (user && user.email) { 
+            // Kiểm tra đăng nhập
+            if (user && user.email && token) { 
                 
-                // --- TẢI DỮ LIỆU VÀO FORM ---
+                // --- 1. TẢI DỮ LIỆU VÀO FORM ---
                 document.getElementById('email').value = user.email || '';
                 document.getElementById('displayName').value = user.displayName || '';
                 document.getElementById('phone').value = user.phone || '';
@@ -243,39 +442,14 @@
                     document.getElementById('gender').value = user.gender;
                 }
 
-                // --- XỬ LÝ HEADER (Dropdown) ---
-                const displayName = user.displayName || user.email.split('@')[0];
-                userInfo.innerHTML = `
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
-                            <i class="fas fa-user-circle text-2xl"></i>
-                            <span class="hidden sm:inline">${displayName}</span>
-                        </button>
-                        
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
-                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
-                                transform scale-95 group-hover:scale-100 origin-top-right">
-                            
-                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
-                                <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
-                            </a>
-                            <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
-                                <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
-                            </a>
-                            <hr class="my-1">
-                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
-                            </button>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('logoutBtn').onclick = function() {
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('token'); 
-                    window.location.href = 'index.html';
-                };
+                // --- 2. XỬ LÝ HEADER ---
+                updateUserInfoHeader(user);
+                
+                // --- 3. SETUP CHỨC NĂNG AVATAR & MẬT KHẨU ---
+                setupAvatarUpdate(user);
+                setupPasswordUpdate(token);
 
-                // --- XỬ LÝ SUBMIT FORM ---
+                // --- 4. XỬ LÝ SUBMIT PROFILE FORM ---
                 document.getElementById('profile-form').onsubmit = function(e) {
                     e.preventDefault();
                     
@@ -289,10 +463,10 @@
                         method: 'PUT',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}` // Cần có token để xác thực
+                            'Authorization': `Bearer ${token}` 
                         },
                         body: JSON.stringify({
-                            email: user.email, 
+                            email: user.email, // Gửi email để xác định người dùng
                             displayName: newDisplayName,
                             phone: newPhone,
                             address: newAddress,
@@ -301,7 +475,6 @@
                     })
                     .then(response => {
                         if (!response.ok) {
-                            // Xử lý lỗi từ server (ví dụ: 401 Unauthorized nếu token hết hạn)
                             if (response.status === 401) {
                                 localStorage.removeItem('user');
                                 localStorage.removeItem('token');
@@ -314,14 +487,19 @@
                     })
                     .then(data => {
                         // Cập nhật lại localStorage sau khi cập nhật thành công
-                        const updatedUser = { ...user, displayName: newDisplayName, phone: newPhone, address: newAddress, gender: newGender };
+                        const updatedUser = { 
+                            ...user, 
+                            displayName: newDisplayName, 
+                            phone: newPhone, 
+                            address: newAddress, 
+                            gender: newGender 
+                        };
                         localStorage.setItem('user', JSON.stringify(updatedUser));
                         
-                        showAlert('Cập nhật hồ sơ thành công!', 'success');
+                        showAlert('Cập nhật hồ sơ thành công! (Tên, SĐT, Địa chỉ)', 'success');
                         
                         // Cập nhật lại tên hiển thị trên header
-                        const newDisplayNameShort = updatedUser.displayName || updatedUser.email.split('@')[0];
-                        userInfo.querySelector('span').textContent = newDisplayNameShort;
+                        updateUserInfoHeader(updatedUser);
                     })
                     .catch(error => {
                         console.error('Lỗi khi cập nhật hồ sơ:', error);
@@ -331,7 +509,6 @@
 
             } else {
                 // Xử lý trường hợp chưa đăng nhập
-                console.warn('Người dùng chưa đăng nhập hoặc dữ liệu user bị lỗi. Chuyển hướng đến trang đăng nhập.');
                 alert('Bạn cần đăng nhập để xem trang thông tin cá nhân.');
                 window.location.href = 'login.html'; 
             }

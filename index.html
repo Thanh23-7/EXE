@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Fresh - Thực phẩm xanh sạch</title>
+    <title>Veggies - Thực phẩm xanh sạch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
@@ -141,7 +141,7 @@
                         return;
                     }
                     container.innerHTML = data.map(p => {
-                        // FIX: Kiểm tra và sử dụng ảnh mặc định (Ảnh mới đã thay thế link cũ) nếu ảnh hỏng
+                        // FIX: Kiểm tra và sử dụng ảnh mặc định nếu ảnh hỏng
                         const imageUrl = p.image && p.image.startsWith('http') ? p.image : 'https://picsum.photos/seed/product/400/200';
                         return `
                             <div class="card bg-white p-4 flex flex-col items-center text-center">
@@ -458,32 +458,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateCartCount(); 
             const userInfo = document.getElementById('user-info');
+            // Đảm bảo xóa nội dung cũ trước khi render lại
+            userInfo.innerHTML = ''; 
+            
             let user = localStorage.getItem('user');
             
             if (user) {
                 try {
                     user = JSON.parse(user);
                 } catch (e) {
-                    // Nếu lỗi JSON, xóa để buộc hiển thị nút Login
                     console.error("Lỗi phân tích JSON user từ localStorage:", e);
                     localStorage.removeItem('user');
                     localStorage.removeItem('token');
                     user = null;
                 }
             }
-            
-            // XÓA CODE CŨ TRƯỚC KHI RENDER MỚI ĐỂ ĐẢM BẢO KHÔNG BỊ TRÙNG
-            userInfo.innerHTML = ''; 
 
             if (user) {
                 // Ưu tiên displayName, nếu không có thì lấy phần đầu email
                 const displayName = user.displayName || user.email.split('@')[0];
+                const avatarUrl = user.avatarUrl || 'https://via.placeholder.com/32/10B981/FFFFFF?text=U'; // Avatar mặc định
                 
                 // CODE TẠO ICON VÀ DROP DOWN
                 userInfo.innerHTML = `
                     <div class="relative group">
                         <button class="flex items-center p-2 text-green-700 hover:text-green-500 transition focus:outline-none">
-                            <i class="fas fa-user-circle text-2xl"></i>
+                            <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full border border-green-300 object-cover">
                             <span class="hidden md:inline text-base ml-1 font-semibold">${displayName}</span> 
                             <i class="fas fa-caret-down text-sm ml-1"></i>
                         </button>
@@ -512,7 +512,6 @@
                 document.getElementById('logoutBtn').onclick = function() {
                     localStorage.removeItem('user');
                     localStorage.removeItem('token'); 
-                    // Chuyển hướng về trang chủ để cập nhật giao diện
                     window.location.href = 'index.html'; 
                 };
             } else {
@@ -526,8 +525,10 @@
 
         // Lắng nghe sự kiện storage (ví dụ: giỏ hàng thay đổi ở trang khác)
         window.addEventListener('storage', (event) => {
-            if (event.key === 'cart') {
+            if (event.key === 'cart' || event.key === 'user') {
                 updateCartCount();
+                // Bắt buộc load lại logic user-info khi có thay đổi user
+                document.dispatchEvent(new Event('DOMContentLoaded')); 
             }
         });
     </script>
