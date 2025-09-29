@@ -105,14 +105,46 @@ function initializeDB() {
         db.all('SELECT COUNT(*) as count FROM products', (err, rows) => {
             if (!err && rows[0].count === 0) {
                 const sampleProducts = [
-                    { id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, description: 'Rau cải xanh hữu cơ được trồng theo phương pháp tự nhiên, không sử dụng hóa chất độc hại. Lá xanh tươi, giòn ngọt, phù hợp cho nhiều món ăn.', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/06/02/18/24/vegetables-2362151_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '500g', expiry: '3-5 ngày', storage: 'Tủ lạnh 2-8°C', stock: 47 },
-                    { id: 2, name: 'Cà chua cherry Đà Lạt', price: 45000, old_price: 50000, description: 'Ngọt tự nhiên, giàu vitamin', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/tomatoes-1238252_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '300g', expiry: '7 ngày', storage: 'Nơi thoáng mát', stock: 120 },
-                    { id: 3, name: 'Táo Fuji Nhật Bản', price: 120000, description: 'Giòn ngọt, chất lượng cao', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256262_1280.jpg', origin: 'Nhật Bản', weight: '1kg', expiry: '10 ngày', storage: 'Tủ lạnh', stock: 65 },
-                    { id: 4, name: 'Gạo hữu cơ ST25', price: 85000, description: 'Gạo thơm ngon, dinh dưỡng', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/rice-2511123_1280.jpg', origin: 'Sóc Trăng', weight: '5kg', expiry: '12 tháng', storage: 'Nơi khô ráo', stock: 80 },
-                    { id: 5, name: 'Thịt bò Úc', price: 220000, description: 'Thịt bò nhập khẩu, mềm ngon', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/beef-1238248_1280.jpg', origin: 'Úc', weight: '500g', expiry: '2 ngày', storage: 'Đông lạnh', stock: 30 },
-                    { id: 6, name: 'Thịt gà ta', price: 90000, description: 'Gà ta thả vườn, chắc thịt', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/chicken-2511125_1280.jpg', origin: 'Việt Nam', weight: '1kg', expiry: '1 ngày', storage: 'Tủ lạnh', stock: 55 },
-                    { id: 7, name: 'Cá hồi Nauy', price: 350000, description: 'Cá hồi tươi, giàu Omega-3', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/salmon-2511126_1280.jpg', origin: 'Nauy', weight: '300g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 20 },
-                    { id: 8, name: 'Tôm sú biển', price: 180000, description: 'Tôm sú tươi sống, ngọt thịt', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 },
+                    { 
+                        id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, 
+                        description: 'Rau cải xanh được trồng theo quy trình **hữu cơ 100%** tại nông trại Lâm Đồng. Chúng tôi cam kết không sử dụng thuốc bảo vệ thực vật hay phân bón hóa học. Sản phẩm có lá xanh đậm, thân giòn, vị ngọt tự nhiên, rất giàu Vitamin A, C và K.\n\n**Cách sử dụng:** Lý tưởng để nấu canh, luộc, xào tỏi hoặc làm món salad trộn. Rửa sạch dưới vòi nước chảy trước khi chế biến.\n\n**Lưu ý bảo quản:** Giữ trong túi kín, để ở ngăn mát tủ lạnh (2-8°C) để duy trì độ tươi ngon tối đa 3-5 ngày.', 
+                        category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/06/02/18/24/vegetables-2362151_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '500g', expiry: '3-5 ngày', storage: 'Tủ lạnh 2-8°C', stock: 47 
+                    },
+                    { 
+                        id: 2, name: 'Cà chua cherry Đà Lạt', price: 45000, old_price: 50000, 
+                        description: 'Cà chua cherry được trồng trong nhà kính tại Đà Lạt, đảm bảo điều kiện thổ nhưỡng và ánh sáng tối ưu. Quả nhỏ, tròn, màu đỏ tươi bắt mắt, có vị ngọt thanh tự nhiên và rất giàu Lycopene, một chất chống oxy hóa mạnh mẽ. Sản phẩm đạt tiêu chuẩn VietGAP.\n\n**Ưu điểm:** Ngọt hơn hẳn cà chua thường, thích hợp ăn sống, làm salad hoặc trang trí món ăn.\n\n**Bảo quản:** Nên để ở nơi thoáng mát ngoài tủ lạnh nếu dùng trong vài ngày. Nếu muốn giữ lâu hơn (trên 1 tuần), hãy cho vào ngăn mát.', 
+                        category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/tomatoes-1238252_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '300g', expiry: '7 ngày', storage: 'Nơi thoáng mát', stock: 120 
+                    },
+                    { 
+                        id: 3, name: 'Táo Fuji Nhật Bản', price: 120000, old_price: 150000,
+                        description: 'Táo Fuji được nhập khẩu trực tiếp từ các vườn trồng tại Nhật Bản, nổi tiếng với độ giòn cao, hương thơm dịu và vị ngọt đậm đà xen lẫn chút chua nhẹ đặc trưng. Táo được thu hoạch đúng độ chín và bảo quản lạnh nghiêm ngặt để giữ trọn dinh dưỡng và độ tươi.\n\n**Dinh dưỡng:** Giàu chất xơ giúp tiêu hóa tốt và cung cấp lượng lớn Vitamin C.\n\n**Khuyến nghị:** Ăn trực tiếp sau khi rửa sạch hoặc dùng để ép nước, làm bánh táo.', 
+                        category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256262_1280.jpg', origin: 'Nhật Bản', weight: '1kg', expiry: '10 ngày', storage: 'Tủ lạnh', stock: 65 
+                    },
+                    { 
+                        id: 4, name: 'Gạo hữu cơ ST25', price: 85000, old_price: 100000,
+                        description: 'Gạo ST25 đạt danh hiệu Gạo ngon nhất thế giới, được trồng theo phương pháp hữu cơ, không sử dụng thuốc trừ sâu hay phân hóa học. Hạt gạo dài, trắng trong, khi nấu cho cơm dẻo, thơm mùi lá dứa tự nhiên. Cơm vẫn giữ được độ mềm dẻo ngay cả khi để nguội.\n\n**Hướng dẫn nấu:** Cho 1 chén gạo với khoảng 0.9 chén nước (tỷ lệ 1:0.9). Không cần vo gạo quá kỹ. Ngâm gạo 15 phút trước khi nấu để cơm được ngon hơn.\n\n**Bảo quản:** Giữ nơi khô ráo, tránh ánh nắng trực tiếp.', 
+                        category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/rice-2511123_1280.jpg', origin: 'Sóc Trăng', weight: '5kg', expiry: '12 tháng', storage: 'Nơi khô ráo', stock: 80 
+                    },
+                    { 
+                        id: 5, name: 'Thịt bò Úc', price: 220000, old_price: 250000,
+                        description: 'Thịt bò thăn ngoại hoặc thăn nội (tùy đợt) được nhập khẩu từ Úc, nơi có quy trình chăn nuôi sạch và khép kín. Thịt có màu đỏ tươi tự nhiên, vân mỡ trắng xen kẽ, đảm bảo độ mềm và hương vị đậm đà khi chế biến. Sản phẩm được cắt miếng và đóng gói hút chân không.\n\n**Chế biến:** Hoàn hảo cho các món nướng (steak), xào, hoặc làm bò lúc lắc. Nên rã đông chậm trong ngăn mát tủ lạnh.\n\n**An toàn:** Đã qua kiểm dịch an toàn thực phẩm nghiêm ngặt của Việt Nam.', 
+                        category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/beef-1238248_1280.jpg', origin: 'Úc', weight: '500g', expiry: '2 ngày', storage: 'Đông lạnh', stock: 30 
+                    },
+                    { 
+                        id: 6, name: 'Thịt gà ta', price: 90000, old_price: 110000,
+                        description: 'Gà ta được nuôi thả vườn tự nhiên tại các trang trại miền quê, đảm bảo vận động thường xuyên nên thịt chắc, da giòn và ít mỡ. Thịt gà không bị bở như gà công nghiệp, giữ trọn vị ngọt tự nhiên của gà ta truyền thống.\n\n**Sử dụng:** Tuyệt vời cho món gà luộc, gà tiềm thuốc bắc, hoặc làm phở gà. Thịt sau khi chế biến sẽ có màu vàng tự nhiên, rất đẹp mắt.\n\n**Thời gian dùng tốt nhất:** Chế biến trong vòng 24 giờ sau khi mua để đảm bảo chất lượng thịt tốt nhất.', 
+                        category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/chicken-2511125_1280.jpg', origin: 'Việt Nam', weight: '1kg', expiry: '1 ngày', storage: 'Tủ lạnh', stock: 55 
+                    },
+                    { 
+                        id: 7, name: 'Cá hồi Nauy', price: 350000, old_price: 380000,
+                        description: 'Cá hồi tươi được đánh bắt và vận chuyển bằng đường hàng không từ Nauy. Đây là nguồn cung cấp dồi dào **Omega-3** (EPA và DHA) có lợi cho tim mạch và trí não. Thịt cá có màu cam hồng tươi sáng, thớ thịt dày, béo ngậy.\n\n**Chế biến:** Có thể dùng ăn sống (sashimi), nướng, áp chảo hoặc làm ruốc cá hồi cho trẻ em.\n\n**Lưu ý:** Chỉ rã đông một lần duy nhất. Không tái cấp đông sản phẩm để đảm bảo dinh dưỡng.', 
+                        category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/salmon-2511126_1280.jpg', origin: 'Nauy', weight: '300g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 20 
+                    },
+                    { 
+                        id: 8, name: 'Tôm sú biển', price: 180000, old_price: 200000,
+                        description: 'Tôm sú được nuôi thả tự nhiên trong môi trường nước lợ hoặc đánh bắt từ biển, đảm bảo chất lượng thịt tươi ngon, dai ngọt. Tôm có kích thước lớn, vỏ xanh đậm, mang lại trải nghiệm ẩm thực cao cấp.\n\n**Chế biến:** Tôm sú hấp bia, nướng muối ớt, hoặc rang me đều rất ngon. Khi tôm chuyển sang màu đỏ gạch là đã chín.\n\n**Tiêu chuẩn:** Sản phẩm được kiểm tra nghiêm ngặt về độ tươi và không sử dụng chất bảo quản.', 
+                        category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 
+                    },
                 ];
                 const insertStmt = db.prepare('INSERT INTO products (id, name, price, old_price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 sampleProducts.forEach(p => {
