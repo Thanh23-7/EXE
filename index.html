@@ -55,48 +55,6 @@
         <i class="fas fa-comments"></i> Chat với admin
     </button>
     
-    <script>
-    document.getElementById('open-chat-btn').onclick = function() {
-        document.getElementById('chat-box').style.display = 'flex';
-        loadChatMessages();
-    };
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    const userEmail = user ? user.email : 'guest';
-    document.getElementById('chat-form').onsubmit = function(e) {
-        e.preventDefault();
-        const msg = document.getElementById('chat-input').value.trim();
-        if (!msg) return;
-        fetch('https://exe-zjbe.onrender.com/api/chat/send', { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sender: userEmail, receiver: 'admin', message: msg })
-        }).then(() => {
-            document.getElementById('chat-input').value = '';
-            loadChatMessages();
-        });
-    };
-    function loadChatMessages() {
-        fetch(`https://exe-zjbe.onrender.com/api/chat/history?user_email=${userEmail}`)
-            .then(res => res.json())
-            .then(data => {
-                const box = document.getElementById('chat-messages');
-                box.innerHTML = '';
-                data.forEach(m => {
-                    box.innerHTML += `<div class="mb-2 flex ${m.sender===userEmail?'justify-end':'justify-start'}">
-                        <div class="px-3 py-2 rounded-lg ${m.sender===userEmail?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'} max-w-[70%]">
-                            <span>${m.message}</span>
-                            <div class="text-xs text-gray-400 mt-1">${m.sender==='admin'?'Admin':'Bạn'} - ${new Date(m.sent_at).toLocaleTimeString()}</div>
-                        </div>
-                    </div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-    }
-    setInterval(() => {
-        if (document.getElementById('chat-box').style.display==='flex') loadChatMessages();
-    }, 5000);
-    </script>
-    
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between py-4">
@@ -421,6 +379,48 @@
     </footer>
 
     <script>
+        // LOGIC CHAT BOX
+        document.getElementById('open-chat-btn').onclick = function() {
+            document.getElementById('chat-box').style.display = 'flex';
+            loadChatMessages();
+        };
+        const userChat = JSON.parse(localStorage.getItem('user') || 'null');
+        const userEmail = userChat ? userChat.email : 'guest';
+        document.getElementById('chat-form').onsubmit = function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('chat-input').value.trim();
+            if (!msg) return;
+            fetch('https://exe-zjbe.onrender.com/api/chat/send', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: userEmail, receiver: 'admin', message: msg })
+            }).then(() => {
+                document.getElementById('chat-input').value = '';
+                loadChatMessages();
+            });
+        };
+        function loadChatMessages() {
+            fetch(`https://exe-zjbe.onrender.com/api/chat/history?user_email=${userEmail}`)
+                .then(res => res.json())
+                .then(data => {
+                    const box = document.getElementById('chat-messages');
+                    box.innerHTML = '';
+                    data.forEach(m => {
+                        box.innerHTML += `<div class="mb-2 flex ${m.sender===userEmail?'justify-end':'justify-start'}">
+                            <div class="px-3 py-2 rounded-lg ${m.sender===userEmail?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'} max-w-[70%]">
+                                <span>${m.message}</span>
+                                <div class="text-xs text-gray-400 mt-1">${m.sender==='admin'?'Admin':'Bạn'} - ${new Date(m.sent_at).toLocaleTimeString()}</div>
+                            </div>
+                        </div>`;
+                    });
+                    box.scrollTop = box.scrollHeight;
+                });
+        }
+        setInterval(() => {
+            if (document.getElementById('chat-box').style.display==='flex') loadChatMessages();
+        }, 5000);
+        // END LOGIC CHAT BOX
+        
         /**
          * Hàm thêm sản phẩm vào giỏ hàng (sử dụng localStorage)
          */
@@ -471,9 +471,10 @@
             }
 
             if (user) {
+                // Ưu tiên displayName, nếu không có thì lấy phần đầu email
                 const displayName = user.displayName || user.email.split('@')[0];
                 
-                // CODE ĐÃ FIX: Dropdown menu Tài khoản
+                // CODE TẠO DROP DOWN VỚI LINK profile.html
                 userInfo.innerHTML = `
                     <div class="relative group">
                         <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
