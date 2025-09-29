@@ -43,8 +43,8 @@ const db = new sqlite3.Database(path.join(__dirname, 'greenfresh.db'));
 db.run('CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY, user_email TEXT, items TEXT, status TEXT DEFAULT "Chờ duyệt", created_at TEXT)');
 db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT UNIQUE, password TEXT, role TEXT DEFAULT "customer")');
 db.run('CREATE TABLE IF NOT EXISTS reviews (id INTEGER PRIMARY KEY, product_id INTEGER, user_email TEXT, rating INTEGER, comment TEXT, created_at TEXT)');
-db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, price REAL, description TEXT, category TEXT, image TEXT)');
-db.run('CREATE TABLE IF NOT EXISTS ProductJourney (id INTEGER PRIMARY KEY, product_id INTEGER, stage TEXT, description TEXT, date TEXT, image TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, price REAL, description TEXT, category TEXT, image TEXT, origin TEXT, weight TEXT, expiry TEXT, storage TEXT, stock INTEGER)');
+db.run('CREATE TABLE IF NOT EXISTS ProductJourney (id INTEGER PRIMARY KEY, product_id INTEGER, stage TEXT, details TEXT, timestamp TEXT, image TEXT)'); // Đổi 'date' thành 'timestamp' và 'description' thành 'details' cho nhất quán
 db.run('CREATE TABLE IF NOT EXISTS PurchaseHistory (id INTEGER PRIMARY KEY, user_email TEXT, product_id INTEGER, quantity INTEGER, purchased_at TEXT)');
 db.run('CREATE TABLE IF NOT EXISTS ChatMessage (id INTEGER PRIMARY KEY, sender TEXT, receiver TEXT, message TEXT, sent_at TEXT)');
 
@@ -105,32 +105,43 @@ function initializeDB() {
         db.all('SELECT COUNT(*) as count FROM products', (err, rows) => {
             if (!err && rows[0].count === 0) {
                 const sampleProducts = [
-                    { name: 'Rau cải xanh hữu cơ', price: 25000, description: 'Tươi ngon, không hóa chất', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/06/02/18/24/vegetables-2362151_1280.jpg' },
-                    { name: 'Cà chua cherry Đà Lạt', price: 45000, description: 'Ngọt tự nhiên, giàu vitamin', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/tomatoes-1238252_1280.jpg' },
-                    { name: 'Táo Fuji Nhật Bản', price: 120000, description: 'Giòn ngọt, chất lượng cao', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256262_1280.jpg' },
-                    { name: 'Gạo hữu cơ ST25', price: 85000, description: 'Gạo thơm ngon, dinh dưỡng', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/rice-2511123_1280.jpg' },
-                    { name: 'Thịt bò Úc', price: 220000, description: 'Thịt bò nhập khẩu, mềm ngon', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/beef-1238248_1280.jpg' },
-                    { name: 'Thịt gà ta', price: 90000, description: 'Gà ta thả vườn, chắc thịt', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/chicken-2511125_1280.jpg' },
-                    { name: 'Cá hồi Nauy', price: 350000, description: 'Cá hồi tươi, giàu Omega-3', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/salmon-2511126_1280.jpg' },
-                    { name: 'Tôm sú biển', price: 180000, description: 'Tôm sú tươi sống, ngọt thịt', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg' },
-                    { name: 'Cam sành miền Tây', price: 40000, description: 'Cam sành mọng nước, giàu vitamin C', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/orange-1238251_1280.jpg' },
-                    { name: 'Chuối Laba Đà Lạt', price: 30000, description: 'Chuối Laba thơm ngon, bổ dưỡng', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/banana-1238253_1280.jpg' },
-                    { name: 'Dưa hấu Long An', price: 25000, description: 'Dưa hấu ngọt mát, giải nhiệt', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/watermelon-1238254_1280.jpg' },
-                    { name: 'Hàu sữa Pháp', price: 60000, description: 'Hàu sữa nhập khẩu, béo ngậy', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/oyster-2511128_1280.jpg' }
+                    { id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, description: 'Rau cải xanh hữu cơ được trồng theo phương pháp tự nhiên, không sử dụng hóa chất độc hại. Lá xanh tươi, giòn ngọt, phù hợp cho nhiều món ăn.', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/06/02/18/24/vegetables-2362151_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '500g', expiry: '3-5 ngày', storage: 'Tủ lạnh 2-8°C', stock: 47 },
+                    { id: 2, name: 'Cà chua cherry Đà Lạt', price: 45000, old_price: 50000, description: 'Ngọt tự nhiên, giàu vitamin', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/tomatoes-1238252_1280.jpg', origin: 'Đà Lạt, Việt Nam', weight: '300g', expiry: '7 ngày', storage: 'Nơi thoáng mát', stock: 120 },
+                    { id: 3, name: 'Táo Fuji Nhật Bản', price: 120000, description: 'Giòn ngọt, chất lượng cao', category: 'Trái cây', image: 'https://cdn.pixabay.com/photo/2014/02/01/17/28/apple-256262_1280.jpg', origin: 'Nhật Bản', weight: '1kg', expiry: '10 ngày', storage: 'Tủ lạnh', stock: 65 },
+                    { id: 4, name: 'Gạo hữu cơ ST25', price: 85000, description: 'Gạo thơm ngon, dinh dưỡng', category: 'Rau củ quả', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/rice-2511123_1280.jpg', origin: 'Sóc Trăng', weight: '5kg', expiry: '12 tháng', storage: 'Nơi khô ráo', stock: 80 },
+                    { id: 5, name: 'Thịt bò Úc', price: 220000, description: 'Thịt bò nhập khẩu, mềm ngon', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2016/03/05/19/02/beef-1238248_1280.jpg', origin: 'Úc', weight: '500g', expiry: '2 ngày', storage: 'Đông lạnh', stock: 30 },
+                    { id: 6, name: 'Thịt gà ta', price: 90000, description: 'Gà ta thả vườn, chắc thịt', category: 'Thịt sạch', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/chicken-2511125_1280.jpg', origin: 'Việt Nam', weight: '1kg', expiry: '1 ngày', storage: 'Tủ lạnh', stock: 55 },
+                    { id: 7, name: 'Cá hồi Nauy', price: 350000, description: 'Cá hồi tươi, giàu Omega-3', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/salmon-2511126_1280.jpg', origin: 'Nauy', weight: '300g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 20 },
+                    { id: 8, name: 'Tôm sú biển', price: 180000, description: 'Tôm sú tươi sống, ngọt thịt', category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 },
                 ];
-                const insertStmt = db.prepare('INSERT INTO products (name, price, description, category, image) VALUES (?, ?, ?, ?, ?)');
+                const insertStmt = db.prepare('INSERT INTO products (id, name, price, old_price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 sampleProducts.forEach(p => {
-                    insertStmt.run(p.name, p.price, p.description, p.category, p.image);
+                    insertStmt.run(p.id, p.name, p.price, p.old_price || p.price, p.description, p.category, p.image, p.origin, p.weight, p.expiry, p.storage, p.stock);
                 });
                 insertStmt.finalize();
+
+                // Thêm dữ liệu Hành trình sản phẩm mẫu cho sản phẩm ID=1
+                const journeyStmt = db.prepare('INSERT INTO ProductJourney (product_id, stage, details, timestamp) VALUES (?, ?, ?, ?)');
+                journeyStmt.run(1, 'Gieo hạt', 'Hạt giống hữu cơ được gieo trồng tại nông trại Lâm Đồng.', new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString());
+                journeyStmt.run(1, 'Chăm sóc hữu cơ', 'Sử dụng phân bón hữu cơ và nước sạch được kiểm soát.', new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString());
+                journeyStmt.run(1, 'Thu hoạch', 'Thu hoạch bằng tay vào sáng sớm để đảm bảo độ tươi ngon.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
+                journeyStmt.run(1, 'Đóng gói & Vận chuyển', 'Đóng gói trong bao bì sinh học và vận chuyển về kho lạnh.', new Date().toISOString());
+                journeyStmt.finalize();
+                
+                // Thêm đánh giá mẫu cho sản phẩm ID=1
+                const reviewStmt = db.prepare('INSERT INTO reviews (product_id, user_email, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)');
+                reviewStmt.run(1, 'customer1@gmail.com', 5, 'Rau tươi, sạch, rất đáng tiền!', new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString());
+                reviewStmt.run(1, 'customer2@gmail.com', 4, 'Hơi ít, nhưng chất lượng tuyệt vời.', new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString());
+                reviewStmt.finalize();
             }
         });
     });
 }
 initializeDB();
-// ... (Các API khác giữ nguyên) ...
 
-// API: Get products with optional price filter
+// --- API ROUTES ---
+
+// API: Get products (Danh sách)
 app.get('/api/products', (req, res) => {
     let sql = 'SELECT * FROM products WHERE 1=1';
     const params = [];
@@ -147,7 +158,44 @@ app.get('/api/products', (req, res) => {
         sql += ' AND category = ?';
         params.push(req.query.category);
     }
+    // Limit and Exclude (dùng cho gợi ý)
+    if (req.query.limit) sql += ` LIMIT ${parseInt(req.query.limit)}`;
+    if (req.query.exclude) {
+        sql += ' AND id != ?';
+        params.push(req.query.exclude);
+    }
+    
     db.all(sql, params, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// ⭐️ API ĐÃ FIX: Lấy chi tiết sản phẩm theo ID ⭐️
+app.get('/api/products/:id', (req, res) => {
+    const productId = req.params.id; 
+    
+    // Sử dụng db.get vì chỉ cần lấy 1 sản phẩm
+    db.get('SELECT * FROM products WHERE id = ?', [productId], (err, row) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: err.message });
+        }
+        
+        if (!row) {
+            // Trả về 404 nếu không tìm thấy
+            return res.status(404).json({ message: 'Không tìm thấy sản phẩm.' });
+        }
+        
+        // Trả về dữ liệu sản phẩm
+        res.json(row);
+    });
+});
+
+
+// API: Lấy hành trình sản phẩm
+app.get('/api/products/:product_id/journey', (req, res) => {
+    db.all('SELECT * FROM ProductJourney WHERE product_id = ? ORDER BY timestamp ASC', [req.params.product_id], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });
@@ -155,8 +203,8 @@ app.get('/api/products', (req, res) => {
 
 // API: Thêm hành trình sản phẩm
 app.post('/api/product-journey', (req, res) => {
-    const { product_id, stage, description, date, image } = req.body;
-    db.run('INSERT INTO ProductJourney (product_id, stage, description, date, image) VALUES (?, ?, ?, ?, ?)', [product_id, stage, description, date, image], function(err) {
+    const { product_id, stage, details, timestamp } = req.body;
+    db.run('INSERT INTO ProductJourney (product_id, stage, details, timestamp) VALUES (?, ?, ?, ?)', [product_id, stage, details, timestamp], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ id: this.lastID });
     });
@@ -180,6 +228,7 @@ app.get('/api/chat/history', (req, res) => {
         res.json(rows);
     });
 });
+
 app.get('/api/recommend-products', (req, res) => {
     // Logic AI: Nếu có user_email, gợi ý sản phẩm cùng loại với sản phẩm user đã mua nhiều nhất
     // Nếu không, gợi ý sản phẩm bán chạy nhất
@@ -221,15 +270,11 @@ app.get('/api/recommend-products', (req, res) => {
         });
     }
 });
-app.get('/api/product-journey/:product_id', (req, res) => {
-    db.all('SELECT * FROM ProductJourney WHERE product_id = ? ORDER BY date ASC', [req.params.product_id], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows);
-    });
-});
+
+
 app.post('/api/products', (req, res) => {
-    const { name, price, description, category, image } = req.body;
-    db.run('INSERT INTO products (name, price, description, category, image) VALUES (?, ?, ?, ?, ?)', [name, price, description, category, image], function(err) {
+    const { name, price, description, category, image, origin, weight, expiry, storage, stock } = req.body;
+    db.run('INSERT INTO products (name, price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [name, price, description, category, image, origin, weight, expiry, storage, stock], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ id: this.lastID });
     });
@@ -322,8 +367,8 @@ app.put('/api/orders/:id', (req, res) => {
 
 // API: Sửa sản phẩm (chỉ admin)
 app.put('/api/products/:id', (req, res) => {
-    const { name, price, description, category, image } = req.body;
-    db.run('UPDATE products SET name = ?, price = ?, description = ?, category = ?, image = ? WHERE id = ?', [name, price, description, category, image, req.params.id], function(err) {
+    const { name, price, description, category, image, origin, weight, expiry, storage, stock } = req.body;
+    db.run('UPDATE products SET name = ?, price = ?, description = ?, category = ?, image = ?, origin = ?, weight = ?, expiry = ?, storage = ?, stock = ? WHERE id = ?', [name, price, description, category, image, origin, weight, expiry, storage, stock, req.params.id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true });
     });
