@@ -21,7 +21,8 @@
             border: 2px solid white; 
         }
         /* Đảm bảo nội dung mô tả chi tiết hiển thị đúng */
-        #description-content p, #description-content div { margin-bottom: 1rem; }
+        /* Sử dụng Tailwind's space-y-4 cho khoảng cách giữa các khối nội dung được tạo từ <br> */
+        #description-content .text-gray-700 { white-space: pre-wrap; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -201,12 +202,12 @@
 
         // --- API Calls ---
 
-        // 0. Load Product Details (ĐÃ FIX LỖI THÔNG TIN CHI TIẾT VÀ API)
+        // 0. Load Product Details (ĐÃ FIX LỖI HIỂN THỊ MÔ TẢ CHI TIẾT)
         async function loadProductDetails() {
             if (!productId) {
-                 document.getElementById('product-name-detail').textContent = 'Lỗi: Không tìm thấy ID sản phẩm';
-                 document.getElementById('product-description').textContent = 'Vui lòng quay lại trang chủ.';
-                 return;
+                document.getElementById('product-name-detail').textContent = 'Lỗi: Không tìm thấy ID sản phẩm';
+                document.getElementById('product-description').textContent = 'Vui lòng quay lại trang chủ.';
+                return;
             }
 
             try {
@@ -224,8 +225,8 @@
                     document.getElementById('breadcrumb-product-name').textContent = productData.name;
                     
                     // 2. Thông tin chính
-                    // Hiển thị mô tả ngắn gọn (chỉ dòng đầu tiên, nếu cần)
-                    const shortDescription = productData.description.split('\n')[0];
+                    // Hiển thị mô tả ngắn gọn (chỉ dòng đầu tiên)
+                    const shortDescription = (productData.description || 'Sản phẩm mới').split('\n')[0];
                     document.getElementById('product-name-detail').textContent = productData.name;
                     document.getElementById('product-description').textContent = shortDescription;
                     
@@ -286,11 +287,24 @@
                         let fullDescriptionHtml = fullDescriptionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
                         // 2. Xử lý Xuống Dòng: Thay thế \n thành <br>
-                        fullDescriptionHtml = fullDescriptionHtml.replace(/\n/g, '<br>');
-                        
-                        // 3. Xử lý List (tùy chọn): Thêm dấu bullet point cho các dòng mới nếu cần (ví dụ: bắt đầu bằng -)
-                        fullDescriptionHtml = fullDescriptionHtml.replace(/<br>\-\s/g, '<br>&bull; ');
+                        // Dùng <p> hoặc <div> cho mỗi đoạn văn cách nhau bằng \n\n (hai lần xuống dòng)
+                        // Giữ lại cách xử lý cũ: Thay thế \n thành <br> (nếu bạn dùng một \n cho xuống dòng trong đoạn)
+                        // Nếu bạn muốn chia đoạn:
+                        let paragraphs = fullDescriptionHtml.split('\n\n');
+                        let finalHtml = paragraphs.map(p => {
+                            // Xử lý các xuống dòng đơn thành <br> trong cùng một đoạn
+                            let lineBreaks = p.trim().replace(/\n/g, '<br>');
+                            // Bọc mỗi đoạn trong thẻ <p> hoặc <div> để tạo khoảng cách
+                            return `<p class="mb-4">${lineBreaks}</p>`;
+                        }).join('');
 
+                        // Cải tiến: Sử dụng **\n** để đảm bảo hiển thị đúng cấu trúc (đã fix ở đây)
+                        // Bọc toàn bộ nội dung trong một thẻ div duy nhất
+                        // Loại bỏ tag <p> ở trên và quay lại xử lý \n -> <br> để dễ dàng kiểm soát Markdown
+                        fullDescriptionHtml = fullDescriptionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        fullDescriptionHtml = fullDescriptionHtml.replace(/\n/g, '<br>'); // Thay thế mọi \n bằng <br>
+                        
+                        // Gán nội dung
                         descriptionContentDiv.innerHTML = `
                             <div class="text-gray-700 leading-relaxed space-y-4">
                                 ${fullDescriptionHtml}
