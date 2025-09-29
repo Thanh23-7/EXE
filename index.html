@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* FIX: Đảm bảo cú pháp CSS chính xác */
+        /* CSS tùy chỉnh */
         .bg-gradient-green {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
@@ -29,12 +29,6 @@
         }
         .card:hover {
             box-shadow: 0 8px 32px rgba(16, 185, 129, 0.18);
-        }
-        /* FIX QUAN TRỌNG: Đảm bảo Dropdown hiển thị khi hover */
-        .group:hover .group-hover\:opacity-100 {
-            opacity: 1 !important;
-            visibility: visible !important;
-            transform: scale(1) !important;
         }
     </style>
 </head>
@@ -136,7 +130,10 @@
             <script>
             // Lấy sản phẩm gợi ý
             fetch('https://exe-zjbe.onrender.com/api/recommend-products')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
                     const container = document.getElementById('recommend-products');
                     if (!data || data.length === 0) {
@@ -156,6 +153,10 @@
                             </div>
                         `;
                     }).join('');
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải sản phẩm gợi ý:", error);
+                    document.getElementById('recommend-products').innerHTML = '<div class="text-red-500 col-span-full">Lỗi: Không thể tải sản phẩm từ máy chủ (Backend). Vui lòng kiểm tra lại kết nối.</div>';
                 });
             </script>
             
@@ -379,7 +380,7 @@
     </footer>
 
     <script>
-        // LOGIC CHAT BOX
+        // LOGIC CHAT BOX (Giữ nguyên)
         document.getElementById('open-chat-btn').onclick = function() {
             document.getElementById('chat-box').style.display = 'flex';
             loadChatMessages();
@@ -453,9 +454,9 @@
             if (cartCount) cartCount.textContent = totalItems; 
         }
         
-        // ⭐️ LOGIC PROFILE DROPDOWN ĐÃ FIX ⭐️
+        // ⭐️ LOGIC PROFILE DROPDOWN ĐÃ FIX VÀ ĐỔI THÀNH ICON ⭐️
         document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount(); // Khởi tạo lại count khi trang load
+            updateCartCount(); 
             const userInfo = document.getElementById('user-info');
             let user = localStorage.getItem('user');
             
@@ -474,19 +475,21 @@
                 // Ưu tiên displayName, nếu không có thì lấy phần đầu email
                 const displayName = user.displayName || user.email.split('@')[0];
                 
-                // CODE TẠO DROP DOWN VỚI LINK profile.html
+                // CODE TẠO ICON VÀ DROP DOWN
                 userInfo.innerHTML = `
                     <div class="relative group">
-                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
+                        <button class="flex items-center p-2 text-green-700 hover:text-green-500 transition focus:outline-none">
                             <i class="fas fa-user-circle text-2xl"></i>
-                            <span class="hidden sm:inline">${displayName}</span>
+                            <span class="hidden sm:inline text-base ml-1 font-semibold">${displayName}</span>
                             <i class="fas fa-caret-down text-sm ml-1"></i>
                         </button>
                         
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
+                        <div class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
                                     opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
                                     transform scale-95 group-hover:scale-100 origin-top-right">
                             
+                            <div class="px-4 py-2 text-gray-800 border-b border-gray-100 font-bold">${user.email}</div>
+
                             <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
                                 <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
                             </a>
@@ -505,13 +508,14 @@
                 document.getElementById('logoutBtn').onclick = function() {
                     localStorage.removeItem('user');
                     localStorage.removeItem('token'); 
-                    location.reload(); // Tải lại trang để cập nhật header
+                    // Chuyển hướng về trang chủ để cập nhật giao diện
+                    window.location.href = 'index.html'; 
                 };
             } else {
                 // Hiển thị nút Đăng nhập / Đăng ký khi chưa đăng nhập
                 userInfo.innerHTML = `
                     <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
-                    <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
+                    <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition hidden sm:flex items-center justify-center">Đăng ký</a>
                 `;
             }
         });
