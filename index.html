@@ -7,26 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* ⭐️ ĐÃ SỬA LỖI CÚ PHÁP CSS TẠI ĐÂY ⭐️ */
         .bg-gradient-green {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
         .btn-primary {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15); /* Thêm dấu chấm phẩy */
             transition: all 0.3s;
         }
         .btn-primary:hover {
             transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
         }
         .card {
             border-radius: 1rem;
-            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.08); /* Thêm dấu chấm phẩy */
             transition: box-shadow 0.3s;
         }
         .card:hover {
-            box-shadow: 0 8px 32px rgba(16,185,129,0.18);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.18);
         }
         /* FIX cho dropdown profile */
         .group:hover .group-hover\:opacity-100 {
@@ -34,6 +35,7 @@
             visibility: visible !important;
             transform: scale(1) !important;
         }
+        /* ⭐️ HẾT PHẦN SỬA LỖI CÚ PHÁP CSS ⭐️ */
     </style>
 </head>
 <body class="bg-gray-50">
@@ -255,9 +257,9 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <span class="text-green-600 font-bold text-lg">25,000đ</span>
-                                <span class="text-gray-400 line-through ml-2">30,000đ</span>
+                                <span class="text-gray-400 line-through ml-2">31,250đ</span>
                             </div>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(101, 'Rau cải xanh hữu cơ', 25000)">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(1, 'Rau cải xanh hữu cơ', 25000)">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -280,7 +282,7 @@
                                 <span class="text-green-600 font-bold text-lg">45,000đ</span>
                                 <span class="text-gray-400 line-through ml-2">55,000đ</span>
                             </div>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(102, 'Cà chua cherry Đà Lạt', 45000)">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(2, 'Cà chua cherry Đà Lạt', 45000)">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -303,7 +305,7 @@
                                 <span class="text-green-600 font-bold text-lg">120,000đ</span>
                                 <span class="text-gray-600 text-sm">/kg</span>
                             </div>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(103, 'Táo Fuji Nhật Bản', 120000)">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(4, 'Táo Fuji Nhật Bản', 120000)">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -326,7 +328,7 @@
                                 <span class="text-green-600 font-bold text-lg">85,000đ</span>
                                 <span class="text-gray-600 text-sm">/5kg</span>
                             </div>
-                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(104, 'Gạo hữu cơ ST25', 85000)">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition" onclick="addToCart(5, 'Gạo hữu cơ ST25', 85000)">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -418,7 +420,8 @@
          */
         function addToCart(id, name, price) {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const cleanedName = name.replace(/\\'/g, "'"); 
+            // Loại bỏ các ký tự đặc biệt có thể gây lỗi cú pháp JSON
+            const cleanedName = name.replace(/\"/g, "'"); 
             const productIndex = cart.findIndex(item => item.id === id);
 
             if (productIndex > -1) {
@@ -441,28 +444,44 @@
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartCount = document.getElementById('cart-count');
-            if (cartCount) cartCount.textContent = cart.length; 
+            // Hiển thị tổng số lượng món hàng
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); 
+            if (cartCount) cartCount.textContent = totalItems; 
         }
-        updateCartCount();
-        window.addEventListener('storage', updateCartCount);
+        
 
-        // FIX: Xử lý hiển thị thông tin đăng nhập và THÊM NÚT PROFILE
+        // FIX TỐI ƯU: Xử lý hiển thị thông tin đăng nhập và Profile Dropdown
         document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount(); // Khởi tạo lại count khi trang load
             const userInfo = document.getElementById('user-info');
             let user = localStorage.getItem('user');
             
             if (user) {
-                user = JSON.parse(user);
+                try {
+                    user = JSON.parse(user);
+                } catch (e) {
+                    console.error("Lỗi phân tích JSON user từ localStorage:", e);
+                    localStorage.removeItem('user');
+                    user = null;
+                }
+            }
+
+            if (user) {
+                // Tên hiển thị ngắn gọn (ưu tiên displayName, sau đó là phần trước @ của email)
+                const displayName = user.displayName || user.email.split('@')[0];
                 
-                // ⭐️ CODE ĐÃ FIX: Thêm dropdown menu Tài khoản ⭐️
+                // CODE ĐÃ FIX TỐI ƯU: Dropdown menu Tài khoản
                 userInfo.innerHTML = `
                     <div class="relative group">
-                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition">
+                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
                             <i class="fas fa-user-circle text-2xl"></i>
-                            <span class="hidden sm:inline">${user.displayName || user.email.split('@')[0]}</span>
+                            <span class="hidden sm:inline">${displayName}</span>
                         </button>
                         
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-200 transform scale-95 group-hover:scale-100 origin-top-right">
+                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
+                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
+                                transform scale-95 group-hover:scale-100 origin-top-right">
+                            
                             <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
                                 <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
                             </a>
@@ -489,6 +508,13 @@
                     <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
                     <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
                 `;
+            }
+        });
+
+        // Lắng nghe sự kiện storage (ví dụ: giỏ hàng thay đổi ở trang khác)
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'cart') {
+                updateCartCount();
             }
         });
     </script>

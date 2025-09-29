@@ -3,256 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin Cá nhân - Organic Shop</title>
+    <title>Thông tin cá nhân - Green Fresh</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .btn-primary {
-            background-color: #10B981; /* green-500 */
-            transition: background-color 0.15s;
+        .bg-gradient-green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .btn-primary { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+            transition: all 0.3s;
         }
         .btn-primary:hover {
-            background-color: #059669; /* green-600 */
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(16,185,129,0.2);
+        }
+        /* FIX cho dropdown profile */
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: scale(1) !important;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-green-600">Organic Shop 🌾</h1>
-            <nav>
-                <a href="product.html" class="text-gray-700 hover:text-green-600 transition">Sản phẩm</a>
-                <a href="cart.html" class="ml-4 text-gray-700 hover:text-green-600 transition">Giỏ hàng</a>
-            </nav>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-green rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold text-green-600 tracking-wide">Green Fresh</span>
+                </a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Trang chủ</a>
+                    <a href="product.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Sản phẩm</a>
+                    <a href="product-detail.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Về chúng tôi</a>
+                    <a href="forgotpassword.html" class="text-gray-700 hover:text-green-600 font-semibold transition">Liên hệ</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden md:block">
+                        <input type="text" placeholder="Tìm kiếm sản phẩm..." 
+                                class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <a href="cart.html">
+                        <button class="relative p-2 text-gray-700 hover:text-green-600">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+                    </a>
+                    <div id="user-info" class="flex items-center space-x-2"></div>
+                </div>
+                <button class="md:hidden p-2 rounded-full hover:bg-green-100">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
         </div>
     </header>
-
     <main class="container mx-auto px-4 py-12">
-        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-2xl">
-            <h2 class="text-4xl font-extrabold text-gray-800 mb-8 text-center border-b pb-4">
-                Thông Tin Tài Khoản
-            </h2>
+        <nav class="text-sm mb-6">
+            <a href="index.html" class="text-gray-500 hover:text-green-600">Trang chủ</a>
+            <span class="mx-2">/</span>
+            <span class="text-green-600 font-semibold">Thông tin cá nhân</span>
+        </nav>
 
-            <div id="profile-msg" class="mt-4 text-center font-semibold">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-bold text-green-700 mb-8 flex items-center">
+                <i class="fas fa-user-circle mr-3"></i> Hồ sơ của tôi
+            </h1>
+            
+            <div id="alert-message" class="mb-4 hidden p-3 rounded-lg text-sm" role="alert"></div>
+
+            <form id="profile-form">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-5">
+                            <label for="email" class="block text-gray-700 font-medium mb-2">Email (Không thể thay đổi)</label>
+                            <input type="email" id="email" name="email" readonly
+                                class="w-full px-4 py-2 border border-gray-300 bg-gray-50 rounded-lg focus:outline-none"
+                                placeholder="example@email.com">
+                        </div>
+                        <div class="mb-5">
+                            <label for="displayName" class="block text-gray-700 font-medium mb-2">Tên hiển thị</label>
+                            <input type="text" id="displayName" name="displayName"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                placeholder="Nhập tên của bạn">
+                        </div>
+                        <div class="mb-5">
+                            <label for="phone" class="block text-gray-700 font-medium mb-2">Số điện thoại</label>
+                            <input type="tel" id="phone" name="phone"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                placeholder="090-xxx-xxxx">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="mb-5">
+                            <label for="gender" class="block text-gray-700 font-medium mb-2">Giới tính</label>
+                            <select id="gender" name="gender" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <option value="" disabled selected>Chọn giới tính</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        <div class="mb-5">
+                            <label for="address" class="block text-gray-700 font-medium mb-2">Địa chỉ</label>
+                            <textarea id="address" name="address" rows="3"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                placeholder="Số nhà, tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-            <section class="mb-10 p-6 border border-gray-100 rounded-lg bg-gray-50">
-                <h3 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
-                    <i class="fas fa-user-edit mr-3"></i> Cập nhật Profile
-                </h3>
-                <form id="updateProfile">
-                    <div class="mb-4">
-                        <label for="email" class="block text-gray-700 font-semibold mb-2">Email (Không thể thay đổi)</label>
-                        <input type="email" id="email" class="w-full border border-gray-300 p-3 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
-                    </div>
-                    <div class="mb-6">
-                        <label for="displayName" class="block text-gray-700 font-semibold mb-2">Tên hiển thị</label>
-                        <input type="text" id="displayName" placeholder="Nhập tên hiển thị của bạn" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-green-500 focus:ring-green-500">
-                    </div>
-                    <button type="submit" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                        Cập nhật thông tin
+                <div class="flex justify-end mt-8 border-t pt-6">
+                    <button type="submit" class="btn-primary px-8 py-3 rounded-full font-semibold">
+                        <i class="fas fa-save mr-2"></i> Lưu thay đổi
                     </button>
-                </form>
-            </section>
-
-            <section class="p-6 border border-gray-100 rounded-lg bg-gray-50">
-                <h3 class="text-2xl font-bold text-red-600 mb-6 flex items-center">
-                    <i class="fas fa-key mr-3"></i> Đổi Mật khẩu
-                </h3>
-                <form id="changePassword">
-                    <div class="mb-4">
-                        <label for="currentPassword" class="block text-gray-700 font-semibold mb-2">Mật khẩu hiện tại</label>
-                        <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-red-500 focus:ring-red-500">
-                    </div>
-                    <div class="mb-6">
-                        <label for="newPassword" class="block text-gray-700 font-semibold mb-2">Mật khẩu mới</label>
-                        <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required class="w-full border border-gray-300 p-3 rounded-lg focus:border-red-500 focus:ring-red-500">
-                    </div>
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 w-full text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md" id="changePassBtn">
-                        Đổi mật khẩu
-                    </button>
-                </form>
-            </section>
-
+                </div>
+            </form>
         </div>
     </main>
-
-    <footer class="bg-gray-800 text-white mt-12 py-6 text-center">
-        <p>&copy; 2024 Organic Shop. Bảo mật & Điều khoản.</p>
-    </footer>
-
-    <script>
-        // --- KHAI BÁO CẤU HÌNH API THẬT ---
-        // SỬ DỤNG BASE URL CHO TẤT CẢ CÁC GỌI API
-        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
-        
-        // ⭐️ FIX: CHỈNH SỬA HÀM GỌI API ĐỂ KHỚP VỚI server.js (Dùng email, không dùng userId) ⭐️
-
-        // --- HÀM GỌI API THẬT: Cập nhật thông tin cá nhân (POST /api/update-profile) ---
-        async function updateProfile(email, newDisplayName) {
-            try {
-                // GỌI API ĐÚNG THEO SERVER.JS: POST /api/update-profile 
-                const response = await fetch(`${API_BASE_URL}/update-profile`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // TRUYỀN email VÀ displayName
-                    body: JSON.stringify({ email: email, displayName: newDisplayName }) 
-                });
-    
-                const data = await response.json();
-    
-                if (!data.success) {
-                    throw new Error(data.error || 'Cập nhật thất bại.');
-                }
+    <footer class="bg-gray-800 text-white py-12 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-leaf text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Green Fresh</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Cung cấp thực phẩm xanh sạch, an toàn cho sức khỏe gia đình Việt.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" class="text-gray-400 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="https://instagram.com" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
                 
-                // Trả về thành công
-                return { success: true, updatedUser: { displayName: newDisplayName } }; 
-    
-            } catch (error) {
-                console.error("Lỗi cập nhật profile:", error);
-                return { success: false, error: error.message || 'Lỗi kết nối máy chủ.' };
-            }
-        }
-    
-        // --- HÀM GỌI API THẬT: Đổi mật khẩu (POST /api/change-password) ---
-        async function changePassword(email, currentPassword, newPassword) {
-            try {
-                // GỌI API ĐÚNG THEO SERVER.JS: POST /api/change-password 
-                const response = await fetch(`${API_BASE_URL}/change-password`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // TRUYỀN email, currentPassword, newPassword
-                    body: JSON.stringify({ email: email, currentPassword, newPassword }) 
-                });
-    
-                const data = await response.json();
-    
-                if (!data.success) {
-                    // Backend trả về message lỗi cụ thể nếu mật khẩu cũ sai
-                    throw new Error(data.error || 'Đổi mật khẩu thất bại.');
-                }
-    
-                return { success: true }; 
-    
-            } catch (error) {
-                console.error("Lỗi đổi mật khẩu:", error);
-                return { success: false, error: error.message || 'Lỗi kết nối máy chủ.' };
-            }
-        }
-        // --- KẾT THÚC HÀM API THẬT ĐÃ FIX ---
-    
-    
-        const profileMsgEl = document.getElementById('profile-msg');
-        const emailInput = document.getElementById('email');
-        const displayNameInput = document.getElementById('displayName');
-        const currentPasswordInput = document.getElementById('currentPassword');
-        const newPasswordInput = document.getElementById('newPassword');
-        const updateBtn = document.querySelector('#updateProfile button[type="submit"]');
-        const changePassBtn = document.querySelector('#changePassword button[type="submit"]');
-    
-        // Kiểm tra trạng thái đăng nhập
-        let user = JSON.parse(localStorage.getItem('user') || 'null');
-        
-        // Chuyển hướng nếu chưa đăng nhập hoặc thiếu thông tin quan trọng
-        // Loại bỏ kiểm tra token vì Backend hiện tại chỉ dùng email/password cho form này
-        if (!user || !user.email) { 
-            window.location.href = 'login.html';
-            return; 
-        }
-    
-        // Hiển thị thông tin cá nhân
-        emailInput.value = user.email;
-        displayNameInput.value = user.displayName || user.email.split('@')[0];
-        
-        /**
-         * Hiển thị thông báo và đặt màu sắc (thành công: xanh, lỗi: đỏ)
-         */
-        function showMessage(message, isSuccess = true) {
-            profileMsgEl.textContent = message;
-            profileMsgEl.className = `mt-4 text-center font-semibold ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
-        }
-    
-        // --- Xử lý Cập nhật thông tin cá nhân ---
-        document.getElementById('updateProfile').onsubmit = async function(e) {
-            e.preventDefault();
-            profileMsgEl.textContent = '';
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Sản phẩm</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="product.html" class="hover:text-white">Rau củ quả</a></li>
+                        <li><a href="product.html" class="hover:text-white">Trái cây</a></li>
+                        <li><a href="product.html" class="hover:text-white">Thịt sạch</a></li>
+                        <li><a href="product.html" class="hover:text-white">Hải sản</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Hỗ trợ</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="forgotpassword.html" class="hover:text-white">Liên hệ</a></li>
+                        <li><a href="index.html" class="hover:text-white">Chính sách đổi trả</a></li>
+                        <li><a href="index.html" class="hover:text-white">Hướng dẫn mua hàng</a></li>
+                        <li><a href="index.html" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
+                    <div class="space-y-2 text-gray-400">
+                        <p><i class="fas fa-map-marker-alt mr-2"></i>123 Đường ABC, Quận 1, TP.HCM</p>
+                        <p><i class="fas fa-phone mr-2"></i>0123 456 789</p>
+                        <p><i class="fas fa-envelope mr-2"></i>info@greenfresh.vn</p>
+                    </div>
+                </div>
+            </div>
             
-            const newDisplayName = displayNameInput.value.trim();
-    
-            if (newDisplayName.length < 3) {
-                return showMessage('Tên hiển thị phải ít nhất 3 ký tự.', false);
-            }
-    
-            if (newDisplayName === user.displayName) {
-                return showMessage('Không có thông tin nào được thay đổi.', true);
-            }
-    
-            // Bắt đầu Loading
-            updateBtn.textContent = 'Đang cập nhật...';
-            updateBtn.disabled = true;
-    
-            // GỌI API THẬT (Dùng email)
-            const data = await updateProfile(user.email, newDisplayName);
-    
-            // Kết thúc Loading
-            updateBtn.textContent = 'Cập nhật thông tin';
-            updateBtn.disabled = false;
-    
-            if (data.success) {
-                // Cập nhật user trong localStorage (Frontend)
-                user.displayName = data.updatedUser.displayName; 
-                localStorage.setItem('user', JSON.stringify(user));
-                showMessage('Cập nhật thông tin thành công! 🎉', true);
-            } else {
-                showMessage(data.error || 'Có lỗi xảy ra khi cập nhật!', false);
-            }
-        };
-    
-        // --- Xử lý Đổi mật khẩu ---
-        document.getElementById('changePassword').onsubmit = async function(e) {
-            e.preventDefault();
-            profileMsgEl.textContent = '';
-    
-            const currentPassword = currentPasswordInput.value;
-            const newPassword = newPasswordInput.value;
-    
-            // Validation cơ bản
-            if (!currentPassword || !newPassword) {
-                return showMessage('Vui lòng điền đầy đủ Mật khẩu hiện tại và Mật khẩu mới.', false);
-            }
-            if (newPassword.length < 6) {
-                return showMessage('Mật khẩu mới phải có ít nhất 6 ký tự.', false);
-            }
-    
-            // Bắt đầu Loading
-            changePassBtn.textContent = 'Đang xử lý...';
-            changePassBtn.disabled = true;
-    
-            // GỌI API THẬT (Dùng email)
-            const data = await changePassword(user.email, currentPassword, newPassword);
-    
-            // Kết thúc Loading
-            changePassBtn.textContent = 'Đổi mật khẩu';
-            changePassBtn.disabled = false;
-    
-            if (data.success) {
-                // Thao tác bảo mật: Yêu cầu đăng nhập lại sau khi đổi mật khẩu
-                showMessage('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', true);
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Green Fresh. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Cập nhật số lượng giỏ hàng trên icon
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) cartCount.textContent = cart.length; 
+        }
+        updateCartCount();
+        window.addEventListener('storage', updateCartCount);
+
+        // Hiển thị thông tin đăng nhập và Profile Dropdown (Sử dụng lại code đã fix)
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInfo = document.getElementById('user-info');
+            let user = localStorage.getItem('user');
+            
+            if (user) {
+                user = JSON.parse(user);
                 
-                currentPasswordInput.value = '';
-                newPasswordInput.value = '';
-    
-                // Tự động Logout sau 2 giây
-                setTimeout(() => {
+                // Tên hiển thị ngắn gọn
+                const displayName = user.displayName || user.email.split('@')[0];
+                
+                // Dropdown menu Tài khoản
+                userInfo.innerHTML = `
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <span class="hidden sm:inline">${displayName}</span>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
+                                    opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
+                                    transform scale-95 group-hover:scale-100 origin-top-right">
+                            
+                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
+                            </a>
+                            <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
+                            </a>
+                            <hr class="my-1">
+                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Thêm sự kiện cho nút Đăng xuất
+                document.getElementById('logoutBtn').onclick = function() {
                     localStorage.removeItem('user');
-                    localStorage.removeItem('token'); // Xóa token
-                    window.location.href = 'login.html'; // Chuyển hướng đến trang đăng nhập
-                }, 2000); 
+                    localStorage.removeItem('token'); 
+                    window.location.href = 'index.html'; // Chuyển về trang chủ sau khi đăng xuất
+                };
+
+                // ⭐️ Xử lý Profile Form ⭐️
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('displayName').value = user.displayName || '';
+                document.getElementById('phone').value = user.phone || '';
+                document.getElementById('address').value = user.address || '';
+                if (user.gender) {
+                    document.getElementById('gender').value = user.gender;
+                }
+
+                document.getElementById('profile-form').onsubmit = function(e) {
+                    e.preventDefault();
+                    
+                    const newDisplayName = document.getElementById('displayName').value;
+                    const newPhone = document.getElementById('phone').value;
+                    const newAddress = document.getElementById('address').value;
+                    const newGender = document.getElementById('gender').value;
+
+                    // 1. Gửi thông tin lên Backend (API endpoint thay thế bằng API của bạn)
+                    fetch('https://exe-zjbe.onrender.com/api/users/update-profile', { 
+                        method: 'PUT',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            email: user.email, // Gửi email để xác định user
+                            displayName: newDisplayName,
+                            phone: newPhone,
+                            address: newAddress,
+                            gender: newGender
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.message || 'Lỗi cập nhật hồ sơ'); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 2. Cập nhật lại localStorage sau khi cập nhật thành công
+                        const updatedUser = { ...user, displayName: newDisplayName, phone: newPhone, address: newAddress, gender: newGender };
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                        
+                        showAlert('Cập nhật hồ sơ thành công!', 'success');
+                        
+                        // Cập nhật lại tên hiển thị trên header
+                        const newDisplayNameShort = updatedUser.displayName || updatedUser.email.split('@')[0];
+                        userInfo.querySelector('span').textContent = newDisplayNameShort;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi cập nhật hồ sơ:', error);
+                        showAlert(error.message || 'Đã xảy ra lỗi trong quá trình cập nhật.', 'error');
+                    });
+                };
+
             } else {
-                showMessage(data.error || 'Đổi mật khẩu thất bại.', false);
+                // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+                alert('Vui lòng đăng nhập để xem thông tin cá nhân.');
+                window.location.href = 'login.html';
             }
-        };
+        });
+
+        // Hàm hiển thị thông báo
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alert-message');
+            alertBox.textContent = message;
+            alertBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
+            
+            if (type === 'success') {
+                alertBox.classList.add('bg-green-100', 'text-green-800');
+            } else {
+                alertBox.classList.add('bg-red-100', 'text-red-800');
+            }
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 5000);
+        }
     </script>
 </body>
 </html>
