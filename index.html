@@ -108,7 +108,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="relative hidden md:block">
                         <input type="text" placeholder="Tìm kiếm sản phẩm..." 
-                                class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                                 class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
                         <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                     </div>
                     <a href="cart.html">
@@ -183,7 +183,7 @@
                             <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
                             <div class="text-green-600 font-semibold mb-2">${p.price.toLocaleString()}đ</div>
                             <div class="text-gray-600 text-sm mb-2">${p.description}</div>
-                            <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})">Xem chi tiết</a>
+                            <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto">Xem chi tiết</a>
                         </div>
                     `).join('');
                 });

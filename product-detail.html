@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rau cải xanh hữu cơ - Green Fresh</title>
+    <title id="page-title">Đang tải chi tiết sản phẩm...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -85,64 +85,52 @@
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 <a href="products.html" class="text-gray-500 hover:text-green-600">Sản phẩm</a>
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
-                <span class="text-gray-800" id="breadcrumb-product-name">Rau cải xanh hữu cơ</span>
+                <span class="text-gray-800" id="breadcrumb-product-name">Đang tải...</span>
             </nav>
         </div>
     </div>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="grid lg:grid-cols-2 gap-12">
+        <div class="grid lg:grid-cols-2 gap-12" id="product-detail-container">
             <div>
                 <div class="mb-4">
-                    <img src="https://via.placeholder.com/500x400/10b981/ffffff?text=Cai+Xanh+Huu+Co" alt="Rau cải xanh hữu cơ" 
-                          class="w-full h-96 object-cover rounded-lg shadow-md" id="mainImage">
+                    <img src="https://via.placeholder.com/500x400/9CA3AF/ffffff?text=Loading..." alt="Hình ảnh sản phẩm" 
+                        class="w-full h-96 object-cover rounded-lg shadow-md" id="mainImage">
                 </div>
-                <div class="grid grid-cols-4 gap-2">
-                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb1" alt="Thumbnail 1" 
-                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-green-500">
-                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb2" alt="Thumbnail 2" 
-                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
-                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb3" alt="Thumbnail 3" 
-                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
-                    <img src="https://via.placeholder.com/100x100/10b981/ffffff?text=Thumb4" alt="Thumbnail 4" 
+                <div class="grid grid-cols-4 gap-2" id="thumbnail-gallery">
+                    <img src="https://via.placeholder.com/100x100/9CA3AF/ffffff?text=Thumb1" alt="Thumbnail 1" 
+                          class="w-full h-20 object-cover rounded cursor-pointer border-2 border-gray-300">
+                    <img src="https://via.placeholder.com/100x100/9CA3AF/ffffff?text=Thumb2" alt="Thumbnail 2" 
                           class="w-full h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-green-500">
                 </div>
             </div>
 
             <div>
-                <div class="mb-4">
-                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Hữu cơ</span>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium ml-2">Tươi ngon</span>
+                <div class="mb-4" id="product-tags">
+                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">Đang tải tag...</span>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-800 mb-4" id="product-name-detail">Rau cải xanh hữu cơ</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4" id="product-name-detail">Đang tải tên sản phẩm...</h1>
                 
                 <div class="flex items-center mb-4">
                     <div class="flex text-yellow-400 mr-2" id="product-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <span class="text-gray-600">(4.9) • <span id="review-count">124</span> đánh giá</span>
+                        </div>
+                    <span class="text-gray-600">(<span id="average-rating">...</span>) • <span id="review-count">...</span> đánh giá</span>
                 </div>
 
                 <div class="mb-6">
                     <div class="flex items-center space-x-4">
-                        <span class="text-3xl font-bold text-green-600" id="current-price">25,000đ</span>
-                        <span class="text-xl text-gray-400 line-through" id="old-price">30,000đ</span>
-                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Giảm 17%</span>
+                        <span class="text-3xl font-bold text-green-600" id="current-price">...</span>
+                        <span class="text-xl text-gray-400 line-through" id="old-price">...</span>
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm" id="discount-label"></span>
                     </div>
-                    <p class="text-gray-600 mt-1">Giá đã bao gồm VAT / Đơn vị: 500g</p>
+                    <p class="text-gray-600 mt-1" id="price-unit">Đơn vị: ...</p>
                 </div>
 
                 <div class="mb-6">
                     <h3 class="font-semibold mb-2">Mô tả sản phẩm:</h3>
                     <p class="text-gray-700 leading-relaxed" id="product-description">
-                        Rau cải xanh hữu cơ được trồng theo phương pháp tự nhiên, không sử dụng 
-                        hóa chất độc hại. Giàu vitamin A, C, K và các khoáng chất thiết yếu. 
-                        Lá xanh tươi, giòn ngọt, phù hợp cho nhiều món ăn.
+                        Đang tải mô tả...
                     </p>
                 </div>
 
@@ -151,19 +139,19 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Xuất xứ:</span>
-                            <span class="font-medium">Đà Lạt, Việt Nam</span>
+                            <span class="font-medium" id="product-origin">...</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Trọng lượng:</span>
-                            <span class="font-medium">500g</span>
+                            <span class="font-medium" id="product-weight">...</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Hạn sử dụng:</span>
-                            <span class="font-medium">3-5 ngày</span>
+                            <span class="font-medium" id="product-expiry">...</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Bảo quản:</span>
-                            <span class="font-medium">Tủ lạnh 2-8°C</span>
+                            <span class="font-medium" id="product-storage">...</span>
                         </div>
                     </div>
                 </div>
@@ -176,7 +164,7 @@
                             <span class="px-4 py-2 border-l border-r border-gray-300" id="quantity">1</span>
                             <button class="px-3 py-2 hover:bg-gray-100" onclick="increaseQuantity()">+</button>
                         </div>
-                        <span class="text-gray-600">Còn lại: 47 sản phẩm</span>
+                        <span class="text-gray-600" id="product-stock">Còn lại: ... sản phẩm</span>
                     </div>
                 </div>
 
@@ -231,25 +219,10 @@
             </div>
             
             <div class="py-8" id="detail-content">
-                <div class="prose max-w-none">
+                <div class="prose max-w-none" id="detailed-description-container">
                     <h3 class="text-xl font-semibold mb-4 text-gray-700">Thông tin chi tiết về sản phẩm</h3>
                     <p class="mb-4">
-                        Rau cải xanh hữu cơ của chúng tôi được trồng tại các trang trại hữu cơ 
-                        được chứng nhận tại Đà Lạt, nơi có khí hậu mát mẻ và đất đai màu mỡ 
-                        lý tưởng cho việc trồng rau xanh.
-                    </p>
-                    <h4 class="text-lg font-semibold mb-2 text-green-700">Giá trị dinh dưỡng:</h4>
-                    <ul class="list-disc list-inside mb-4 space-y-1">
-                        <li>Giàu **vitamin A**: Tốt cho mắt và da</li>
-                        <li>**Vitamin C**: Tăng cường hệ miễn dịch</li>
-                        <li>**Vitamin K**: Hỗ trợ đông máu và xương khớp</li>
-                        <li>**Folate**: Quan trọng cho phụ nữ mang thai</li>
-                        <li>**Chất xơ**: Hỗ trợ tiêu hóa</li>
-                    </ul>
-                    <h4 class="text-lg font-semibold mb-2 text-green-700">Cách sử dụng:</h4>
-                    <p>
-                        Có thể chế biến thành nhiều món ăn như xào, luộc, nấu canh, làm salad. 
-                        Nên rửa sạch trước khi sử dụng và bảo quản trong tủ lạnh.
+                        Đang tải thông tin chi tiết...
                     </p>
                 </div>
             </div>
@@ -310,11 +283,15 @@
     <script>
         const API_BASE_URL = 'https://exe-zjbe.onrender.com/api';
         
-        // Lấy product_id từ URL hoặc gán cứng cho demo
+        // LẤY PRODUCT ID TỪ URL - KHÔNG GÁN CỨNG NỮA
         const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id') || '1'; // Giả định product ID là 1 cho demo
+        // BỎ GÁN CỨNG: nếu không có ID, productId sẽ là null, và loadProductDetail() sẽ báo lỗi.
+        const productId = urlParams.get('id'); 
         
         let quantity = 1;
+
+        // Lưu trữ dữ liệu sản phẩm hiện tại để sử dụng trong addToCart()
+        let currentProductData = null;
 
         // Helper function to format currency (VND)
         function formatCurrency(amount) {
@@ -337,7 +314,7 @@
         // --- Tab Switching ---
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons and hide all content
+                // ... (logic chuyển tab giữ nguyên)
                 document.querySelectorAll('.tab-button').forEach(btn => {
                     btn.classList.remove('border-green-500', 'text-green-600');
                     btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700');
@@ -346,7 +323,6 @@
                     content.classList.add('hidden');
                 });
 
-                // Add active class to the clicked button and show target content
                 const targetId = button.getAttribute('data-target');
                 button.classList.add('border-green-500', 'text-green-600');
                 button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700');
@@ -367,7 +343,6 @@
                 authButton.href = 'login.html';
             }
         }
-        checkAuth();
 
         // --- Render Star Rating ---
         function renderStars(rating) {
@@ -382,12 +357,95 @@
             
             return html;
         }
-        document.getElementById('product-rating').innerHTML = renderStars(4.9); // Giữ hardcode cho rating tổng
 
-        // --- API Calls ---
+        // =======================================================
+        //                 HÀM TẢI CHI TIẾT SẢN PHẨM (FIX)
+        // =======================================================
+        async function loadProductDetail() {
+            const container = document.getElementById('product-detail-container');
+            const productNameDetail = document.getElementById('product-name-detail');
+
+            if (!productId) {
+                productNameDetail.textContent = 'Lỗi: Không tìm thấy ID sản phẩm trong URL.';
+                container.innerHTML = '<div class="text-center text-red-500 py-20">Vui lòng kiểm tra lại liên kết sản phẩm.</div>';
+                return;
+            }
+
+            productNameDetail.textContent = 'Đang tải...';
+            document.getElementById('page-title').textContent = 'Đang tải...';
+            
+            try {
+                // API endpoint của bạn là 'https://exe-zjbe.onrender.com/api'
+                const response = await fetch(`${API_BASE_URL}/products/${productId}`);
+                
+                if (response.ok) {
+                    const product = await response.json();
+                    currentProductData = product; // Lưu dữ liệu sản phẩm
+
+                    // 1. CẬP NHẬT THÔNG TIN TĨNH BỊ GÁN CỨNG TRONG HTML
+                    
+                    // Header và Breadcrumb
+                    document.getElementById('page-title').textContent = `${product.name} - Green Fresh`;
+                    document.getElementById('breadcrumb-product-name').textContent = product.name;
+                    
+                    // Khu vực thông tin chính
+                    productNameDetail.textContent = product.name;
+                    document.getElementById('mainImage').src = product.image || 'https://via.placeholder.com/500x400/10b981/ffffff?text=' + product.name.replace(/ /g, '+');
+                    document.getElementById('product-description').textContent = product.description;
+
+                    // Giá
+                    const oldPrice = product.old_price || product.price * 1.2;
+                    const discount = 1 - (product.price / oldPrice);
+                    document.getElementById('current-price').textContent = formatCurrency(product.price);
+                    document.getElementById('old-price').textContent = formatCurrency(oldPrice);
+                    document.getElementById('discount-label').textContent = `Giảm ${Math.round(discount * 100)}%`;
+                    document.getElementById('price-unit').textContent = `Giá đã bao gồm VAT / Đơn vị: ${product.unit || '500g'}`;
+
+                    // Thông tin chi tiết
+                    document.getElementById('product-origin').textContent = product.origin || 'Không rõ';
+                    document.getElementById('product-weight').textContent = product.unit || 'N/A';
+                    document.getElementById('product-expiry').textContent = product.expiry || 'N/A';
+                    document.getElementById('product-storage').textContent = product.storage || 'N/A';
+                    document.getElementById('product-stock').textContent = `Còn lại: ${product.stock || 0} sản phẩm`;
+                    
+                    // Tag (ví dụ: 'Hữu cơ')
+                    const tagsHtml = (product.tags || []).map(tag => 
+                        `<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">${tag}</span>`
+                    ).join('');
+                    document.getElementById('product-tags').innerHTML = tagsHtml || '';
+
+                    // Mô tả chi tiết tab đầu tiên (ví dụ gán lại mô tả chi tiết từ API)
+                    document.getElementById('detailed-description-container').innerHTML = `
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Thông tin chi tiết về sản phẩm</h3>
+                        <p class="mb-4">
+                            ${product.detailed_description || product.description}
+                        </p>
+                        <h4 class="text-lg font-semibold mb-2 text-green-700">Giá trị dinh dưỡng:</h4>
+                        <ul class="list-disc list-inside mb-4 space-y-1">
+                            ${(product.nutritional_info || ['Đang cập nhật...']).map(info => `<li>${info}</li>`).join('')}
+                        </ul>
+                    `;
+
+
+                    // 2. KHỞI CHẠY TẢI CÁC DỮ LIỆU PHỤ (Reviews, Journey, Recommendations)
+                    loadReviews();
+                    // renderProductJourney(); // Khởi chạy khi người dùng nhấn tab
+                    loadRecommendedProducts();
+
+                } else {
+                    productNameDetail.textContent = 'Sản phẩm không tồn tại.';
+                    container.innerHTML = '<div class="text-center text-red-500 py-20">Không tìm thấy thông tin sản phẩm này.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading product detail:', error);
+                productNameDetail.textContent = 'Lỗi kết nối server.';
+                container.innerHTML = '<div class="text-center text-red-500 py-20">Lỗi kết nối mạng hoặc server không phản hồi.</div>';
+            }
+        }
 
         // 1. Load Reviews
         async function loadReviews() {
+            // ... (Logic load Reviews giữ nguyên, nhưng giờ đã có productId đúng)
             const reviewList = document.getElementById('review-list');
             reviewList.innerHTML = '<div class="text-center text-gray-500 py-10">Đang tải đánh giá...</div>';
             
@@ -404,6 +462,12 @@
                         return;
                     }
                     
+                    // Tính rating trung bình
+                    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+                    const avgRating = (totalRating / reviews.length).toFixed(1);
+                    document.getElementById('average-rating').textContent = avgRating;
+                    document.getElementById('product-rating').innerHTML = renderStars(parseFloat(avgRating));
+
                     reviews.forEach(r => {
                         const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
                         reviewList.innerHTML += `
@@ -429,6 +493,7 @@
         // 2. Submit Review
         document.getElementById('review-form').onsubmit = async function(e) {
             e.preventDefault();
+            // ... (Logic submit review giữ nguyên)
             const user = JSON.parse(localStorage.getItem('user') || 'null');
             const token = localStorage.getItem('token');
             const reviewMessage = document.getElementById('review-message');
@@ -438,6 +503,7 @@
             if (!user || !token) {
                 reviewMessage.textContent = 'Bạn cần đăng nhập để đánh giá!';
                 reviewMessage.classList.add('text-red-500');
+                reviewMessage.classList.remove('hidden');
                 return;
             }
 
@@ -475,10 +541,12 @@
                 reviewMessage.textContent = 'Lỗi kết nối mạng hoặc server!';
                 reviewMessage.classList.add('text-red-500');
             }
+            reviewMessage.classList.remove('hidden');
         };
 
         // 3. Load Product Journey
         async function renderProductJourney() {
+            // ... (Logic render Product Journey giữ nguyên)
             const journeyTimeline = document.getElementById('journey-timeline');
             journeyTimeline.innerHTML = '<div class="text-center text-gray-500 py-10">Đang tải thông tin hành trình...</div>';
 
@@ -519,6 +587,7 @@
 
         // 4. Load Recommended Products
         async function loadRecommendedProducts() {
+            // ... (Logic load Recommended Products giữ nguyên)
             const container = document.getElementById('recommend-products');
             container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-10">Đang tải gợi ý...</div>';
 
@@ -557,19 +626,22 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadReviews();
-            renderProductJourney();
-            loadRecommendedProducts();
-            
-            // Tải lại Journey khi click tab
+            checkAuth();
+            loadProductDetail(); // KHỞI ĐỘNG HÀM TẢI CHI TIẾT SẢN PHẨM
+
+            // Gán lại sự kiện click cho tab Journey (đã sửa để chạy hàm khi click)
             document.querySelector('.tab-button[data-target="journey-content"]').addEventListener('click', renderProductJourney);
         });
 
         // --- Cart Mockup (Basic) ---
         function addToCart() {
-            alert(`Đã thêm ${quantity} sản phẩm 'Rau cải xanh hữu cơ' vào giỏ hàng! (Chức năng này cần API giỏ hàng thực tế)`);
-            let currentCartCount = parseInt(document.getElementById('cart-count').textContent);
-            document.getElementById('cart-count').textContent = currentCartCount + quantity;
+            if (currentProductData) {
+                alert(`Đã thêm ${quantity} sản phẩm '${currentProductData.name}' vào giỏ hàng! (Chức năng này cần API giỏ hàng thực tế)`);
+                let currentCartCount = parseInt(document.getElementById('cart-count').textContent);
+                document.getElementById('cart-count').textContent = currentCartCount + quantity;
+            } else {
+                alert('Không thể thêm vào giỏ hàng vì dữ liệu sản phẩm chưa được tải.');
+            }
         }
 
     </script>
