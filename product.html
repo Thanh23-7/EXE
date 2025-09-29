@@ -174,7 +174,7 @@
         const productsPerPage = 9; // Số sản phẩm mỗi trang (sẽ gửi lên API)
         let currentPage = 1;
         
-        // --- HÀM TẢI DỮ LIỆU TỪ API (MỚI) ---
+        // --- HÀM TẢI DỮ LIỆU TỪ API (ĐÃ SỬA) ---
         /**
          * Tải sản phẩm từ API, có áp dụng lọc, sắp xếp và phân trang.
          * @param {boolean} updateUrlFlag - Có cập nhật URL của trình duyệt không.
@@ -237,9 +237,22 @@
                 }
                 const data = await response.json();
                 
-                // API phải trả về: { products: [...], totalCount: N }
-                const products = data.products || [];
-                const totalProducts = data.totalCount || 0; 
+                // === LOGIC XỬ LÝ ĐỊNH DẠNG API (ĐÃ SỬA TẠI ĐÂY) ===
+                let products = [];
+                let totalProducts = 0;
+
+                if (Array.isArray(data)) {
+                    // Trường hợp Backend trả về MẢNG trực tiếp (như hiện tại trên Render)
+                    products = data;
+                    // Đặt totalProducts = số lượng sản phẩm trả về (tối đa 9)
+                    // Lưu ý: Phân trang sẽ không hoạt động đúng cho đến khi sửa Backend
+                    totalProducts = data.length; 
+                } else if (data && Array.isArray(data.products)) {
+                    // Trường hợp Backend trả về ĐỐI TƯỢNG PHÂN TRANG (đúng format mong muốn)
+                    products = data.products;
+                    totalProducts = data.totalCount || data.products.length; 
+                }
+                // ====================================================
     
                 renderProducts(products, totalProducts); 
     
@@ -251,7 +264,7 @@
         }
     
     
-        // --- HÀM KHỞI TẠO TỪ URL (QUAN TRỌNG) ---
+        // --- HÀM KHỞI TẠO TỪ URL (GIỮ NGUYÊN) ---
         function loadStateFromUrl() {
             const params = new URLSearchParams(window.location.search);
             
@@ -284,10 +297,10 @@
             if (priceValue) {
                 const priceInput = document.querySelector(`.price-filter[value="${priceValue}"]`);
                 if (priceInput) {
-                     priceInput.checked = true;
+                    priceInput.checked = true;
                 }
             } else {
-                 // Đảm bảo nút "Tất cả" được chọn nếu không có bộ lọc giá nào được áp dụng
+                // Đảm bảo nút "Tất cả" được chọn nếu không có bộ lọc giá nào được áp dụng
                 const defaultPrice = document.querySelector('.price-filter[value=""]');
                 if (defaultPrice) defaultPrice.checked = true;
             }
@@ -309,7 +322,7 @@
             loadProductsFromAPI(false); // Tham số false báo hiệu không cần update URL (vì nó đã được tải từ URL)
         }
     
-        // --- CÁC HÀM PHỤ TRỢ ---
+        // --- CÁC HÀM PHỤ TRỢ (GIỮ NGUYÊN) ---
     
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -363,7 +376,12 @@
             const displayStart = (currentPage - 1) * productsPerPage + 1;
             const displayEnd = displayStart + products.length - 1;
             
-            countDisplay.textContent = `Hiển thị ${displayStart}-${displayEnd} của ${totalProducts} sản phẩm`;
+            // Chú ý: totalProducts ở đây có thể chỉ là số lượng sản phẩm trên trang
+            // nếu Backend chưa được sửa đúng.
+            // Điều chỉnh hiển thị để tránh bị sai nếu totalProducts = 0
+            const actualTotal = totalProducts > 0 ? totalProducts : displayEnd; 
+            
+            countDisplay.textContent = `Hiển thị ${displayStart}-${displayEnd} của ${actualTotal} sản phẩm`;
     
     
             products.forEach((product) => {
@@ -436,7 +454,7 @@
             
             window.addToCart(id, name, price, image);
         }
-    
+
         function renderPagination(totalProducts) {
             const paginationContainer = document.getElementById('pagination-container');
             const totalPages = Math.ceil(totalProducts / productsPerPage);
@@ -506,7 +524,7 @@
         }
     
     
-        // --- GẮN SỰ KIỆN KHI TRANG LOAD ---
+        // --- GẮN SỰ KIỆN KHI TRANG LOAD (GIỮ NGUYÊN) ---
     
         document.addEventListener('DOMContentLoaded', function() {
             // 1. Logic trạng thái đăng nhập (giữ nguyên)
@@ -547,10 +565,10 @@
             // Gắn sự kiện cho Tìm kiếm (có Debounce)
             let searchTimer;
             document.getElementById('search-input').addEventListener('input', () => {
-                 clearTimeout(searchTimer);
-                 searchTimer = setTimeout(() => {
-                     applyFilters(true);
-                 }, 300); // Đợi 300ms sau khi người dùng ngừng gõ
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    applyFilters(true);
+                }, 300); // Đợi 300ms sau khi người dùng ngừng gõ
             });
             
             // Xử lý nút back/forward của trình duyệt (Popstate)
