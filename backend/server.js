@@ -102,7 +102,7 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRe
 // Initialize DB from SQL files if empty
 function initializeDB() {
     db.serialize(() => {
-        // ⭐️ FIX: Bỏ qua kiểm tra COUNT và buộc TẠO LẠI BẢNG PRODUCTS để cập nhật mô tả chi tiết ⭐️
+        // ⭐️ FIX: Bỏ qua kiểm tra COUNT và buộc TẠO LẠI BẢNG PRODUCTS để cập nhật mô tả chi tiết VÀ URL ẢNH MỚI ⭐️
         db.run('DROP TABLE IF EXISTS products', (err) => {
             // Recreate table
             db.run('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, old_price REAL, description TEXT, category TEXT, image TEXT, origin TEXT, weight TEXT, expiry TEXT, storage TEXT, stock INTEGER)', (err) => {
@@ -111,7 +111,7 @@ function initializeDB() {
                     return;
                 }
 
-                // ⭐️ START: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ĐẦY ĐỦ ⭐️
+                // ⭐️ START: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT URL ẢNH MỚI & MÔ TẢ CHI TIẾT ⭐️
                 const sampleProducts = [
                     { 
                         id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, 
@@ -153,8 +153,13 @@ function initializeDB() {
                         description: 'Tôm sú được nuôi thả tự nhiên trong môi trường nước lợ hoặc đánh bắt từ biển, đảm bảo chất lượng thịt tươi ngon, dai ngọt. Tôm có kích thước lớn, vỏ xanh đậm, mang lại trải nghiệm ẩm thực cao cấp.\n\n**Chế biến:** Tôm sú hấp bia, nướng muối ớt, hoặc rang me đều rất ngon. Khi tôm chuyển sang màu đỏ gạch là đã chín.\n\n**Tiêu chuẩn:** Sản phẩm được kiểm tra nghiêm ngặt về độ tươi và không sử dụng chất bảo quản.', 
                         category: 'Hải sản', image: 'https://i.imgur.com/7bE9QJ9.jpeg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 
                     },
+                    { 
+                        id: 9, name: 'Hàu sữa Pháp', price: 60000, old_price: 75000,
+                        description: 'Hàu sữa nhập khẩu trực tiếp từ Pháp. Thân hàu mập, béo ngậy, giàu kẽm, thích hợp cho việc bồi bổ sức khỏe.\n\n**Chế biến:** Tuyệt vời khi ăn sống với chanh và mù tạt, hoặc nướng phô mai.\n\n**Lưu ý:** Giữ lạnh, ăn hết trong vòng 24 giờ sau khi mở hộp.', 
+                        category: 'Hải sản', image: 'https://i.imgur.com/wP0vWJc.jpeg', origin: 'Pháp', weight: '500g (6-8 con)', expiry: '1 ngày', storage: 'Tủ lạnh', stock: 25 
+                    },
                 ];
-                // ⭐️ END: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ĐẦY ĐỦ ⭐️
+                // ⭐️ END: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT URL ẢNH MỚI & MÔ TẢ CHI TIẾT ⭐️
 
                 // Chèn dữ liệu mới vào bảng products rỗng
                 const insertStmt = db.prepare('INSERT INTO products (id, name, price, old_price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
@@ -208,7 +213,7 @@ app.get('/api/products', (req, res) => {
         else if (price === '4') sql += ' AND price > 200000';
     }
     
-    // ⭐️ FIX MÃ HÓA/LỌC: Đảm bảo sử dụng tham số hóa an toàn ⭐️
+    // ⭐️ FIX LỌC DANH MỤC: Đảm bảo sử dụng tham số hóa an toàn ⭐️
     if (req.query.category) {
         // Log ra để kiểm tra chuỗi nhận được từ Frontend (thường là "Hải sản" đã được decode)
         console.log("Filtering category:", req.query.category); 
@@ -234,7 +239,7 @@ app.get('/api/products', (req, res) => {
     });
 });
 
-// API: Lấy chi tiết sản phẩm theo ID 
+// ⭐️ FIX: API Lấy chi tiết sản phẩm theo ID (Đã đảm bảo logic đúng) ⭐️
 app.get('/api/products/:id', (req, res) => {
     const productId = req.params.id; 
     
