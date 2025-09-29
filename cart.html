@@ -66,7 +66,7 @@
         <h1 class="text-3xl font-bold mb-6">Giỏ hàng của bạn</h1>
         
         <div id="cart-items" class="space-y-6">
-            </div>
+        </div>
 
         <div id="cart-empty" class="text-gray-500 text-center text-xl mt-12 hidden">
             <i class="fas fa-box-open text-3xl mb-4"></i>
@@ -84,14 +84,12 @@
     </main>
 
     <script>
-        // *** ĐỊNH NGHĨA BASE URL CHO BACKEND (QUAN TRỌNG ĐỂ KHẮC PHỤC LỖI 404) ***
+        // *** ĐỊNH NGHĨA BASE URL CHO BACKEND ***
         const API_BASE_URL = 'https://exe-zjbe.onrender.com'; 
-        // LƯU Ý: Nếu URL Render của bạn thay đổi, bạn phải cập nhật lại dòng này!
         
         // --- HÀM CƠ BẢN ---
 
         function calculateCartTotal(cart) {
-            // Tính tổng tiền chính xác
             return cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
         }
 
@@ -129,6 +127,7 @@
                 const finalPrice = parseFloat(item.price || 0);
                 total += finalPrice;
                 
+                // Sử dụng dấu ngoặc kép bên ngoài và template literal bên trong
                 cartItems.innerHTML += `
                     <div class="bg-white card p-6 flex items-center justify-between">
                         <div class="flex items-center space-x-4">
@@ -154,7 +153,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             renderCart();
-        }
+        }; // Thêm dấu chấm phẩy
 
         // --- HÀM XỬ LÝ THANH TOÁN (KIỂM TRA ĐĂNG NHẬP) ---
         
@@ -167,7 +166,7 @@
                 return false;
             }
 
-            if (!user) {
+            if (!user || !user.email) { // Kiểm tra user.email để chắc chắn user hợp lệ
                 alert('Vui lòng đăng nhập để tiến hành thanh toán.');
                 window.location.href = 'login.html'; 
                 return false;
@@ -183,6 +182,7 @@
 
             const { cart } = checkoutData;
 
+            // Giả lập lưu đơn hàng COD vào localStorage
             let orders = JSON.parse(localStorage.getItem('orders') || '[]');
             orders.push({
                 items: cart,
@@ -197,7 +197,7 @@
             updateCartCount();
             alert('Đặt hàng thành công! Đơn hàng COD đã được lưu vào lịch sử. Cảm ơn bạn đã tin tưởng Green Fresh.');
             window.location.href = 'index.html'; 
-        };
+        }; // Thêm dấu chấm phẩy
 
         // --- XỬ LÝ SỰ KIỆN NÚT THANH TOÁN VNPAY (ĐÃ FIX LỖI 404) ---
         document.getElementById('vnpayBtn').onclick = function() {
@@ -211,6 +211,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    // VNPay yêu cầu số nguyên (round total)
                     amount: Math.round(total), 
                     orderId: 'ORDER' + Date.now(),
                     orderInfo: `Thanh toán đơn hàng cho ${user.email}`
@@ -228,7 +229,7 @@
                 console.error("Lỗi khi gọi API VNPay:", error);
                 alert('Có lỗi xảy ra khi kết nối thanh toán. Vui lòng kiểm tra console log.');
             });
-        };
+        }; // Thêm dấu chấm phẩy
 
         // --- KHỞI TẠO ---
         document.addEventListener('DOMContentLoaded', function() {
