@@ -1,235 +1,391 @@
-<script>
-    // --- KHAI BÁO CẤU HÌNH API THẬT ---
-    const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
-    // Giả định endpoint đăng ký là /api/auth/register
-    const API_REGISTER_URL = `${API_BASE_URL}/auth/register`; 
-
-
-    // --- UTILITIES VÀ VALIDATION ---
-
-    // Toggle password visibility
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const toggle = document.getElementById(fieldId + 'Toggle');
-        
-        if (field.type === 'password') {
-            field.type = 'text';
-            toggle.classList.remove('fa-eye');
-            toggle.classList.add('fa-eye-slash');
-        } else {
-            field.type = 'password';
-            toggle.classList.remove('fa-eye-slash');
-            toggle.classList.add('fa-eye');
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Tài Khoản - Green Fresh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Các style tùy chỉnh cho Tailwind (nếu có) */
+        .password-strength {
+            height: 4px;
+            transition: width 0.3s ease;
+            border-radius: 9999px;
         }
-    }
-
-    // Password strength checker
-    function checkPasswordStrength(password) {
-        let strength = 0;
-        let feedback = [];
-
-        if (password.length >= 8) strength += 1;
-        else feedback.push('ít nhất 8 ký tự');
-
-        if (/[a-z]/.test(password)) strength += 1;
-        else feedback.push('chữ thường');
-
-        if (/[A-Z]/.test(password)) strength += 1;
-        else feedback.push('chữ hoa');
-
-        if (/[0-9]/.test(password)) strength += 1;
-        else feedback.push('số');
-
-        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-        else feedback.push('ký tự đặc biệt');
-
-        return { strength, feedback };
-    }
-
-    // Update password strength indicator
-    document.getElementById('password').addEventListener('input', function() {
-        const password = this.value;
-        const strengthBar = document.getElementById('passwordStrength');
-        const strengthText = document.getElementById('passwordStrengthText');
-        
-        if (password.length === 0) {
-            strengthBar.style.width = '0%';
-            strengthBar.className = 'password-strength bg-gray-200';
-            strengthText.textContent = 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số';
-            strengthText.className = 'text-xs mt-1 text-gray-500';
-            return;
+        .form-container {
+            max-width: 600px;
         }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
 
-        const { strength, feedback } = checkPasswordStrength(password);
-        const percentage = (strength / 5) * 100;
-        
-        strengthBar.style.width = percentage + '%';
-        
-        // Cập nhật màu và thông báo dựa trên độ mạnh
-        if (strength <= 2) {
-            strengthBar.className = 'password-strength bg-red-500';
-            strengthText.textContent = 'Yếu - Cần: ' + feedback.join(', ');
-            strengthText.className = 'text-xs mt-1 text-red-500';
-        } else if (strength <= 3) {
-            strengthBar.className = 'password-strength bg-yellow-500';
-            strengthText.textContent = 'Trung bình - Cần: ' + feedback.join(', ');
-            strengthText.className = 'text-xs mt-1 text-yellow-600';
-        } else if (strength <= 4) {
-            strengthBar.className = 'password-strength bg-blue-500';
-            strengthText.textContent = 'Khá - Cần: ' + feedback.join(', ');
-            strengthText.className = 'text-xs mt-1 text-blue-600';
-        } else {
-            strengthBar.className = 'password-strength bg-green-500';
-            strengthText.textContent = 'Mạnh - Mật khẩu an toàn';
-            strengthText.className = 'text-xs mt-1 text-green-600';
-        }
-    });
+    <header class="w-full max-w-7xl px-4 mb-8">
+        <nav class="flex justify-between items-center py-4">
+            <a href="index.html" class="flex items-center space-x-2 text-2xl font-bold text-green-700">
+                <i class="fas fa-leaf"></i>
+                <span>Green Fresh</span>
+            </a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-gray-600 hover:text-green-700">Trang chủ</a>
+                <a href="product.html" class="text-gray-600 hover:text-green-700">Sản phẩm</a>
+                <a href="contact.html" class="text-gray-600 hover:text-green-700">Liên hệ</a>
+                <a href="login.html" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Đăng nhập</a>
+            </div>
+        </nav>
+    </header>
+    <div class="form-container w-full px-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Đăng Ký Tài Khoản</h2>
+            <p class="text-center text-gray-500 mb-8">Trải nghiệm mua sắm nông sản sạch cùng Green Fresh!</p>
+
+            <form id="registerForm" class="space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700">Họ</label>
+                        <input type="text" id="firstName" name="firstName" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Vui lòng nhập họ."></p>
+                    </div>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700">Tên</label>
+                        <input type="text" id="lastName" name="lastName" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Vui lòng nhập tên."></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <p id="emailError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Vui lòng nhập email hợp lệ."></p>
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">Điện thoại</label>
+                        <input type="tel" id="phone" name="phone"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <p id="phoneError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Vui lòng nhập số điện thoại hợp lệ (10-11 số)."></p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Ngày sinh (Tùy chọn)</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Giới tính (Tùy chọn)</label>
+                        <div class="mt-2 flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="gender" value="Nam" class="form-radio text-green-600">
+                                <span class="ml-2 text-sm text-gray-700">Nam</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="gender" value="Nữ" class="form-radio text-green-600">
+                                <span class="ml-2 text-sm text-gray-700">Nữ</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="gender" value="Khác" class="form-radio text-green-600">
+                                <span class="ml-2 text-sm text-gray-700">Khác</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="password" name="password" required
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm pr-10">
+                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePassword('password')">
+                            <i id="passwordToggle" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div id="passwordStrength" class="password-strength bg-gray-200" style="width: 0;"></div>
+                    </div>
+                    <p id="passwordStrengthText" class="text-xs mt-1 text-gray-500">Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số</p>
+                    <p id="passwordError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Mật khẩu quá yếu (cần >= 3/5 tiêu chí)."></p>
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Nhập lại mật khẩu</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm pr-10">
+                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onclick="togglePassword('confirmPassword')">
+                            <i id="confirmPasswordToggle" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                        </span>
+                    </div>
+                    <p id="confirmPasswordError" class="text-red-500 text-xs mt-1 hidden" data-default-error="Mật khẩu nhập lại không khớp."></p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <input id="terms" name="terms" type="checkbox" required
+                            class="h-4 w-4 text-green-600 border-gray-300 rounded mt-1">
+                        <label for="terms" class="ml-2 block text-sm text-gray-900">
+                            Tôi đồng ý với <a href="#" class="text-green-600 hover:underline">Điều khoản dịch vụ</a>
+                        </label>
+                    </div>
+                    <p id="termsError" class="text-red-500 text-xs -mt-2 hidden" data-default-error="Vui lòng chấp nhận điều khoản dịch vụ."></p>
+
+                    <div class="flex items-start">
+                        <input id="newsletter" name="newsletter" type="checkbox"
+                            class="h-4 w-4 text-green-600 border-gray-300 rounded mt-1">
+                        <label for="newsletter" class="ml-2 block text-sm text-gray-900">
+                            Đăng ký nhận bản tin và ưu đãi qua email (Tùy chọn)
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="registerBtn"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                        <span id="registerSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                        <span id="registerBtnText">Tạo tài khoản</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Đã có tài khoản?
+                    <a href="login.html" class="font-medium text-green-600 hover:text-green-500">
+                        Đăng nhập ngay
+                    </a>
+                </p>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        // --- KHAI BÁO CẤU HÌNH API THẬT ---
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
+        // Endpoint đăng ký
+        const API_REGISTER_URL = `${API_BASE_URL}/register`; // Đổi thành /api/register nếu bạn đã cấu hình lại Backend
 
 
-    // --- HÀM GỌI API THẬT: Đăng ký người dùng ---
-    async function registerUser(userInfo) {
-        try {
-            // SỬ DỤNG FETCH VỚI API THẬT
-            const response = await fetch(API_REGISTER_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userInfo)
-            });
+        // --- UTILITIES VÀ VALIDATION ---
 
-            const data = await response.json();
-
-            // Nếu Backend trả về thành công (ví dụ: HTTP 201 Created)
-            if (response.ok) {
-                return { success: true, user: data };
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = document.getElementById(fieldId + 'Toggle');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
             } else {
-                // Xử lý các lỗi như email đã tồn tại, validation lỗi từ Backend
-                return { success: false, error: data.message || 'Lỗi đăng ký từ máy chủ.' };
+                field.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = [];
+
+            if (password.length >= 8) strength += 1;
+            else feedback.push('ít nhất 8 ký tự');
+
+            if (/[a-z]/.test(password)) strength += 1;
+            else feedback.push('chữ thường');
+
+            if (/[A-Z]/.test(password)) strength += 1;
+            else feedback.push('chữ hoa');
+
+            if (/[0-9]/.test(password)) strength += 1;
+            else feedback.push('số');
+
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            else feedback.push('ký tự đặc biệt');
+
+            return { strength, feedback };
+        }
+
+        // Update password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            if (password.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthBar.className = 'password-strength bg-gray-200';
+                strengthText.textContent = 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số';
+                strengthText.className = 'text-xs mt-1 text-gray-500';
+                return;
             }
 
-        } catch (error) {
-            console.error("Lỗi kết nối API:", error);
-            return { success: false, error: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền hoặc CORS.' };
-        }
-    }
-
-
-    // Form validation and submission
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Get form values
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const dateOfBirth = document.getElementById('dateOfBirth').value;
-        const gender = document.querySelector('input[name="gender"]:checked')?.value || 'Không xác định';
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const terms = document.getElementById('terms').checked;
-        const newsletter = document.getElementById('newsletter').checked;
-        
-        // Elements
-        const btn = document.getElementById('registerBtn');
-        const btnText = document.getElementById('registerBtnText');
-        const spinner = document.getElementById('registerSpinner');
-        
-        // Reset errors
-        const errorFields = ['firstNameError', 'lastNameError', 'emailError', 'phoneError', 'passwordError', 'confirmPasswordError', 'termsError'];
-        errorFields.forEach(field => {
-            const el = document.getElementById(field);
-            // Giả định bạn có thuộc tính data-default-error trong HTML cho lỗi mặc định
-            el.textContent = el.getAttribute('data-default-error') || ''; 
-            el.classList.add('hidden');
+            const { strength, feedback } = checkPasswordStrength(password);
+            const percentage = (strength / 5) * 100;
+            
+            strengthBar.style.width = percentage + '%';
+            
+            // Cập nhật màu và thông báo dựa trên độ mạnh
+            if (strength <= 2) {
+                strengthBar.className = 'password-strength bg-red-500';
+                strengthText.textContent = 'Yếu - Cần: ' + feedback.join(', ');
+                strengthText.className = 'text-xs mt-1 text-red-500';
+            } else if (strength <= 3) {
+                strengthBar.className = 'password-strength bg-yellow-500';
+                strengthText.textContent = 'Trung bình - Cần: ' + feedback.join(', ');
+                strengthText.className = 'text-xs mt-1 text-yellow-600';
+            } else if (strength <= 4) {
+                strengthBar.className = 'password-strength bg-blue-500';
+                strengthText.textContent = 'Khá - Cần: ' + feedback.join(', ');
+                strengthText.className = 'text-xs mt-1 text-blue-600';
+            } else {
+                strengthBar.className = 'password-strength bg-green-500';
+                strengthText.textContent = 'Mạnh - Mật khẩu an toàn';
+                strengthText.className = 'text-xs mt-1 text-green-600';
+            }
         });
-        
-        let isValid = true;
-        
-        // --- VALIDATION TỪNG TRƯỜNG ---
-        if (!firstName) { document.getElementById('firstNameError').classList.remove('hidden'); isValid = false; }
-        if (!lastName) { document.getElementById('lastNameError').classList.remove('hidden'); isValid = false; }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) { document.getElementById('emailError').classList.remove('hidden'); isValid = false; }
-        
-        const phoneRegex = /^[0-9]{10,11}$/;
-        // Bỏ khoảng trắng trước khi kiểm tra SĐT
-        if (!phoneRegex.test(phone.replace(/\s/g, ''))) { document.getElementById('phoneError').classList.remove('hidden'); isValid = false; }
-        
-        const { strength } = checkPasswordStrength(password);
-        if (strength < 3) { document.getElementById('passwordError').classList.remove('hidden'); isValid = false; }
-        
-        if (password !== confirmPassword) { document.getElementById('confirmPasswordError').classList.remove('hidden'); isValid = false; }
-        
-        if (!terms) { document.getElementById('termsError').classList.remove('hidden'); isValid = false; }
-        // --- END VALIDATION ---
-        
-        if (isValid) {
-            // Show loading state
-            btn.disabled = true;
-            btn.classList.add('opacity-70');
-            btnText.textContent = 'Đang tạo tài khoản...';
-            spinner.classList.remove('hidden');
 
-            const newUserInfo = {
-                firstName,
-                lastName,
-                email,
-                phone,
-                dateOfBirth,
-                gender,
-                password,
-                newsletter
-            };
-            
-            // GỌI API THẬT
-            const result = await registerUser(newUserInfo);
-            
-            // Reset button state
-            btn.disabled = false;
-            btn.classList.remove('opacity-70');
-            btnText.textContent = 'Tạo tài khoản';
-            spinner.classList.add('hidden');
-            
-            if (result.success) {
-                alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
-                window.location.href = 'login.html'; 
-            } else {
-                // Hiển thị lỗi từ API (ví dụ: email đã tồn tại)
-                const emailErrorDiv = document.getElementById('emailError');
-                emailErrorDiv.textContent = result.error;
-                emailErrorDiv.classList.remove('hidden');
+        // --- HÀM GỌI API THẬT: Đăng ký người dùng ---
+        async function registerUser(userInfo) {
+            try {
+                // SỬ DỤNG FETCH VỚI API THẬT
+                const response = await fetch(API_REGISTER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    // Backend của bạn chỉ yêu cầu email và password cho API /api/register
+                    body: JSON.stringify({
+                        email: userInfo.email,
+                        password: userInfo.password
+                    })
+                });
+
+                const data = await response.json();
+
+                // Nếu Backend trả về thành công (HTTP 200/201 và success: true)
+                if (response.ok && data.success) {
+                    return { success: true, user: data };
+                } else {
+                    // Xử lý các lỗi như email đã tồn tại, validation lỗi từ Backend
+                    return { success: false, error: data.error || 'Lỗi đăng ký từ máy chủ.' };
+                }
+
+            } catch (error) {
+                console.error("Lỗi kết nối API:", error);
+                return { success: false, error: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền hoặc CORS.' };
             }
         }
-    });
 
-    // Real-time validation (Giữ nguyên)
-    document.getElementById('email').addEventListener('blur', function() {
-        const email = this.value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const errorDiv = document.getElementById('emailError');
-        
-        // Nếu trường trống thì không báo lỗi blur
-        if (email && !emailRegex.test(email)) {
-            errorDiv.textContent = 'Vui lòng nhập email hợp lệ';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.classList.add('hidden');
-        }
-    });
 
-    document.getElementById('confirmPassword').addEventListener('input', function() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = this.value;
-        const errorDiv = document.getElementById('confirmPasswordError');
-        
-        if (confirmPassword && password !== confirmPassword) {
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.classList.add('hidden');
-        }
-    });
-</script>
+        // Form validation and submission
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Elements
+            const btn = document.getElementById('registerBtn');
+            const btnText = document.getElementById('registerBtnText');
+            const spinner = document.getElementById('registerSpinner');
+            
+            // Reset errors
+            const errorFields = ['firstNameError', 'lastNameError', 'emailError', 'phoneError', 'passwordError', 'confirmPasswordError', 'termsError'];
+            errorFields.forEach(field => {
+                const el = document.getElementById(field);
+                el.classList.add('hidden');
+                // Đảm bảo nội dung lỗi được reset
+                el.textContent = el.getAttribute('data-default-error') || ''; 
+            });
+            
+            let isValid = true;
+            
+            // --- VALIDATION CƠ BẢN (tập trung vào email, password và terms) ---
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) { document.getElementById('emailError').classList.remove('hidden'); isValid = false; }
+            
+            const { strength } = checkPasswordStrength(password);
+            if (strength < 3) { document.getElementById('passwordError').classList.remove('hidden'); isValid = false; }
+            
+            if (password !== confirmPassword) { 
+                document.getElementById('confirmPasswordError').classList.remove('hidden'); 
+                isValid = false; 
+            }
+            
+            if (!terms) { document.getElementById('termsError').classList.remove('hidden'); isValid = false; }
+            // --- END VALIDATION ---
+            
+            if (isValid) {
+                // Show loading state
+                btn.disabled = true;
+                btn.classList.add('opacity-70');
+                btnText.textContent = 'Đang tạo tài khoản...';
+                spinner.classList.remove('hidden');
+
+                const newUserInfo = {
+                    email,
+                    password
+                    // Chỉ gửi 2 trường Backend cần
+                };
+                
+                // GỌI API THẬT
+                const result = await registerUser(newUserInfo);
+                
+                // Reset button state
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+                btnText.textContent = 'Tạo tài khoản';
+                spinner.classList.add('hidden');
+                
+                if (result.success) {
+                    alert('Đăng ký thành công! Vui lòng đăng nhập.');
+                    // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
+                    window.location.href = 'login.html'; 
+                } else {
+                    // Hiển thị lỗi từ API (ví dụ: email đã tồn tại)
+                    const emailErrorDiv = document.getElementById('emailError');
+                    emailErrorDiv.textContent = result.error;
+                    emailErrorDiv.classList.remove('hidden');
+                }
+            }
+        });
+
+        // Real-time validation (Giữ nguyên)
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const errorDiv = document.getElementById('emailError');
+            
+            if (email && !emailRegex.test(email)) {
+                errorDiv.textContent = 'Vui lòng nhập email hợp lệ';
+                errorDiv.classList.remove('hidden');
+            } else {
+                errorDiv.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const errorDiv = document.getElementById('confirmPasswordError');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                errorDiv.classList.remove('hidden');
+            } else {
+                errorDiv.classList.add('hidden');
+            }
+        });
+    </script>
+    </body>
+</html>
