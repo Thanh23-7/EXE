@@ -62,6 +62,7 @@
             </div>
         </div>
     </header>
+
     <main class="container mx-auto px-4 py-12">
         <nav class="text-sm mb-6">
             <a href="index.html" class="text-gray-500 hover:text-green-600">Trang chủ</a>
@@ -127,6 +128,7 @@
             </form>
         </div>
     </main>
+
     <footer class="bg-gray-800 text-white py-12 mt-12">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8">
@@ -182,121 +184,18 @@
             </div>
         </div>
     </footer>
+
     <script>
         // Cập nhật số lượng giỏ hàng trên icon
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartCount = document.getElementById('cart-count');
-            if (cartCount) cartCount.textContent = cart.length; 
+            // Tính tổng số lượng sản phẩm
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); 
+            if (cartCount) cartCount.textContent = totalItems; 
         }
         updateCartCount();
         window.addEventListener('storage', updateCartCount);
-
-        // Hiển thị thông tin đăng nhập và Profile Dropdown (Sử dụng lại code đã fix)
-        document.addEventListener('DOMContentLoaded', function() {
-            const userInfo = document.getElementById('user-info');
-            let user = localStorage.getItem('user');
-            
-            if (user) {
-                user = JSON.parse(user);
-                
-                // Tên hiển thị ngắn gọn
-                const displayName = user.displayName || user.email.split('@')[0];
-                
-                // Dropdown menu Tài khoản
-                userInfo.innerHTML = `
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
-                            <i class="fas fa-user-circle text-2xl"></i>
-                            <span class="hidden sm:inline">${displayName}</span>
-                        </button>
-                        
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
-                                    opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
-                                    transform scale-95 group-hover:scale-100 origin-top-right">
-                            
-                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
-                                <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
-                            </a>
-                            <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
-                                <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
-                            </a>
-                            <hr class="my-1">
-                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                // Thêm sự kiện cho nút Đăng xuất
-                document.getElementById('logoutBtn').onclick = function() {
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('token'); 
-                    window.location.href = 'index.html'; // Chuyển về trang chủ sau khi đăng xuất
-                };
-
-                // ⭐️ Xử lý Profile Form ⭐️
-                document.getElementById('email').value = user.email || '';
-                document.getElementById('displayName').value = user.displayName || '';
-                document.getElementById('phone').value = user.phone || '';
-                document.getElementById('address').value = user.address || '';
-                if (user.gender) {
-                    document.getElementById('gender').value = user.gender;
-                }
-
-                document.getElementById('profile-form').onsubmit = function(e) {
-                    e.preventDefault();
-                    
-                    const newDisplayName = document.getElementById('displayName').value;
-                    const newPhone = document.getElementById('phone').value;
-                    const newAddress = document.getElementById('address').value;
-                    const newGender = document.getElementById('gender').value;
-
-                    // 1. Gửi thông tin lên Backend (API endpoint thay thế bằng API của bạn)
-                    fetch('https://exe-zjbe.onrender.com/api/users/update-profile', { 
-                        method: 'PUT',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify({
-                            email: user.email, // Gửi email để xác định user
-                            displayName: newDisplayName,
-                            phone: newPhone,
-                            address: newAddress,
-                            gender: newGender
-                        })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => { throw new Error(err.message || 'Lỗi cập nhật hồ sơ'); });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // 2. Cập nhật lại localStorage sau khi cập nhật thành công
-                        const updatedUser = { ...user, displayName: newDisplayName, phone: newPhone, address: newAddress, gender: newGender };
-                        localStorage.setItem('user', JSON.stringify(updatedUser));
-                        
-                        showAlert('Cập nhật hồ sơ thành công!', 'success');
-                        
-                        // Cập nhật lại tên hiển thị trên header
-                        const newDisplayNameShort = updatedUser.displayName || updatedUser.email.split('@')[0];
-                        userInfo.querySelector('span').textContent = newDisplayNameShort;
-                    })
-                    .catch(error => {
-                        console.error('Lỗi khi cập nhật hồ sơ:', error);
-                        showAlert(error.message || 'Đã xảy ra lỗi trong quá trình cập nhật.', 'error');
-                    });
-                };
-
-            } else {
-                // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-                alert('Vui lòng đăng nhập để xem thông tin cá nhân.');
-                window.location.href = 'login.html';
-            }
-        });
 
         // Hàm hiển thị thông báo
         function showAlert(message, type) {
@@ -314,6 +213,129 @@
                 alertBox.classList.add('hidden');
             }, 5000);
         }
+
+        // Logic chính để tải trang Profile và xử lý đăng nhập
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInfo = document.getElementById('user-info');
+            const userLocalStorage = localStorage.getItem('user');
+            let user = null;
+
+            // ⭐️ BƯỚC 1: Xử lý lỗi JSON khi đọc localStorage ⭐️
+            if (userLocalStorage) {
+                try {
+                    user = JSON.parse(userLocalStorage);
+                } catch (e) {
+                    console.error("Lỗi phân tích JSON user từ localStorage:", e);
+                    localStorage.removeItem('user'); // Xóa dữ liệu lỗi
+                    user = null; // Bắt buộc chuyển hướng
+                }
+            }
+
+            // ⭐️ BƯỚC 2: Kiểm tra đăng nhập và chuyển hướng nếu không hợp lệ ⭐️
+            if (user && user.email) { 
+                
+                // --- TẢI DỮ LIỆU VÀO FORM ---
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('displayName').value = user.displayName || '';
+                document.getElementById('phone').value = user.phone || '';
+                document.getElementById('address').value = user.address || '';
+                if (user.gender) {
+                    document.getElementById('gender').value = user.gender;
+                }
+
+                // --- XỬ LÝ HEADER (Dropdown) ---
+                const displayName = user.displayName || user.email.split('@')[0];
+                userInfo.innerHTML = `
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition py-1">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <span class="hidden sm:inline">${displayName}</span>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 
+                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
+                                transform scale-95 group-hover:scale-100 origin-top-right">
+                            
+                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
+                            </a>
+                            <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
+                            </a>
+                            <hr class="my-1">
+                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('logoutBtn').onclick = function() {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token'); 
+                    window.location.href = 'index.html';
+                };
+
+                // --- XỬ LÝ SUBMIT FORM ---
+                document.getElementById('profile-form').onsubmit = function(e) {
+                    e.preventDefault();
+                    
+                    const newDisplayName = document.getElementById('displayName').value;
+                    const newPhone = document.getElementById('phone').value;
+                    const newAddress = document.getElementById('address').value;
+                    const newGender = document.getElementById('gender').value;
+
+                    // Gửi thông tin lên Backend
+                    fetch('https://exe-zjbe.onrender.com/api/users/update-profile', { 
+                        method: 'PUT',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}` // Cần có token để xác thực
+                        },
+                        body: JSON.stringify({
+                            email: user.email, 
+                            displayName: newDisplayName,
+                            phone: newPhone,
+                            address: newAddress,
+                            gender: newGender
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // Xử lý lỗi từ server (ví dụ: 401 Unauthorized nếu token hết hạn)
+                            if (response.status === 401) {
+                                localStorage.removeItem('user');
+                                localStorage.removeItem('token');
+                                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                                window.location.href = 'login.html';
+                            }
+                            return response.json().then(err => { throw new Error(err.message || 'Lỗi cập nhật hồ sơ'); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Cập nhật lại localStorage sau khi cập nhật thành công
+                        const updatedUser = { ...user, displayName: newDisplayName, phone: newPhone, address: newAddress, gender: newGender };
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                        
+                        showAlert('Cập nhật hồ sơ thành công!', 'success');
+                        
+                        // Cập nhật lại tên hiển thị trên header
+                        const newDisplayNameShort = updatedUser.displayName || updatedUser.email.split('@')[0];
+                        userInfo.querySelector('span').textContent = newDisplayNameShort;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi cập nhật hồ sơ:', error);
+                        showAlert(error.message || 'Đã xảy ra lỗi trong quá trình cập nhật.', 'error');
+                    });
+                };
+
+            } else {
+                // Xử lý trường hợp chưa đăng nhập
+                console.warn('Người dùng chưa đăng nhập hoặc dữ liệu user bị lỗi. Chuyển hướng đến trang đăng nhập.');
+                alert('Bạn cần đăng nhập để xem trang thông tin cá nhân.');
+                window.location.href = 'login.html'; 
+            }
+        });
     </script>
 </body>
 </html>
