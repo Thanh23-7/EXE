@@ -43,7 +43,7 @@ const db = new sqlite3.Database(path.join(__dirname, 'greenfresh.db'));
 db.run('CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY, user_email TEXT, items TEXT, status TEXT DEFAULT "Chờ duyệt", created_at TEXT)');
 db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT UNIQUE, password TEXT, role TEXT DEFAULT "customer")');
 db.run('CREATE TABLE IF NOT EXISTS reviews (id INTEGER PRIMARY KEY, product_id INTEGER, user_email TEXT, rating INTEGER, comment TEXT, created_at TEXT)');
-db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, price REAL, description TEXT, category TEXT, image TEXT, origin TEXT, weight TEXT, expiry TEXT, storage TEXT, stock INTEGER)');
+db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, price REAL, old_price REAL, description TEXT, category TEXT, image TEXT, origin TEXT, weight TEXT, expiry TEXT, storage TEXT, stock INTEGER)');
 db.run('CREATE TABLE IF NOT EXISTS ProductJourney (id INTEGER PRIMARY KEY, product_id INTEGER, stage TEXT, details TEXT, timestamp TEXT, image TEXT)'); // Đổi 'date' thành 'timestamp' và 'description' thành 'details' cho nhất quán
 db.run('CREATE TABLE IF NOT EXISTS PurchaseHistory (id INTEGER PRIMARY KEY, user_email TEXT, product_id INTEGER, quantity INTEGER, purchased_at TEXT)');
 db.run('CREATE TABLE IF NOT EXISTS ChatMessage (id INTEGER PRIMARY KEY, sender TEXT, receiver TEXT, message TEXT, sent_at TEXT)');
@@ -104,6 +104,7 @@ function initializeDB() {
     db.serialize(() => {
         db.all('SELECT COUNT(*) as count FROM products', (err, rows) => {
             if (!err && rows[0].count === 0) {
+                // ⭐️ START: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ⭐️
                 const sampleProducts = [
                     { 
                         id: 1, name: 'Rau cải xanh hữu cơ', price: 25000, old_price: 30000, 
@@ -146,6 +147,8 @@ function initializeDB() {
                         category: 'Hải sản', image: 'https://cdn.pixabay.com/photo/2017/07/16/10/43/shrimp-2511127_1280.jpg', origin: 'Việt Nam', weight: '500g', expiry: '1 ngày', storage: 'Đông lạnh', stock: 40 
                     },
                 ];
+                // ⭐️ END: DỮ LIỆU SẢN PHẨM ĐÃ CẬP NHẬT MÔ TẢ CHI TIẾT ⭐️
+                
                 const insertStmt = db.prepare('INSERT INTO products (id, name, price, old_price, description, category, image, origin, weight, expiry, storage, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 sampleProducts.forEach(p => {
                     insertStmt.run(p.id, p.name, p.price, p.old_price || p.price, p.description, p.category, p.image, p.origin, p.weight, p.expiry, p.storage, p.stock);
@@ -203,7 +206,7 @@ app.get('/api/products', (req, res) => {
     });
 });
 
-// ⭐️ API ĐÃ FIX: Lấy chi tiết sản phẩm theo ID ⭐️
+// API: Lấy chi tiết sản phẩm theo ID 
 app.get('/api/products/:id', (req, res) => {
     const productId = req.params.id; 
     
@@ -261,12 +264,12 @@ app.get('/api/chat/history', (req, res) => {
     });
 });
 
+// ⭐️ API GỢI Ý SẢN PHẨM ĐÃ FIX VÀ HOÀN THIỆN LOGIC ⭐️
 app.get('/api/recommend-products', (req, res) => {
-    // Logic AI: Nếu có user_email, gợi ý sản phẩm cùng loại với sản phẩm user đã mua nhiều nhất
-    // Nếu không, gợi ý sản phẩm bán chạy nhất
     const { product_id, user_email } = req.query;
+    
     if (user_email) {
-        // Tìm sản phẩm user đã mua nhiều nhất
+        // Kịch bản 1: Gợi ý theo sản phẩm user đã mua nhiều nhất
         db.get('SELECT product_id, COUNT(*) as cnt FROM PurchaseHistory WHERE user_email = ? GROUP BY product_id ORDER BY cnt DESC LIMIT 1', [user_email], (err, row) => {
             if (err || !row) {
                 // Nếu chưa có lịch sử, gợi ý sản phẩm bán chạy
@@ -278,6 +281,7 @@ app.get('/api/recommend-products', (req, res) => {
                 // Lấy loại sản phẩm đã mua nhiều nhất
                 db.get('SELECT category FROM products WHERE id = ?', [row.product_id], (err3, prod) => {
                     if (err3 || !prod) return res.json([]);
+                    // Lấy các sản phẩm khác cùng danh mục
                     db.all('SELECT * FROM products WHERE category = ? AND id != ? LIMIT 6', [prod.category, row.product_id], (err4, rows) => {
                         if (err4) return res.json([]);
                         res.json(rows);
@@ -286,7 +290,7 @@ app.get('/api/recommend-products', (req, res) => {
             }
         });
     } else if (product_id) {
-        // Gợi ý sản phẩm cùng loại với sản phẩm đang xem
+        // Kịch bản 2: Gợi ý sản phẩm cùng loại với sản phẩm đang xem
         db.get('SELECT category FROM products WHERE id = ?', [product_id], (err, prod) => {
             if (err || !prod) return res.json([]);
             db.all('SELECT * FROM products WHERE category = ? AND id != ? LIMIT 6', [prod.category, product_id], (err2, rows) => {
@@ -295,7 +299,7 @@ app.get('/api/recommend-products', (req, res) => {
             });
         });
     } else {
-        // Gợi ý sản phẩm bán chạy nhất
+        // Kịch bản 3: Gợi ý sản phẩm bán chạy nhất (mặc định)
         db.all('SELECT p.*, COUNT(ph.id) as sold FROM products p LEFT JOIN PurchaseHistory ph ON p.id = ph.product_id GROUP BY p.id ORDER BY sold DESC LIMIT 6', [], (err, rows) => {
             if (err) return res.json([]);
             res.json(rows);
