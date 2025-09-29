@@ -136,7 +136,6 @@ function initializeDB() {
 initializeDB();
 // ... (Các API khác giữ nguyên) ...
 
-// API: Get all products
 // API: Get products with optional price filter
 app.get('/api/products', (req, res) => {
     let sql = 'SELECT * FROM products WHERE 1=1';
@@ -160,7 +159,6 @@ app.get('/api/products', (req, res) => {
     });
 });
 
-// API: Add a product (for demo)
 // API: Thêm hành trình sản phẩm
 app.post('/api/product-journey', (req, res) => {
     const { product_id, stage, description, date, image } = req.body;
@@ -170,8 +168,6 @@ app.post('/api/product-journey', (req, res) => {
     });
 });
 
-// API: Lấy hành trình sản phẩm theo product_id
-// API: AI gợi ý sản phẩm
 // API: Gửi tin nhắn chat
 app.post('/api/chat/send', (req, res) => {
     const { sender, receiver, message } = req.body;
@@ -254,11 +250,12 @@ app.listen(PORT, () => {
 const vnp_TmnCode = process.env.VNP_TMN_CODE; 
 const vnp_HashSecret = process.env.VNP_HASH_SECRET; 
 const vnp_Url = 'https://pay.vnpay.vn/vpcpay.html';
-const vnp_ReturnUrl = `${BACKEND_BASE_URL}/vnpay_return`; // Dùng URL công khai
+
+// ⭐️ ĐÃ FIX: Đổi URL trả về thành địa chỉ Netlify Frontend ⭐️
+const vnp_ReturnUrl = `${NETLIFY_URL}/vnpay_return.html`; 
 
 // API: Tạo link thanh toán VNPay
 app.post('/api/vnpay/create_payment', (req, res) => {
-    // ... (Giữ nguyên logic tạo tham số) ...
     if (!vnp_TmnCode || !vnp_HashSecret) {
         return res.status(500).json({ error: 'Missing VNPAY credentials (VNP_TMN_CODE or VNP_HASH_SECRET) in Environment Variables' });
     }
@@ -277,7 +274,7 @@ app.post('/api/vnpay/create_payment', (req, res) => {
     vnp_Params['vnp_OrderInfo'] = orderInfo;
     vnp_Params['vnp_OrderType'] = 'other';
     vnp_Params['vnp_Amount'] = amount * 100;
-    vnp_Params['vnp_ReturnUrl'] = vnp_ReturnUrl;
+    vnp_Params['vnp_ReturnUrl'] = vnp_ReturnUrl; // <-- Đã dùng URL Netlify
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
     // Sort params
@@ -293,8 +290,11 @@ app.post('/api/vnpay/create_payment', (req, res) => {
 });
 
 // API: Xử lý callback VNPay (demo, cần xác thực hash khi dùng thật)
+// API này chỉ dành cho SERVER-TO-SERVER (IPN), nhưng ta vẫn giữ lại
 app.get('/vnpay_return', (req, res) => {
-    // Xác thực giao dịch ở đây, cập nhật trạng thái đơn hàng
+    // Logic: VNPay gửi kết quả về Frontend (vnpay_return.html). 
+    // Frontend sẽ gọi một API khác trên Backend để xác thực.
+    // API này (vnpay_return trên Render) có thể chỉ dùng cho IPN (thông báo tức thời).
     res.send('Thanh toán VNPay thành công!');
 });
 
@@ -404,7 +404,7 @@ app.post('/api/login', (req, res) => {
         if (err || !user) return res.status(401).json({ error: 'Sai thông tin đăng nhập' });
         res.json({ success: true, user: { id: user.id, email: user.email, role: user.role } });
     });
-}); // <--- ⭐️ DẤU NGOẶC ĐÓNG CỦA API LOGIN CẦN ĐƯỢC CHUYỂN XUỐNG ⭐️
+});
 
 // API: Tạo tài khoản admin (chỉ dùng 1 lần, hoặc xóa sau khi tạo)
 app.post('/api/create-admin', (req, res) => {
