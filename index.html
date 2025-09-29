@@ -28,6 +28,12 @@
         .card:hover {
             box-shadow: 0 8px 32px rgba(16,185,129,0.18);
         }
+        /* FIX cho dropdown profile */
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: scale(1) !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -47,7 +53,6 @@
     </button>
     
     <script>
-    // FIX: Đã thay thế '/api/chat/send' bằng URL Render
     document.getElementById('open-chat-btn').onclick = function() {
         document.getElementById('chat-box').style.display = 'flex';
         loadChatMessages();
@@ -68,7 +73,6 @@
         });
     };
     function loadChatMessages() {
-        // FIX: Đã thay thế '/api/chat/history' bằng URL Render
         fetch(`https://exe-zjbe.onrender.com/api/chat/history?user_email=${userEmail}`)
             .then(res => res.json())
             .then(data => {
@@ -108,7 +112,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="relative hidden md:block">
                         <input type="text" placeholder="Tìm kiếm sản phẩm..." 
-                                 class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                                class="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
                         <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                     </div>
                     <a href="cart.html">
@@ -168,7 +172,7 @@
                 <div id="recommend-products" class="grid md:grid-cols-3 gap-8"></div>
             </div>
             <script>
-            // FIX: Đã thay thế '/api/recommend-products' bằng URL Render
+            // Lấy sản phẩm gợi ý
             fetch('https://exe-zjbe.onrender.com/api/recommend-products')
                 .then(res => res.json())
                 .then(data => {
@@ -411,21 +415,15 @@
     <script>
         /**
          * Hàm thêm sản phẩm vào giỏ hàng (sử dụng localStorage)
-         * @param {number} id - ID duy nhất của sản phẩm
-         * @param {string} name - Tên sản phẩm
-         * @param {number} price - Giá sản phẩm (đơn vị: đ)
          */
         function addToCart(id, name, price) {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            // Xử lý trường hợp chuỗi chứa ký tự đặc biệt
             const cleanedName = name.replace(/\\'/g, "'"); 
             const productIndex = cart.findIndex(item => item.id === id);
 
             if (productIndex > -1) {
-                // Nếu sản phẩm đã có, tăng số lượng
                 cart[productIndex].quantity += 1;
             } else {
-                // Nếu sản phẩm chưa có, thêm mới
                 cart.push({
                     id: id,
                     name: cleanedName,
@@ -443,36 +441,55 @@
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartCount = document.getElementById('cart-count');
-            // Tính tổng số lượng sản phẩm khác nhau trong giỏ (không phải tổng số lượng item)
             if (cartCount) cartCount.textContent = cart.length; 
         }
         updateCartCount();
         window.addEventListener('storage', updateCartCount);
 
-        // Hiển thị thông tin đăng nhập hoặc nút đăng nhập/đăng ký
+        // FIX: Xử lý hiển thị thông tin đăng nhập và THÊM NÚT PROFILE
         document.addEventListener('DOMContentLoaded', function() {
             const userInfo = document.getElementById('user-info');
             let user = localStorage.getItem('user');
+            
             if (user) {
                 user = JSON.parse(user);
+                
+                // ⭐️ CODE ĐÃ FIX: Thêm dropdown menu Tài khoản ⭐️
                 userInfo.innerHTML = `
-                    <span class="font-semibold text-green-600">${user.email}</span>
-                    <button id="logoutBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-full hover:bg-gray-300 transition">Đăng xuất</button>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-green-700 hover:text-green-500 font-semibold transition">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <span class="hidden sm:inline">${user.displayName || user.email.split('@')[0]}</span>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-50 opacity-0 group-hover:opacity-100 group-hover:visible invisible transition-all duration-200 transform scale-95 group-hover:scale-100 origin-top-right">
+                            <a href="profile.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-address-card mr-2"></i> Thông tin cá nhân
+                            </a>
+                            <a href="order-history.html" class="block px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-600">
+                                <i class="fas fa-history mr-2"></i> Lịch sử đơn hàng
+                            </a>
+                            <hr class="my-1">
+                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                            </button>
+                        </div>
+                    </div>
                 `;
+                
+                // Thêm sự kiện cho nút Đăng xuất
                 document.getElementById('logoutBtn').onclick = function() {
                     localStorage.removeItem('user');
+                    localStorage.removeItem('token'); 
                     location.reload();
                 };
             } else {
+                // Hiển thị nút Đăng nhập / Đăng ký khi chưa đăng nhập
                 userInfo.innerHTML = `
                     <a href="login.html" class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition flex items-center justify-center">Đăng nhập</a>
                     <a href="register.html" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition flex items-center justify-center">Đăng ký</a>
                 `;
             }
-
-            // Gắn sự kiện cho các nút Mua hàng trên trang sản phẩm (nếu đây là file product.html)
-            // LƯU Ý: Đoạn này cần được đặt trong file product.html nếu đó là file riêng.
-            // Để đảm bảo code chạy được, tôi sẽ đặt giả định cho trang chủ.
         });
     </script>
 </body>

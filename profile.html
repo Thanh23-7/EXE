@@ -84,31 +84,30 @@
 
     <script>
         // --- KHAI BÁO CẤU HÌNH API THẬT ---
+        // SỬ DỤNG BASE URL CHO TẤT CẢ CÁC GỌI API
         const API_BASE_URL = 'https://exe-zjbe.onrender.com/api'; 
-        const API_USERS_URL = `${API_BASE_URL}/users`; 
-    
-        // --- HÀM GỌI API THẬT: Cập nhật thông tin cá nhân ---
-        async function updateProfile(userId, newDisplayName) {
+        
+        // ⭐️ FIX: CHỈNH SỬA HÀM GỌI API ĐỂ KHỚP VỚI server.js (Dùng email, không dùng userId) ⭐️
+
+        // --- HÀM GỌI API THẬT: Cập nhật thông tin cá nhân (POST /api/update-profile) ---
+        async function updateProfile(email, newDisplayName) {
             try {
-                const token = localStorage.getItem('token');
-                
-                // Giả định: PUT /api/users/:userId
-                const response = await fetch(`${API_USERS_URL}/${userId}`, { 
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ displayName: newDisplayName })
+                // GỌI API ĐÚNG THEO SERVER.JS: POST /api/update-profile 
+                const response = await fetch(`${API_BASE_URL}/update-profile`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // TRUYỀN email VÀ displayName
+                    body: JSON.stringify({ email: email, displayName: newDisplayName }) 
                 });
     
                 const data = await response.json();
     
-                if (!response.ok) {
-                    throw new Error(data.message || `Lỗi HTTP: ${response.status}. Vui lòng kiểm tra Backend/CORS.`);
+                if (!data.success) {
+                    throw new Error(data.error || 'Cập nhật thất bại.');
                 }
-    
-                return { success: true, updatedUser: data }; 
+                
+                // Trả về thành công
+                return { success: true, updatedUser: { displayName: newDisplayName } }; 
     
             } catch (error) {
                 console.error("Lỗi cập nhật profile:", error);
@@ -116,25 +115,22 @@
             }
         }
     
-        // --- HÀM GỌI API THẬT: Đổi mật khẩu ---
-        async function changePassword(userId, currentPassword, newPassword) {
+        // --- HÀM GỌI API THẬT: Đổi mật khẩu (POST /api/change-password) ---
+        async function changePassword(email, currentPassword, newPassword) {
             try {
-                const token = localStorage.getItem('token'); 
-                
-                // Giả định: POST /api/users/:userId/change-password
-                const response = await fetch(`${API_USERS_URL}/${userId}/change-password`, { 
+                // GỌI API ĐÚNG THEO SERVER.JS: POST /api/change-password 
+                const response = await fetch(`${API_BASE_URL}/change-password`, { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ currentPassword, newPassword })
+                    headers: { 'Content-Type': 'application/json' },
+                    // TRUYỀN email, currentPassword, newPassword
+                    body: JSON.stringify({ email: email, currentPassword, newPassword }) 
                 });
     
                 const data = await response.json();
     
-                if (!response.ok) {
-                    throw new Error(data.message || `Lỗi HTTP: ${response.status}. Vui lòng kiểm tra Backend/CORS.`);
+                if (!data.success) {
+                    // Backend trả về message lỗi cụ thể nếu mật khẩu cũ sai
+                    throw new Error(data.error || 'Đổi mật khẩu thất bại.');
                 }
     
                 return { success: true }; 
@@ -144,7 +140,7 @@
                 return { success: false, error: error.message || 'Lỗi kết nối máy chủ.' };
             }
         }
-        // --- KẾT THÚC HÀM API THẬT ---
+        // --- KẾT THÚC HÀM API THẬT ĐÃ FIX ---
     
     
         const profileMsgEl = document.getElementById('profile-msg');
@@ -159,7 +155,8 @@
         let user = JSON.parse(localStorage.getItem('user') || 'null');
         
         // Chuyển hướng nếu chưa đăng nhập hoặc thiếu thông tin quan trọng
-        if (!user || !user.id || !localStorage.getItem('token')) { 
+        // Loại bỏ kiểm tra token vì Backend hiện tại chỉ dùng email/password cho form này
+        if (!user || !user.email) { 
             window.location.href = 'login.html';
             return; 
         }
@@ -195,8 +192,8 @@
             updateBtn.textContent = 'Đang cập nhật...';
             updateBtn.disabled = true;
     
-            // GỌI API THẬT
-            const data = await updateProfile(user.id, newDisplayName);
+            // GỌI API THẬT (Dùng email)
+            const data = await updateProfile(user.email, newDisplayName);
     
             // Kết thúc Loading
             updateBtn.textContent = 'Cập nhật thông tin';
@@ -232,8 +229,8 @@
             changePassBtn.textContent = 'Đang xử lý...';
             changePassBtn.disabled = true;
     
-            // GỌI API THẬT
-            const data = await changePassword(user.id, currentPassword, newPassword);
+            // GỌI API THẬT (Dùng email)
+            const data = await changePassword(user.email, currentPassword, newPassword);
     
             // Kết thúc Loading
             changePassBtn.textContent = 'Đổi mật khẩu';
