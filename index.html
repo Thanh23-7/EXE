@@ -6,8 +6,9 @@
     <title>Green Fresh - Thực phẩm xanh sạch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        /* CSS cho hiệu ứng và màu sắc tùy chỉnh */
+        /* FIX: Đảm bảo cú pháp CSS chính xác */
         .bg-gradient-green {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
@@ -29,7 +30,7 @@
         .card:hover {
             box-shadow: 0 8px 32px rgba(16, 185, 129, 0.18);
         }
-        /* FIX: Đảm bảo Dropdown hiển thị khi hover (quan trọng cho Tailwind JIT) */
+        /* FIX QUAN TRỌNG: Đảm bảo Dropdown hiển thị khi hover */
         .group:hover .group-hover\:opacity-100 {
             opacity: 1 !important;
             visibility: visible !important;
@@ -184,15 +185,19 @@
                         container.innerHTML = '<div class="text-gray-500">Chưa có gợi ý sản phẩm.</div>';
                         return;
                     }
-                    container.innerHTML = data.map(p => `
-                        <div class="card bg-white p-4 flex flex-col items-center text-center">
-                            <img src="${p.image && p.image.startsWith('http') ? p.image : 'https://i.imgur.com/sSgVbJm.jpeg'}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
-                            <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
-                            <div class="text-green-600 font-semibold mb-2">${p.price.toLocaleString()}đ</div>
-                            <div class="text-gray-600 text-sm mb-2">${p.description}</div>
-                            <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto">Xem chi tiết</a>
-                        </div>
-                    `).join('');
+                    container.innerHTML = data.map(p => {
+                        // FIX: Kiểm tra và sử dụng ảnh mặc định nếu ảnh hỏng
+                        const imageUrl = p.image && p.image.startsWith('http') ? p.image : 'https://i.imgur.com/sSgVbJm.jpeg';
+                        return `
+                            <div class="card bg-white p-4 flex flex-col items-center text-center">
+                                <img src="${imageUrl}" alt="${p.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                                <h3 class="font-bold text-lg mb-2 text-green-700">${p.name}</h3>
+                                <div class="text-green-600 font-semibold mb-2">${p.price.toLocaleString()}đ</div>
+                                <div class="text-gray-600 text-sm mb-2">${p.description}</div>
+                                <a href="product-detail.html?id=${p.id}" class="btn-primary px-4 py-2 rounded-full mt-auto">Xem chi tiết</a>
+                            </div>
+                        `;
+                    }).join('');
                 });
             </script>
             
