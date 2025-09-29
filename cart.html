@@ -84,6 +84,10 @@
     </main>
 
     <script>
+        // *** ĐỊNH NGHĨA BASE URL CHO BACKEND (QUAN TRỌNG ĐỂ KHẮC PHỤC LỖI 404) ***
+        const API_BASE_URL = 'https://exe-zjbe.onrender.com'; 
+        // LƯU Ý: Nếu URL Render của bạn thay đổi, bạn phải cập nhật lại dòng này!
+        
         // --- HÀM CƠ BẢN ---
 
         function calculateCartTotal(cart) {
@@ -94,7 +98,6 @@
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartCount = document.getElementById('cart-count');
-            // Tính tổng số lượng item
             if (cartCount) cartCount.textContent = cart.length; 
         }
 
@@ -111,13 +114,11 @@
             if (cart.length === 0) {
                 cartEmpty.classList.remove('hidden');
                 cartTotal.textContent = 'Tổng cộng: 0đ';
-                // Ẩn nút thanh toán khi giỏ hàng trống
                 checkoutBtn.style.display = 'none';
                 vnpayBtn.style.display = 'none';
                 return;
             } else {
                 cartEmpty.classList.add('hidden');
-                // Hiện nút thanh toán
                 checkoutBtn.style.display = 'inline-block';
                 vnpayBtn.style.display = 'inline-block';
             }
@@ -155,11 +156,8 @@
             renderCart();
         }
 
-        // --- HÀM XỬ LÝ THANH TOÁN (ĐÃ FIX LỖI CHECKOUT VÀ TỔNG TIỀN) ---
+        // --- HÀM XỬ LÝ THANH TOÁN (KIỂM TRA ĐĂNG NHẬP) ---
         
-        /**
-         * Xử lý logic chung cho việc thanh toán (kiểm tra giỏ hàng/đăng nhập)
-         */
         function handleCheckout(method) {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -171,21 +169,20 @@
 
             if (!user) {
                 alert('Vui lòng đăng nhập để tiến hành thanh toán.');
-                window.location.href = 'login.html'; // Chuyển hướng
+                window.location.href = 'login.html'; 
                 return false;
             }
             
             return { cart, user, total: calculateCartTotal(cart) };
         }
 
-        // --- XỬ LÝ SỰ KIỆN NÚT THANH TOÁN COD (ĐÃ FIX) ---
+        // --- XỬ LÝ SỰ KIỆN NÚT THANH TOÁN COD ---
         document.getElementById('checkoutBtn').onclick = function() {
             const checkoutData = handleCheckout('COD');
-            if (!checkoutData) return; // Dừng nếu chưa đăng nhập hoặc giỏ hàng trống
+            if (!checkoutData) return; 
 
             const { cart } = checkoutData;
 
-            // Logic Thanh toán COD giả lập:
             let orders = JSON.parse(localStorage.getItem('orders') || '[]');
             orders.push({
                 items: cart,
@@ -194,23 +191,23 @@
                 total: calculateCartTotal(cart)
             });
             localStorage.setItem('orders', JSON.stringify(orders));
-            localStorage.setItem('cart', '[]'); // Xóa giỏ hàng
+            localStorage.setItem('cart', '[]'); 
             
             renderCart();
             updateCartCount();
             alert('Đặt hàng thành công! Đơn hàng COD đã được lưu vào lịch sử. Cảm ơn bạn đã tin tưởng Green Fresh.');
-            window.location.href = 'index.html'; // Chuyển về trang chủ
+            window.location.href = 'index.html'; 
         };
 
-        // --- XỬ LÝ SỰ KIỆN NÚT THANH TOÁN VNPAY (ĐÃ FIX) ---
+        // --- XỬ LÝ SỰ KIỆN NÚT THANH TOÁN VNPAY (ĐÃ FIX LỖI 404) ---
         document.getElementById('vnpayBtn').onclick = function() {
             const checkoutData = handleCheckout('VNPAY');
-            if (!checkoutData) return; // Dừng nếu chưa đăng nhập hoặc giỏ hàng trống
+            if (!checkoutData) return; 
             
             const { user, total } = checkoutData;
 
-            // Gọi API VNPAY (giả định endpoint /api/vnpay/create_payment có tồn tại trên Backend)
-            fetch('/api/vnpay/create_payment', {
+            // GỌI API VỚI URL TUYỆT ĐỐI ĐỂ TRÁNH LỖI 404 TRÊN NETLIFY
+            fetch(`${API_BASE_URL}/api/vnpay/create_payment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -224,7 +221,7 @@
                 if (data.paymentUrl) {
                     window.location.href = data.paymentUrl;
                 } else {
-                    alert('Không tạo được link thanh toán VNPAY! Vui lòng kiểm tra Backend API.');
+                    alert('Không tạo được link thanh toán VNPAY! Vui lòng kiểm tra log Backend.');
                 }
             })
             .catch(error => {
